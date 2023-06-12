@@ -93,7 +93,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         {
             try
             {
-                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12 };
+                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccSection13, ccSection14 };
                 controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
 
@@ -264,7 +264,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         {
             if (Global.updatingPreset == false) savePreset();
 
-            CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12 };
+            CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccSection13, ccSection14 };
 
             if (cards[cards.Length - 1].Visibility == Visibility.Visible)
             {
@@ -308,7 +308,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     _isIGPUClock = ViewModel.IsIGPUClock,
                     iGPUClock = ViewModel.IGPUClock,
                     _isEPP = ViewModel.IsEPP,
-                    _EPP = ViewModel.EPP
+                    _EPP = ViewModel.EPP,
+                    _isRSR = ViewModel.IsRSR,
+                    _RSR = ViewModel.RSR
                 };
                 adaptivePresetManager.SavePreset(Global.presetName, preset);
             }

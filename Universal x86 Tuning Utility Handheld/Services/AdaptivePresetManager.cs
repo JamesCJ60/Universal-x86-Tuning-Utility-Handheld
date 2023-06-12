@@ -22,6 +22,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Services
         public int iGPUClock { get; set; }
         public bool _isEPP { get; set; }
         public int _EPP { get; set; }
+        public bool _isRSR { get; set; }
+        public int _RSR { get; set; }
     }
 
     public class AdaptivePresetManager

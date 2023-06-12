@@ -356,6 +356,58 @@
                     </Grid>
                 </ui:CardControl.Header>
             </ui:CardControl>
+
+            <ui:CardControl
+                Name="ccSection13"
+            IsEnabled="True"
+            Icon="FullScreenMaximize24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Radeon™ Super Resolution" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Toggles RSR and alters RSR sharpness"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsRSR, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection14" Visibility="{Binding ViewModel.IsRSR, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.RSR,StringFormat={}{0}%}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="100" Value="{Binding ViewModel.RSR, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
         </StackPanel>
     </Grid>
 </ui:UiPage>

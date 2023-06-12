@@ -63,6 +63,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         [ObservableProperty]
         private int _EPP = 25;
 
+        [ObservableProperty]
+        private bool _isRSR = false;
+
+        [ObservableProperty]
+        private int _RSR = 20;
+
         public void OnNavigatedTo()
         {
         }

@@ -205,6 +205,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 // Activate the current power scheme
                 PowerPlans.SetActiveScheme("scheme_current");
             }
+
+            if (AdViewModel.IsRSR == true)
+            {
+                ADLXBackend.SetRSR(true);
+                ADLXBackend.SetRSRSharpness(AdViewModel.RSR);
+            } else ADLXBackend.SetRSR(false);
         }
 
         private void UpdateInfo()
@@ -551,6 +557,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     AdViewModel.IsIGPUClock = myPreset._isIGPUClock;
                     AdViewModel.IGPUClock = myPreset.iGPUClock;
                     AdViewModel.IsEPP = myPreset._isEPP;
+                    AdViewModel.IsRSR = myPreset._isRSR;
+                    AdViewModel.RSR = myPreset._RSR;
                 }
             }
             catch (Exception ex) { System.Windows.MessageBox.Show(ex.ToString()); }

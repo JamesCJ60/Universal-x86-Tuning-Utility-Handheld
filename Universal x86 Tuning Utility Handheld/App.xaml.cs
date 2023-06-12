@@ -188,7 +188,9 @@ namespace Universal_x86_Tuning_Utility_Handheld
                         _isIGPUClock = false,
                         iGPUClock = 1500,
                         _isEPP = false,
-                        _EPP = 50
+                        _EPP = 50,
+                        _isRSR = false,
+                        _RSR = 20
                     };
                     adaptivePresetManager.SavePreset("Default", preset);
                 }

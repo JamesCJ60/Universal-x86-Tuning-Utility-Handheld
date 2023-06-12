@@ -13,6 +13,8 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Universal_x86_Tuning_Utility.Scripts;
+using Universal_x86_Tuning_Utility.Scripts.AMD_Backend;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
@@ -107,7 +109,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             Wpf.Ui.Appearance.Watcher.Watch(this, Wpf.Ui.Appearance.BackgroundType.Mica, true);
         }
-
+        int i = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (timer.Interval == TimeSpan.FromSeconds(1))
@@ -115,7 +117,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 timer.Stop();
                 HideFromTaskbar();
                 //MessageBox.Show(RootNavigation.Current.PageTag);
-
+                Garbage.Garbage_Collect();
                 timer.Interval = TimeSpan.FromSeconds(2.2);
                 timer.Start();
             }
@@ -124,10 +126,88 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 UpdateInfo();
                 SetWindowPosition();
                 getBatteryTime();
+                ApplySettings();
+                i++;
+                if(i >= 9)
+                {
+                    Garbage.Garbage_Collect();
+                    i = 0;
+                }
             }
         }
 
-        public void UpdateInfo()
+        private void ApplySettings()
+        {
+            string commandString = "";
+
+            if(Family.TYPE == Family.ProcessorType.Amd_Apu)
+            {
+                if (AdViewModel.IsTemp == true) commandString = $"--tctl-temp={AdViewModel.TempLimit} --skin-temp-limit={AdViewModel.TempLimit} ";
+                if (AdViewModel.IsPower == true) commandString = commandString + $"--stapm-limit={AdViewModel.PowerLimit * 1000} --slow-limit={AdViewModel.PowerLimit * 1000} --fast-limit={AdViewModel.PowerLimit * 1000} --vrm-current={(AdViewModel.PowerLimit * 1000) * 2} --vrmmax-current={(AdViewModel.PowerLimit * 1000) * 2} ";
+                if (AdViewModel.IsUndervolt == true)
+                {
+                    if (AdViewModel.UnderVolt >= 0) commandString = commandString + $"--set-coall={AdViewModel.UnderVolt} ";
+                    if (AdViewModel.UnderVolt < 0) commandString = commandString + $"--set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * AdViewModel.UnderVolt))} ";
+                }
+                if (AdViewModel.IsIGPUClock == true) commandString = commandString + $"--gfx-clk={AdViewModel.IGPUClock} ";
+
+                if(commandString != null && commandString != "") RyzenAdj_To_UXTU.Translate(commandString);
+            }
+
+            if (AdViewModel.IsMaxClock == true)
+            {
+                // Set the AC and DC values for PROCFREQMAX
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, false);
+
+                // Set the AC and DC values for PROCFREQMAX1
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", (uint)AdViewModel.MaxClock, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", (uint)AdViewModel.MaxClock, false);
+
+                // Activate the current power scheme
+                PowerPlans.SetActiveScheme("scheme_current");
+            }
+            else
+            {
+                // Set the AC and DC values for PROCFREQMAX
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", 0, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", 0, false);
+
+                // Set the AC and DC values for PROCFREQMAX1
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", 0, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", 0, false);
+
+                // Activate the current power scheme
+                PowerPlans.SetActiveScheme("scheme_current");
+            }
+
+            if (AdViewModel.IsEPP == true)
+            {
+
+                // Set the AC and DC values for PROCFREQMAX
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP", (uint)AdViewModel.EPP, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP", (uint)AdViewModel.EPP, false);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", (uint)AdViewModel.EPP, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", (uint)AdViewModel.EPP, false);
+
+                // Activate the current power scheme
+                PowerPlans.SetActiveScheme("scheme_current");
+            }
+            else
+            {
+
+                // Set the AC and DC values for EPP
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP ", 40, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP ", 40, false);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 25, true);
+                PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 25, false);
+
+                // Activate the current power scheme
+                PowerPlans.SetActiveScheme("scheme_current");
+            }
+        }
+
+        private void UpdateInfo()
         {
             PowerStatus powerStatus = SystemInformation.PowerStatus;
             int batteryLifePercent = (int)(powerStatus.BatteryLifePercent * 100);

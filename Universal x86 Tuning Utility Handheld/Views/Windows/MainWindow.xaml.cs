@@ -171,12 +171,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             this.Width = 512;
 
             // Get the primary screen dimensions
-            var primaryScreen = Screen.PrimaryScreen;
-            var screenWidth = primaryScreen.WorkingArea.Width;
-            var screenHeight = primaryScreen.WorkingArea.Height;
+            var primaryScreen = System.Windows.SystemParameters.WorkArea;
+            var screenWidth = primaryScreen.Width;
+            var screenHeight = primaryScreen.Height;
 
             this.Left = screenWidth - this.Width - 12;
-            this.Top = primaryScreen.WorkingArea.Top + 12;
+            this.Top = primaryScreen.Top + 12;
             this.Height = screenHeight - 24;
             this.MaxHeight = screenHeight - 24;
             this.MinHeight = screenHeight - 24;
@@ -237,7 +237,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             {
                 this.WindowState = WindowState.Normal;
                 SetWindowPosition();
-                this.Activate();
             }
         }
 
@@ -298,7 +297,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         else
                         {
                             this.WindowState = WindowState.Normal;
-                            this.Activate();
+                            SetWindowPosition();
                         }
                     }
 
@@ -331,7 +330,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         else
                         {
                             this.WindowState = WindowState.Normal;
-                            this.Activate();
                         }
                     }
                 }
@@ -361,6 +359,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             }
             catch { }
         }
+        static double lastWifi = 0;
         public static async Task<double> RetrieveSignalStrengthAsync()
         {
             try
@@ -370,6 +369,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 {
                     foreach (var network in adapter.NetworkReport.AvailableNetworks)
                     {
+                        lastWifi = network.SignalBars;
                         return network.SignalBars;
                     }
                     return 0;
@@ -378,7 +378,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             }
             catch
             {
-                return 0;
+                return lastWifi;
             }
         }
 
@@ -386,6 +386,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         {
             string wifiURL = "";
             double wifi = await Task.Run(() => RetrieveSignalStrengthAsync().Result);
+            wifi = await Task.Run(() => RetrieveSignalStrengthAsync().Result);
 
             var wifiRadios = await Radio.GetRadiosAsync();
             var wifiRadio = await Task.Run(() => wifiRadios.FirstOrDefault(r => r.Kind == RadioKind.WiFi));

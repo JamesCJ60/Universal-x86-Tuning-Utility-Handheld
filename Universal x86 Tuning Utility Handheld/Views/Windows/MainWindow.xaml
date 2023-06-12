@@ -18,7 +18,6 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d" 
-    WindowStyle="none"
     LocationChanged="UiWindow_LocationChanged"
     WindowState="Minimized" 
     StateChanged="UiWindow_StateChanged" ResizeMode="NoResize" >
@@ -38,7 +37,6 @@
             </Grid.ColumnDefinitions>
 
             <!--  This is the main navigation of the application.  -->
-            <Viewbox Stretch="None" VerticalAlignment="Top">
             <ui:NavigationStore
                 x:Name="RootNavigation"
                 Grid.Column="0"
@@ -46,7 +44,6 @@
                 Footer="{Binding ViewModel.NavigationFooter, Mode=TwoWay}"
                 Frame="{Binding ElementName=RootFrame, Mode=OneWay}"
                 Items="{Binding ViewModel.NavigationItems, Mode=TwoWay}" />
-            </Viewbox>
 
             <!--  We display our pages inside this element.  -->
             <Border
@@ -96,7 +93,7 @@
                     MenuOnRightClick="True"
                     LeftClick="NotifyIcon_LeftClick"
                     FocusOnLeftClick="False"
-                    TooltipText="Universal_x86_Tuning_Utility_Handheld">
+                    TooltipText="Universal x86 Tuning Utility">
                     <ui:NotifyIcon.Menu>
                         <ContextMenu>
                             <MenuItem Header="Home" Tag="home" />

@@ -67,7 +67,18 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
-            SetWindowPosition();
+            if (this.WindowState == WindowState.Normal)
+            {
+                SetWindowPosition();
+                this.WindowState = WindowState.Minimized;
+                SetWindowPosition();
+                this.WindowState = WindowState.Normal;
+            }
+            else
+            {
+                SetWindowPosition();
+                this.WindowState = WindowState.Minimized;
+            }
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -77,7 +88,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             timer.Tick += Timer_Tick;
             timer.Start();
 
-            Wpf.Ui.Appearance.Watcher.Watch(this, Wpf.Ui.Appearance.BackgroundType.Acrylic, true);                                   
+            Wpf.Ui.Appearance.Watcher.Watch(this, Wpf.Ui.Appearance.BackgroundType.Acrylic, true);
+
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = SystemParameters.WorkArea.Width - Width;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -94,6 +108,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             else
             {
                 UpdateInfo();
+                SetWindowPosition();
             }
         }
 
@@ -136,17 +151,23 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void SetWindowPosition()
         {
+            this.Topmost = true;
+            this.MaxWidth = 525;
             this.MinWidth = 525;
             this.Width = 525;
 
-            var screen = System.Windows.Forms.Screen.PrimaryScreen;
-            var workArea = screen.WorkingArea;
-            this.Left = workArea.Right - this.Width - 12;
-            this.Top = workArea.Top + 12;
-            this.Height = workArea.Height - 24;
-            this.ResizeMode = ResizeMode.NoResize;
+            // Get the primary screen dimensions
+            var primaryScreen = Screen.PrimaryScreen;
+            var screenWidth = primaryScreen.WorkingArea.Width;
+            var screenHeight = primaryScreen.WorkingArea.Height;
 
-            // Force a layout update
+            this.Left = screenWidth - this.Width - 12;
+            this.Top = primaryScreen.WorkingArea.Top + 12;
+            this.Height = screenHeight - 24;
+            this.MaxHeight = screenHeight - 24;
+            this.MinHeight = screenHeight - 24;
+
+            this.InvalidateVisual();
             this.UpdateLayout();
         }
 
@@ -185,7 +206,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void UiWindow_LocationChanged(object sender, EventArgs e)
         {
-            if (this.WindowState == WindowState.Normal) this.Visibility = Visibility.Visible;
+            if (this.WindowState == WindowState.Maximized) this.Visibility = Visibility.Visible;
 
             if (this.WindowState == WindowState.Minimized) this.Visibility = Visibility.Hidden;
 
@@ -201,6 +222,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             else
             {
                 this.WindowState = WindowState.Normal;
+                SetWindowPosition();
                 this.Activate();
             }
         }
@@ -213,6 +235,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             }
             else
             {
+                SetWindowPosition();
                 this.ShowInTaskbar = true;
             }
 

@@ -1,0 +1,361 @@
+﻿<ui:UiPage x:Class="Universal_x86_Tuning_Utility_Handheld.Views.Pages.AdvancedPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Universal_x86_Tuning_Utility_Handheld.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="AdvancedPage"
+    d:DataContext="{d:DesignInstance local:AdvancedPage, IsDesignTimeCreatable=False}"
+    d:DesignHeight="2000"
+    d:DesignWidth="800"
+    d:Background="{DynamicResource ApplicationBackgroundBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d" Scrollable="True" 
+           ScrollViewer.CanContentScroll="False" 
+           ScrollViewer.VerticalScrollBarVisibility="Auto" 
+           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           ScrollViewer.PanningMode="VerticalFirst"
+    Stylus.IsFlicksEnabled="False"
+    Stylus.IsTouchFeedbackEnabled="True"
+    ScrollViewer.IsDeferredScrollingEnabled="False">
+
+    <ui:UiPage.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:UiPage.Resources>
+
+    <Grid Margin="18,0,18,0" VerticalAlignment="Top">
+        <StackPanel>
+            <ui:Card Margin="0,18,0,0" Padding="10,12,10,12">
+                <StackPanel Orientation="Horizontal">
+                    <ui:SymbolIcon Symbol="{Binding ViewModel.BatteryIcon, Mode=OneWay}" FontSize="70">
+                        <ui:SymbolIcon.LayoutTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-90"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </ui:SymbolIcon.LayoutTransform>
+                    </ui:SymbolIcon>
+                    <StackPanel Margin="9,0,0,0" VerticalAlignment="Center">
+                        <TextBlock FontWeight="Medium" FontSize="20" Text="{Binding ViewModel.Battery, Mode=TwoWay, StringFormat={}{0}%}"></TextBlock>
+                        <TextBlock FontSize="15" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ViewModel.BatteryTime, Mode=TwoWay}"></TextBlock>
+                        <TextBlock FontSize="15" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ViewModel.ChargeRate, Mode=TwoWay}" Visibility="{Binding ViewModel.IsDischarge, Converter={StaticResource BooleanToVisibilityConverter}}"></TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </ui:Card>
+            <ui:CardControl
+                Name="ccSection1"
+            IsEnabled="True"
+            Icon="Temperature24" Margin="0,9,0,0" DockPanel.Dock="Top" BorderThickness="2.5" BorderBrush="White">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Temperature Limit (°C)" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Controls CPU/APU temperature limit"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsTemp, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection2" Visibility="{Binding ViewModel.IsTemp, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.TempLimit,StringFormat={}{0}°C}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.TempLimit, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+
+            <ui:CardControl
+                Name="ccSection3"
+            IsEnabled="True"
+            Icon="Flash24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Power Limit (W)" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Controls CPU/APU power limit"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsPower, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection4" Visibility="{Binding ViewModel.IsPower, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.PowerLimit,StringFormat={}{0}W}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="60" Value="{Binding ViewModel.PowerLimit, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+
+            <ui:CardControl
+                Name="ccSection5"
+            IsEnabled="True"
+            Icon="ArrowBidirectionalUpDown24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Curve Optimiser" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Controls CPU/APU voltage offset"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsUndervolt, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection6" Visibility="{Binding ViewModel.IsUndervolt, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.UnderVolt}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="-50" Maximum="0" Value="{Binding ViewModel.UnderVolt, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+
+            <ui:CardControl
+                Name="ccSection7"
+            IsEnabled="True"
+            Icon="Pulse24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Max CPU Clock (MHz)" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Controls CPU max boost clock limit"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsMaxClock, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection8" Visibility="{Binding ViewModel.IsMaxClock, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.MaxClock,StringFormat={}{0}MHz}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" TickFrequency="25" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="1000" SmallChange="25" LargeChange="50" Maximum="6000" Value="{Binding ViewModel.MaxClock, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+
+            <ui:CardControl
+                Name="ccSection9"
+            IsEnabled="True"
+            Icon="Pulse24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="iGPU Clock (MHz)" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Sets a custom static iGPU clock speed"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsIGPUClock, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection10" Visibility="{Binding ViewModel.IsIGPUClock, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.IGPUClock,StringFormat={}{0}MHz}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" TickFrequency="25" HorizontalAlignment="Stretch" Minimum="400" SmallChange="25" LargeChange="50" Maximum="4000" Value="{Binding ViewModel.IGPUClock, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+
+            <ui:CardControl
+                Name="ccSection11"
+            IsEnabled="True"
+            Icon="BatterySaver24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="EPP Policy" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Allows you to set a custom EPP value"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsEPP, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection12" Visibility="{Binding ViewModel.IsEPP, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.EPP,StringFormat={}{0}%}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="100" Value="{Binding ViewModel.EPP, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+        </StackPanel>
+    </Grid>
+</ui:UiPage>

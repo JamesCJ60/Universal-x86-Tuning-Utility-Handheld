@@ -19,6 +19,7 @@ using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Universal_x86_Tuning_Utility.Scripts;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using System.Management;
+using System.Security.Cryptography;
 
 namespace Universal_x86_Tuning_Utility_Handheld
 {
@@ -59,6 +60,8 @@ namespace Universal_x86_Tuning_Utility_Handheld
                 // Views and ViewModels
                 services.AddScoped<Views.Pages.DashboardPage>();
                 services.AddScoped<ViewModels.DashboardViewModel>();
+                services.AddScoped<Views.Pages.AdvancedPage>();
+                services.AddScoped<ViewModels.AdvancedViewModel>();
                 services.AddScoped<Views.Pages.DataPage>();
                 services.AddScoped<ViewModels.DataViewModel>();
                 services.AddScoped<Views.Pages.SettingsPage>();
@@ -87,6 +90,8 @@ namespace Universal_x86_Tuning_Utility_Handheld
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
+
+        private static AdaptivePresetManager adaptivePresetManager = new AdaptivePresetManager(Settings.Default.Path + "adaptivePresets.json");
 
         public static string mbo = "";
 
@@ -165,6 +170,28 @@ namespace Universal_x86_Tuning_Utility_Handheld
                 }
 
                 //if (IsInternetAvailable()) if (Settings.Default.UpdateCheck) CheckForUpdate();
+
+                AdaptivePreset myPreset = adaptivePresetManager.GetPreset("Default");
+
+                if (myPreset == null)
+                {
+                    AdaptivePreset preset = new AdaptivePreset
+                    {
+                        _isTemp = false,
+                        tempLimit = 95,
+                        _isPower = false,
+                        powerLimit = 15,
+                        _isUndervolt = false,
+                        underVolt = 0,
+                        _isMaxClock = false,
+                        maxClock = 3000,
+                        _isIGPUClock = false,
+                        iGPUClock = 1500,
+                        _isEPP = false,
+                        _EPP = 50
+                    };
+                    adaptivePresetManager.SavePreset("Default", preset);
+                }
 
                 await _host.StartAsync();
             }

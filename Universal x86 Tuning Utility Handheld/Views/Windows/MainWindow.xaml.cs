@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,8 +13,10 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
+using Universal_x86_Tuning_Utility_Handheld.Services;
 using Windows.Devices.Power;
 using Windows.Devices.Radios;
 using Windows.Devices.WiFi;
@@ -31,14 +34,20 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
     {
         public ViewModels.MainWindowViewModel ViewModel
         {
-            get;
+            get; set;
+        }
+        public ViewModels.AdvancedViewModel AdViewModel
+        {
+            get; set;
         }
 
         private DispatcherTimer timer;
 
-        public MainWindow(ViewModels.MainWindowViewModel viewModel, IPageService pageService, INavigationService navigationService)
+        private readonly INavigationService _navigationService;
+        public MainWindow(ViewModels.MainWindowViewModel viewModel, ViewModels.AdvancedViewModel adViewModel, IPageService pageService, INavigationService navigationService)
         {
             ViewModel = viewModel;
+            AdViewModel = adViewModel;
             DataContext = this;
 
             InitializeComponent();
@@ -63,6 +72,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
 
             UpdateInfo();
+            getBatteryTime();
+
+            _navigationService = navigationService;
+
+            UpdatePreset("Default");
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
@@ -109,6 +123,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             {
                 UpdateInfo();
                 SetWindowPosition();
+                getBatteryTime();
             }
         }
 
@@ -119,7 +134,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             ViewModel.Battery = batteryLifePercent;
             ViewModel.Time = DateTime.Now;
             bool isBatteryCharging = powerStatus.PowerLineStatus == System.Windows.Forms.PowerLineStatus.Online && powerStatus.BatteryChargeStatus.HasFlag(BatteryChargeStatus.Charging);
-
             if (!isBatteryCharging)
             {
                 if (batteryLifePercent >= 100) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery1024;
@@ -152,9 +166,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         private void SetWindowPosition()
         {
             this.Topmost = true;
-            this.MaxWidth = 525;
-            this.MinWidth = 525;
-            this.Width = 525;
+            this.MaxWidth = 512;
+            this.MinWidth = 512;
+            this.Width = 512;
 
             // Get the primary screen dimensions
             var primaryScreen = Screen.PrimaryScreen;
@@ -287,6 +301,22 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             this.Activate();
                         }
                     }
+
+                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.LeftShoulder) && this.WindowState != WindowState.Minimized)
+                    {
+                        int current = RootNavigation.SelectedPageIndex;
+                        current--;
+                        if(current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
+                        else if(current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
+                    }
+
+                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightShoulder) && this.WindowState != WindowState.Minimized)
+                    {
+                        int current = RootNavigation.SelectedPageIndex;
+                        current++;
+                        if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
+                        else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
+                    }
                 }
 
                 if (App.mbo.Contains("aya") && controllerNo == UserIndex.One)
@@ -366,9 +396,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 if (wifi >= 4) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi124;
                 else if (wifi >= 3) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi224;
                 else if (wifi >= 2) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi324;
-                else if (wifi == 1) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi424;
+                else if (wifi >= 1) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi424;
                 else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
-
             }
             else if (wifiRadio != null && wifiRadio.State == RadioState.Off) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.WifiOff24;
             else if (internetConnectionProfile != null)
@@ -381,6 +410,71 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 }
             }
 
+        }
+
+        public async void getBatteryTime()
+        {
+            await Task.Run(() =>
+            {
+                PowerStatus pwr = System.Windows.Forms.SystemInformation.PowerStatus;
+                //Get battery life
+
+                var batTime = (float)pwr.BatteryLifeRemaining;
+
+                bool isCharging = false;
+
+                if (ViewModel.BatteryIcon == Wpf.Ui.Common.SymbolRegular.BatteryCharge24)
+                {
+                    batTime = 0;
+                    isCharging = true;
+                }
+                var time = TimeSpan.FromSeconds(batTime);
+
+                AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
+
+                if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == true) AdViewModel.BatteryTime = "Battery Charging";
+                if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == false) AdViewModel.BatteryTime = "Calculating";
+
+                PerfCounters.ReadSensors();
+                float dischargeRate = (float)PerfCounters.BatteryDischarge;
+
+                if (dischargeRate != 0)
+                {
+                    AdViewModel.IsDischarge = true;
+                    AdViewModel.ChargeRate = $"-{dischargeRate.ToString("0.00")}W Charge Rate";
+                }
+                else AdViewModel.IsDischarge = false;
+            });
+        }
+
+        private static AdaptivePresetManager adaptivePresetManager = new AdaptivePresetManager(Settings.Default.Path + "adaptivePresets.json");
+        private void UpdatePreset(string presetName)
+        {
+            Global.updatingPreset = true;
+            try
+            {
+                Global.presetName = presetName;
+
+                adaptivePresetManager = new AdaptivePresetManager(Settings.Default.Path + "adaptivePresets.json");
+                AdaptivePreset myPreset = adaptivePresetManager.GetPreset(presetName);
+
+                if (myPreset != null)
+                {
+                    AdViewModel.IsTemp = myPreset._isTemp;
+                    AdViewModel.TempLimit = myPreset.tempLimit;
+                    AdViewModel.IsPower = myPreset._isPower;
+                    AdViewModel.PowerLimit = myPreset.powerLimit;
+                    AdViewModel.IsUndervolt = myPreset._isUndervolt;
+                    AdViewModel.IsMaxClock = myPreset._isMaxClock;
+                    AdViewModel.MaxClock = myPreset.maxClock;
+                    AdViewModel.IsIGPUClock = myPreset._isIGPUClock;
+                    AdViewModel.IGPUClock = myPreset.iGPUClock;
+                    AdViewModel.IsEPP = myPreset._isEPP;
+                }
+            }
+            catch (Exception ex) { System.Windows.MessageBox.Show(ex.ToString()); }
+
+            Global.updatingPreset = false;
         }
     }
 }

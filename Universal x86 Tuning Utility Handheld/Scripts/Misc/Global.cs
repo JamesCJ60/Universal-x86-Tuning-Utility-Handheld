@@ -24,6 +24,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Misc
         public static SymbolRegular battery = SymbolRegular.Empty;
         public static int batteryPer = 0;
 
+        public static string presetName = "Default";
+        public static bool updatingPreset = false;
         public static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             int childCount = VisualTreeHelper.GetChildrenCount(parent);

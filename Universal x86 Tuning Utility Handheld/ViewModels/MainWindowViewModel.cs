@@ -60,7 +60,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                     Content = "Advanced",
                     PageTag = "power",
                     Icon = SymbolRegular.Battery924,
-                    PageType = typeof(Views.Pages.DataPage)
+                    PageType = typeof(Views.Pages.AdvancedPage)
                 },
                 new NavigationItem()
                 {

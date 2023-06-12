@@ -20,6 +20,10 @@
     Stylus.IsTouchFeedbackEnabled="True"
     ScrollViewer.IsDeferredScrollingEnabled="False">
 
+    <ui:UiPage.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:UiPage.Resources>
+
     <Grid Margin="18,0,18,0" VerticalAlignment="Top">
         <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -47,7 +51,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Provides the ability to toggle WiFi."/>
+                            Text="Provides the ability to toggle WiFi"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.Wifi, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
@@ -74,7 +78,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Provides the ability to toggle Bluetooth."/>
+                            Text="Provides the ability to toggle Bluetooth"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.Bluetooth, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
@@ -155,7 +159,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Toggles input status of all recording devices."/>
+                            Text="Toggles input status of all recording devices"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.Recording, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
@@ -164,6 +168,7 @@
                     </Grid>
                 </ui:CardControl.Header>
             </ui:CardControl>
+            <!--Visibility="{Binding ElementName=test, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"-->
             <ui:CardControl
                 Name="ccSection6"
             IsEnabled="True"
@@ -182,7 +187,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Convert controller input to mouse input."/>
+                            Text="Convert controller input to mouse input"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.Mouse, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
@@ -212,7 +217,7 @@
                             Text="Toggles built in RTSS game overlay."/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.over, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.Overlay, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
                         </StackPanel>
 
                     </Grid>
@@ -236,7 +241,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Start application on Windows boot."/>
+                            Text="Start application on Windows boot"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.StartOnBoot, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>

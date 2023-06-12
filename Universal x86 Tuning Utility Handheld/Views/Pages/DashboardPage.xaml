@@ -36,7 +36,7 @@
             <ui:CardControl
                 Name="ccSection1"
             IsEnabled="True"
-            Icon="Wifi124" Margin="0,18,0,0" DockPanel.Dock="Top" BorderThickness="2.5" BorderBrush="White">
+            Icon="Wifi124" Margin="0,18,0,0" DockPanel.Dock="Top" BorderThickness="2.5" BorderBrush="{DynamicResource TextFillColorPrimaryBrush}">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>

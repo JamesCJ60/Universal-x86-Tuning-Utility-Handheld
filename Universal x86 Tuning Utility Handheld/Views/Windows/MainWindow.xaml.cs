@@ -102,10 +102,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             timer.Tick += Timer_Tick;
             timer.Start();
 
-            Wpf.Ui.Appearance.Watcher.Watch(this, Wpf.Ui.Appearance.BackgroundType.Acrylic, true);
-
             WindowStartupLocation = WindowStartupLocation.Manual;
             Left = SystemParameters.WorkArea.Width - Width;
+
+            Wpf.Ui.Appearance.Watcher.Watch(this, Wpf.Ui.Appearance.BackgroundType.Mica, true);
         }
 
         private void Timer_Tick(object sender, EventArgs e)

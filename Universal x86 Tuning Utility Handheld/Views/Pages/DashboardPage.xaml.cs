@@ -53,7 +53,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             getBluetooth();
 
             normalBorderBrush = ccSection8.BorderBrush;
-
             checkInput.Interval = TimeSpan.FromSeconds(0.12);
             checkInput.Tick += checkInput_Tick;
             checkInput.Start();
@@ -67,6 +66,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             {
                 UpdateGUI(UserIndex.One);
                 UpdateGUI(UserIndex.Two);
+
+                var foregroundBrush = (Brush)Application.Current.FindResource("TextFillColorPrimaryBrush");
+                selectedBorderBrush = foregroundBrush;
             }
             else wasMini = true;
         }

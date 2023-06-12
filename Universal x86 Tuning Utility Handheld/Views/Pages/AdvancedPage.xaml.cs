@@ -76,6 +76,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             {
                 UpdateGUI(UserIndex.One);
                 UpdateGUI(UserIndex.Two);
+
+                var foregroundBrush = (Brush)System.Windows.Application.Current.FindResource("TextFillColorPrimaryBrush");
+                selectedBorderBrush = foregroundBrush;
             }
         }
 

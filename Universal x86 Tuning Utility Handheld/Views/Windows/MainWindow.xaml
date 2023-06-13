@@ -19,7 +19,8 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d" 
     LocationChanged="UiWindow_LocationChanged"
-    WindowState="Minimized" 
+    WindowStyle="None"
+    AllowsTransparency="True"
     StateChanged="UiWindow_StateChanged" ResizeMode="NoResize" >
     <Grid>
         <Grid.RowDefinitions>
@@ -73,9 +74,9 @@
         <ui:TitleBar
             Height="38"
             Grid.Row="0"
-            UseSnapLayout="false" ShowMaximize="False" MinimizeClicked="TitleBar_MinimizeClicked" CanMaximize="False" >
+            UseSnapLayout="false" ShowMaximize="False" MinimizeClicked="TitleBar_MinimizeClicked" CanMaximize="False" ShowMinimize="False" ShowClose="False">
             <ui:TitleBar.Header>
-                <DockPanel LastChildFill="False" Margin="9,0,9,0" Height="38">
+                <DockPanel LastChildFill="False" Margin="9,0,12,0" Height="38">
                     <Image Source="pack://application:,,,/Assets/applicationIcon-256.png" Width="19"/>
                     <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left" Text="{Binding ViewModel.ApplicationTitle}" FontSize="13" Margin="6,-1.9,0,0"/>
                     <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">

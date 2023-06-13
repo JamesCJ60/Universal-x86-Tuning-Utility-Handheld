@@ -72,7 +72,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         bool wasMini = true;
         async void checkInput_Tick(object sender, EventArgs e)
         {
-            if (Global._mainWindowNav.SelectedPageIndex == 1 && Global._appState != WindowState.Minimized && Global.shortCut == false)
+            if (Global._mainWindowNav.SelectedPageIndex == 1 && Global._appVis == Visibility.Visible && Global.shortCut == false)
             {
                 UpdateGUI(UserIndex.One);
                 UpdateGUI(UserIndex.Two);
@@ -96,6 +96,17 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                 CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccSection13, ccSection14 };
                 controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
+
+                if (cards[cards.Length - 1].Visibility == Visibility.Visible)
+                {
+                    cards[cards.Length - 2].Margin = new Thickness(0, 9, 0, 0);
+                    cards[cards.Length - 1].Margin = new Thickness(0, 9, 0, 18);
+                }
+                else
+                {
+                    cards[cards.Length - 2].Margin = new Thickness(0, 9, 0, 18);
+                    cards[cards.Length - 1].Margin = new Thickness(0, 9, 0, 0);
+                }
 
                 if (connected)
                 {

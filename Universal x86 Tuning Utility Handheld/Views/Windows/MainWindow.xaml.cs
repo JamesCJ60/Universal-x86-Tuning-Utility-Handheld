@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.NetworkInformation;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows;
@@ -82,19 +84,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
-        {
-            if (this.WindowState == WindowState.Normal)
-            {
-                SetWindowPosition();
-                this.WindowState = WindowState.Minimized;
-                SetWindowPosition();
-                this.WindowState = WindowState.Normal;
-            }
-            else
-            {
-                SetWindowPosition();
-                this.WindowState = WindowState.Minimized;
-            }
+        {      
+            this.WindowState = WindowState.Minimized;
+            SetWindowPosition();
+            this.UpdateLayout();
+            SetWindowPosition();
+            this.UpdateLayout();
+            this.WindowState = WindowState.Normal;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -106,8 +102,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             WindowStartupLocation = WindowStartupLocation.Manual;
             Left = SystemParameters.WorkArea.Width - Width;
-
-            Wpf.Ui.Appearance.Watcher.Watch(this, Wpf.Ui.Appearance.BackgroundType.Mica, true);
         }
         int i = 0;
         private void Timer_Tick(object sender, EventArgs e)
@@ -117,6 +111,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 timer.Stop();
                 HideFromTaskbar();
                 //MessageBox.Show(RootNavigation.Current.PageTag);
+                this.Topmost = true;
                 Garbage.Garbage_Collect();
                 timer.Interval = TimeSpan.FromSeconds(2.2);
                 timer.Start();
@@ -263,12 +258,18 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             this.Left = screenWidth - this.Width - 12;
             this.Top = primaryScreen.Top + 12;
-            this.Height = screenHeight - 24;
-            this.MaxHeight = screenHeight - 24;
-            this.MinHeight = screenHeight - 24;
+            this.Height = screenHeight - 22;
+            this.MaxHeight = screenHeight - 22;
+            this.MinHeight = screenHeight - 22;
+
+            this.WindowStyle = WindowStyle.None;
 
             this.InvalidateVisual();
             this.UpdateLayout();
+            this.Activate();
+            this.Focus();
+            Wpf.Ui.Appearance.Watcher.Watch(this, Wpf.Ui.Appearance.BackgroundType.Mica, true);
+            Global._appVis = this.Visibility;
         }
 
         #region INavigationWindow methods
@@ -306,39 +307,31 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void UiWindow_LocationChanged(object sender, EventArgs e)
         {
-            if (this.WindowState == WindowState.Maximized) this.Visibility = Visibility.Visible;
-
-            if (this.WindowState == WindowState.Minimized) this.Visibility = Visibility.Hidden;
-
             SetWindowPosition();
         }
 
+        private IntPtr Handle => new WindowInteropHelper(this).Handle;
+
         private void NotifyIcon_LeftClick(Wpf.Ui.Controls.NotifyIcon sender, RoutedEventArgs e)
         {
-            if (this.WindowState != WindowState.Minimized)
+            if (Visibility == Visibility.Visible)
             {
-                this.WindowState = WindowState.Minimized;
+                Visibility = Visibility.Hidden;
             }
             else
             {
-                this.WindowState = WindowState.Normal;
-                SetWindowPosition();
+                Visibility = Visibility.Visible;
+                this.Activate();
             }
+            SetWindowPosition();
+            UpdateLayout();
+
+            Global._appVis = this.Visibility;
         }
 
         private void UiWindow_StateChanged(object sender, EventArgs e)
         {
-            if (this.WindowState == WindowState.Minimized)
-            {
-                this.ShowInTaskbar = false;
-            }
-            else
-            {
-                SetWindowPosition();
-                this.ShowInTaskbar = true;
-            }
 
-            Global._appState = this.WindowState;
         }
 
         private void TitleBar_MinimizeClicked(object sender, RoutedEventArgs e)
@@ -353,6 +346,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         }
 
         private static Controller controller;
+        bool visible = true;
         private void ControllerInput(UserIndex controllerNo)
         {
             try
@@ -360,6 +354,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 controller = new Controller(controllerNo);
 
                 bool connected = controller.IsConnected;
+
+                SetWindowPosition();
+                this.UpdateLayout();
+                SetWindowPosition();
+                this.UpdateLayout();
 
                 if (connected)
                 {
@@ -376,15 +375,19 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.LeftShoulder) && state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadUp) && state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightShoulder))
                     {
-                        if (this.WindowState != WindowState.Minimized)
+                        if (Visibility == Visibility.Visible)
                         {
-                            this.WindowState = WindowState.Minimized;
+                            Visibility = Visibility.Hidden;
                         }
                         else
                         {
-                            this.WindowState = WindowState.Normal;
+                            Visibility = Visibility.Visible;
+                            this.Activate();
                             SetWindowPosition();
+                            UpdateLayout();
                         }
+
+                        UpdateLayout();
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.LeftShoulder) && this.WindowState != WindowState.Minimized)
@@ -409,16 +412,23 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     //detect if keyboard or controller combo is being activated
                     if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.F12) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.F12) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.LWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.LWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.RWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.RWin) & KeyStates.Down) > 0)
                     {
-                        if (this.WindowState != WindowState.Minimized)
+                        if (Visibility == Visibility.Visible)
                         {
-                            this.WindowState = WindowState.Minimized;
+                            Visibility = Visibility.Hidden;
                         }
                         else
                         {
-                            this.WindowState = WindowState.Normal;
+                            Visibility = Visibility.Visible;
+                            this.Activate();
+                            SetWindowPosition();
+                            UpdateLayout();
                         }
+
+                        UpdateLayout();
                     }
                 }
+
+                Global._appVis = this.Visibility;
             }
             catch { }
         }

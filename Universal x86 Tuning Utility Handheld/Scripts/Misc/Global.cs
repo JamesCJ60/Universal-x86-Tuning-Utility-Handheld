@@ -15,7 +15,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Misc
     {
         public static NavigationStore _mainWindowNav = null;
 
-        public static WindowState _appState = WindowState.Minimized;
+        public static Visibility _appVis = Visibility.Visible;
 
         public static bool shortCut = false;
 

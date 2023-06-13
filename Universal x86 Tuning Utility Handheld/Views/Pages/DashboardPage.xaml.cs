@@ -62,7 +62,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         bool wasMini = true;
         async void checkInput_Tick(object sender, EventArgs e)
         {
-            if (Global._mainWindowNav.SelectedPageIndex == 0 && Global._appState != WindowState.Minimized && Global.shortCut == false)
+            if (Global._mainWindowNav.SelectedPageIndex == 0 && Global._appVis == Visibility.Visible && Global.shortCut == false)
             {
                 UpdateGUI(UserIndex.One);
                 UpdateGUI(UserIndex.Two);

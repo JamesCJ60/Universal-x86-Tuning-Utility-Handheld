@@ -254,6 +254,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         }
                     }
                 }
+                else if (controllerNo == UserIndex.One && !connected)
+                {
+                    foreach (var card in cards)
+                    {
+                        card.BorderBrush = normalBorderBrush;
+                        card.BorderThickness = normalThickness;
+                    }
+                }
             } catch { }
         }
 

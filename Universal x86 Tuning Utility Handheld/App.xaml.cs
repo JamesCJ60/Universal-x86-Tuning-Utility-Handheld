@@ -185,6 +185,8 @@ namespace Universal_x86_Tuning_Utility_Handheld
                 //if (IsInternetAvailable()) if (Settings.Default.UpdateCheck) CheckForUpdate();
 
                 AdaptivePreset myPreset = adaptivePresetManager.GetPreset("Default");
+                int MaxCoreCount = 0;
+                foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get()) { MaxCoreCount = Convert.ToInt32(item["NumberOfCores"]); }
 
                 if (myPreset == null)
                 {
@@ -203,7 +205,9 @@ namespace Universal_x86_Tuning_Utility_Handheld
                         _isEPP = false,
                         _EPP = 50,
                         _isRSR = false,
-                        _RSR = 20
+                        _RSR = 20,
+                        _isCoreCount = false,
+                        _CoreCount = MaxCoreCount
                     };
                     adaptivePresetManager.SavePreset("Default", preset);
                 }

@@ -28,6 +28,7 @@ using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Wpf.Ui.Mvvm.Interfaces;
 using Universal_x86_Tuning_Utility_Handheld.Services;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using Universal_x86_Tuning_Utility.Scripts;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -68,7 +69,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             ViewModel.BatteryIcon = Global.battery;
         }
 
-        int selected = 0, lastSelected = 0;
+        int selected = 0, lastSelected = -1;
         bool wasMini = true;
         async void checkInput_Tick(object sender, EventArgs e)
         {
@@ -93,8 +94,25 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         {
             try
             {
-                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccSection13, ccSection14 };
-                controller = new Controller(controllerNo);
+                CardControl[] cards = new CardControl[1];
+
+                if (Family.TYPE == Family.ProcessorType.Amd_Apu)
+                {
+                    CardControl[] cardsTemp = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection81, ccSection82, ccSection9, ccSection10, ccSection11, ccSection12, ccSection13, ccSection14 };
+                    cards = cardsTemp;
+                }
+                if (Family.TYPE == Family.ProcessorType.Intel)
+                {
+                    ccSection1.Visibility = Visibility.Collapsed;
+                    ccSection2.Visibility = Visibility.Collapsed;
+                    ccSection5.Visibility = Visibility.Collapsed;
+                    ccSection9.Visibility = Visibility.Collapsed;
+                    ccSection13.Visibility = Visibility.Collapsed;
+                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection7, ccSection8, ccSection81, ccSection82, ccSection11, ccSection12};
+                    cards = cardsTemp;
+                }
+
+                    controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
 
                 if (cards[cards.Length - 1].Visibility == Visibility.Visible)
@@ -268,6 +286,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         }
                     }
                 }
+                else if (controllerNo == UserIndex.One && !connected)
+                {
+                    foreach (var card in cards)
+                    {
+                        card.BorderBrush = normalBorderBrush;
+                        card.BorderThickness = normalThickness;
+                    }
+                }
             } catch { }
         }        
 
@@ -321,7 +347,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     _isEPP = ViewModel.IsEPP,
                     _EPP = ViewModel.EPP,
                     _isRSR = ViewModel.IsRSR,
-                    _RSR = ViewModel.RSR
+                    _RSR = ViewModel.RSR,
+                    _isCoreCount = ViewModel.IsCoreCount,
+                    _CoreCount = ViewModel.CoreCount
                 };
                 adaptivePresetManager.SavePreset(Global.presetName, preset);
             }

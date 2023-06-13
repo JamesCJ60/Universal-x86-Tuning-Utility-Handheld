@@ -69,6 +69,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         [ObservableProperty]
         private int _RSR = 20;
 
+        [ObservableProperty]
+        private bool _isCoreCount = false;
+
+        [ObservableProperty]
+        private int _coreCount = 8;
+
+        [ObservableProperty]
+        private int _maxCoreCount = 8;
+
+
         public void OnNavigatedTo()
         {
         }

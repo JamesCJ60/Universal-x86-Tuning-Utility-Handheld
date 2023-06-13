@@ -254,6 +254,58 @@
             </ui:CardControl>
 
             <ui:CardControl
+                Name="ccSection81"
+            IsEnabled="True"
+            Icon="DeveloperBoard24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Max CPU Count" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Controls CPU unparked core count limit"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsCoreCount, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection82" Visibility="{Binding ViewModel.IsCoreCount, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.CoreCount,StringFormat={}{0} Cores}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" TickFrequency="25" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="2" SmallChange="1" LargeChange="2" Maximum="{Binding ViewModel.MaxCoreCount}" Value="{Binding ViewModel.CoreCount, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+
+            <ui:CardControl
                 Name="ccSection9"
             IsEnabled="True"
             Icon="Pulse24" Margin="0,9,0,0" DockPanel.Dock="Top">
@@ -271,7 +323,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Sets a custom static iGPU clock speed"/>
+                            Text="Contols a static iGPU clock speed"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsIGPUClock, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
@@ -319,11 +371,11 @@
                             <TextBlock
                             FontSize="16"
                             FontWeight="Medium"
-                            Text="EPP Policy" />
+                            Text="Energy Performance Preference Policy" />
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Allows you to set a custom EPP value"/>
+                            Text="Controls EPP offset value"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsEPP, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
@@ -375,7 +427,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Toggles RSR and alters RSR sharpness"/>
+                            Text="Controls RSR status and RSR sharpness"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsRSR, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>

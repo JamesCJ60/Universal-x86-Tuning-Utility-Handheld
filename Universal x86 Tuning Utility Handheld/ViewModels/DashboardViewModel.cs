@@ -1,8 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics;
+using System.Windows.Input;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
+using Wpf.Ui.Common;
 using Wpf.Ui.Common.Interfaces;
+using Wpf.Ui.Controls;
 
 namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
 {
@@ -26,6 +30,19 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         private bool _mouse = Settings.Default.isMouse;
         [ObservableProperty]
         private bool _startOnBoot = Settings.Default.StartOnBoot;
+        [ObservableProperty]
+        private bool _startMini = Settings.Default.StartMini;
+        [ObservableProperty]
+        private string _ACMode = "Perf Mode";
+        [ObservableProperty]
+        private int _acMode = Settings.Default.acMode;
+        [ObservableProperty]
+        private bool _isASUS = Settings.Default.isASUS;
+        [ObservableProperty]
+        private SymbolRegular _acModeIcon = SymbolRegular.Scales24;
+
+        private ICommand _functions;
+        public ICommand FunctionCommands => _functions ??= new RelayCommand<string>(Functions);
 
         public void OnNavigatedTo()
         {
@@ -33,6 +50,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
 
         public void OnNavigatedFrom()
         {
+        }
+
+        private void Functions(string parameter)
+        {
+            switch (parameter)
+            {
+                case "close":
+                    System.Windows.Application.Current.Shutdown();
+                    return;
+            }
         }
 
         //[RelayCommand]

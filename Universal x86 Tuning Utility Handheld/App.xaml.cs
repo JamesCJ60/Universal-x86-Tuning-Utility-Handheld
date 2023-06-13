@@ -20,6 +20,9 @@ using Universal_x86_Tuning_Utility.Scripts;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using System.Management;
 using System.Security.Cryptography;
+using Universal_x86_Tuning_Utility_Handheld.Scripts;
+using Microsoft.Toolkit.Uwp.Notifications;
+using System.ServiceProcess;
 
 namespace Universal_x86_Tuning_Utility_Handheld
 {
@@ -28,6 +31,9 @@ namespace Universal_x86_Tuning_Utility_Handheld
     /// </summary>
     public partial class App
     {
+
+        public static ASUSWmi wmi;
+
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -56,6 +62,7 @@ namespace Universal_x86_Tuning_Utility_Handheld
                 // Main window with navigation
                 services.AddScoped<INavigationWindow, Views.Windows.MainWindow>();
                 services.AddScoped<ViewModels.MainWindowViewModel>();
+
 
                 // Views and ViewModels
                 services.AddScoped<Views.Pages.DashboardPage>();
@@ -144,6 +151,20 @@ namespace Universal_x86_Tuning_Utility_Handheld
 
                 if (File.Exists("C:\\Universal.x86.Tuning.Utility.Handheld.msi")) File.Delete("C:\\Universal.x86.Tuning.Utility.Handheld.msi");
 
+                mbo = GetSystemInfo.Product;
+
+                if (GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF"))
+                {
+                    wmi = new ASUSWmi();
+                    Settings.Default.isASUS = true;
+                    Settings.Default.Save();
+                }
+                else
+                {
+                    Settings.Default.isASUS = false;
+                    Settings.Default.Save();
+                }
+
                 if (firstBoot)
                 {
                     string path = System.Reflection.Assembly.GetEntryAssembly().Location;
@@ -159,14 +180,6 @@ namespace Universal_x86_Tuning_Utility_Handheld
                     PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP", 50, false);
                     PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 50, true);
                     PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 50, false);
-                }
-
-                //Detect if an AYA Neo is being used
-                ManagementObjectSearcher baseboardSearcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_BaseBoard");
-                foreach (ManagementObject queryObj in baseboardSearcher.Get())
-                {
-                    mbo = queryObj["Manufacturer"].ToString();
-                    mbo = mbo.ToLower();
                 }
 
                 //if (IsInternetAvailable()) if (Settings.Default.UpdateCheck) CheckForUpdate();

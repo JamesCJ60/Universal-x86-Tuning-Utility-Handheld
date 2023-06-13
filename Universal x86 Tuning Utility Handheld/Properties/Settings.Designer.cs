@@ -142,5 +142,41 @@ namespace Universal_x86_Tuning_Utility_Handheld.Properties {
                 this["isMouse"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool StartMini {
+            get {
+                return ((bool)(this["StartMini"]));
+            }
+            set {
+                this["StartMini"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int acMode {
+            get {
+                return ((int)(this["acMode"]));
+            }
+            set {
+                this["acMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isASUS {
+            get {
+                return ((bool)(this["isASUS"]));
+            }
+            set {
+                this["isASUS"] = value;
+            }
+        }
     }
 }

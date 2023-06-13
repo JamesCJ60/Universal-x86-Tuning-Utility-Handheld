@@ -95,11 +95,11 @@
                     LeftClick="NotifyIcon_LeftClick"
                     FocusOnLeftClick="False"
                     TooltipText="Universal x86 Tuning Utility">
-                    <ui:NotifyIcon.Menu>
+                    <!--<ui:NotifyIcon.Menu>
                         <ContextMenu>
-                            <MenuItem Header="Home" Tag="home" />
+                            <MenuItem Name="hiClose" Header="Close" Tag="close" Click="hiClose_Click" />
                         </ContextMenu>
-                    </ui:NotifyIcon.Menu>
+                    </ui:NotifyIcon.Menu>-->
                 </ui:NotifyIcon>
             </ui:TitleBar.Tray>
         </ui:TitleBar>

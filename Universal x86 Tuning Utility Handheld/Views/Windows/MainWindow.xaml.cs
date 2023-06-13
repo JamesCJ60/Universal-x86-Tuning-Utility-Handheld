@@ -101,7 +101,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             timer.Start();
 
             WindowStartupLocation = WindowStartupLocation.Manual;
-            Left = SystemParameters.WorkArea.Width - Width;
+            SetWindowPosition();
+            if (Settings.Default.StartMini) this.Visibility = Visibility.Hidden;
+
         }
         int i = 0;
         private void Timer_Tick(object sender, EventArgs e)
@@ -258,9 +260,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             this.Left = screenWidth - this.Width - 12;
             this.Top = primaryScreen.Top + 12;
-            this.Height = screenHeight - 22;
-            this.MaxHeight = screenHeight - 22;
-            this.MinHeight = screenHeight - 22;
+            this.Height = screenHeight - 24;
+            this.MaxHeight = screenHeight - 24;
+            this.MinHeight = screenHeight - 24;
 
             this.WindowStyle = WindowStyle.None;
 
@@ -322,6 +324,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             {
                 Visibility = Visibility.Visible;
                 this.Activate();
+                this.Focus();
             }
             SetWindowPosition();
             UpdateLayout();
@@ -336,7 +339,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void TitleBar_MinimizeClicked(object sender, RoutedEventArgs e)
         {
-            this.WindowStyle = WindowStyle.None;
         }
 
         async void KeyShortCuts_Tick(object sender, EventArgs e)
@@ -346,7 +348,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         }
 
         private static Controller controller;
-        bool visible = true;
         private void ControllerInput(UserIndex controllerNo)
         {
             try
@@ -354,11 +355,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 controller = new Controller(controllerNo);
 
                 bool connected = controller.IsConnected;
-
-                SetWindowPosition();
-                this.UpdateLayout();
-                SetWindowPosition();
-                this.UpdateLayout();
 
                 if (connected)
                 {
@@ -383,6 +379,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         {
                             Visibility = Visibility.Visible;
                             this.Activate();
+                            this.Focus();
                             SetWindowPosition();
                             UpdateLayout();
                         }
@@ -407,7 +404,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     }
                 }
 
-                if (App.mbo.Contains("aya") && controllerNo == UserIndex.One)
+                if (App.mbo.Contains("AYA") && controllerNo == UserIndex.One)
                 {
                     //detect if keyboard or controller combo is being activated
                     if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.F12) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.F12) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.LWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.LWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.RWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.RWin) & KeyStates.Down) > 0)
@@ -420,6 +417,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         {
                             Visibility = Visibility.Visible;
                             this.Activate();
+                            this.Focus();
                             SetWindowPosition();
                             UpdateLayout();
                         }
@@ -574,6 +572,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             catch (Exception ex) { System.Windows.MessageBox.Show(ex.ToString()); }
 
             Global.updatingPreset = false;
+        }
+
+        private void hiClose_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
         }
     }
 }

@@ -141,8 +141,33 @@
                     </Grid>
                 </ui:CardControl.Header>
             </ui:CardControl>
-            <ui:CardControl
+            <ui:CardControl Visibility="{Binding ViewModel.IsASUS, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Name="ccSection5"
+            IsEnabled="True"
+            Icon="{Binding ViewModel.AcModeIcon}" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="122">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.ACMode, Mode=TwoWay}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="2" Value="{Binding ViewModel.AcMode, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" IsSnapToTickEnabled="True" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection6"
             IsEnabled="True"
             Icon="Mic24" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
@@ -170,7 +195,7 @@
             </ui:CardControl>
             <!--Visibility="{Binding ElementName=test, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"-->
             <ui:CardControl
-                Name="ccSection6"
+                Name="ccSection7"
             IsEnabled="True"
             Icon="XboxController24" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
@@ -197,7 +222,7 @@
                 </ui:CardControl.Header>
             </ui:CardControl>
             <ui:CardControl
-                Name="ccSection7"
+                Name="ccSection8"
             IsEnabled="True"
             Icon="ShareScreenPersonOverlay24" Margin="0,9,0,0" DockPanel.Dock="Top" Visibility="Collapsed">
                 <ui:CardControl.Header>
@@ -224,9 +249,9 @@
                 </ui:CardControl.Header>
             </ui:CardControl>
             <ui:CardControl
-                Name="ccSection8"
+                Name="ccSection9"
             IsEnabled="True"
-            Icon="Open24" Margin="0,9,0,18" DockPanel.Dock="Top">
+            Icon="Open24" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -245,6 +270,56 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.StartOnBoot, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection10"
+            IsEnabled="True"
+            Icon="ArrowMinimize24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Start Minimised" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Start application minimised"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.StartMini, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccClose"
+            IsEnabled="True"
+            Icon="Power24" Margin="0,9,0,18" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Close Application" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button Width="120" Name="btnClose" Command="{Binding ViewModel.FunctionCommands}" CommandParameter="close">Close</Button>
                         </StackPanel>
 
                     </Grid>

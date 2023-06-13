@@ -22,6 +22,9 @@ using System.Linq;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Microsoft.Win32.TaskScheduler;
 using Task = System.Threading.Tasks.Task;
+using Wpf.Ui.Common;
+using Universal_x86_Tuning_Utility_Handheld.Scripts;
+using Universal_x86_Tuning_Utility.Scripts.Misc;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -51,6 +54,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             getVol();
             getWifi();
             getBluetooth();
+            UpdateASUS();
+            SetRecordingDeviceState(ViewModel.Recording);
 
             normalBorderBrush = ccSection8.BorderBrush;
             checkInput.Interval = TimeSpan.FromSeconds(0.12);
@@ -87,7 +92,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     wasMini = false;
                 }
 
-                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8 };
+                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccClose };
                 controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
 
@@ -185,6 +190,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             if(toggleSwitch.IsChecked == true) toggleSwitch.IsChecked = false;
                             else toggleSwitch.IsChecked = true;
                         }
+
+                        if(cards[selected] == ccClose) System.Windows.Application.Current.Shutdown();
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadRight) || tx > 26000)
@@ -297,6 +304,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             Settings.Default.isRTSS = ViewModel.Overlay;
             Settings.Default.isMouse = ViewModel.Mouse;
             Settings.Default.StartOnBoot = ViewModel.StartOnBoot;
+            Settings.Default.StartMini = ViewModel.StartMini;
             Settings.Default.Save();
         }
 
@@ -319,6 +327,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             Settings.Default.isRTSS = ViewModel.Overlay;
             Settings.Default.isMouse = ViewModel.Mouse;
             Settings.Default.StartOnBoot = ViewModel.StartOnBoot;
+            Settings.Default.StartMini = ViewModel.StartMini;
             Settings.Default.Save();
         }
 
@@ -326,6 +335,32 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         {
             updateBrightness(ViewModel.Brightness);
             updateVolume(ViewModel.Volume);
+            UpdateASUS();
+        }
+
+        private void UpdateASUS()
+        {
+            if (ViewModel.AcMode == 0)
+            {
+                ViewModel.ACMode = "Silent Mode";
+                ViewModel.AcModeIcon = SymbolRegular.LeafTwo24;
+                if(GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF")) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceSilent);
+            }
+            if (ViewModel.AcMode == 1)
+            {
+                ViewModel.ACMode = "Perf Mode";
+                ViewModel.AcModeIcon = SymbolRegular.Scales24;
+                if (GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF")) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceBalanced);
+            }
+            if (ViewModel.AcMode == 2)
+            {
+                ViewModel.ACMode = "Turbo Mode";
+                ViewModel.AcModeIcon = SymbolRegular.Gauge24;
+                if (GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF")) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
+            }
+
+            Settings.Default.acMode = ViewModel.AcMode;
+            Settings.Default.Save();
         }
 
         static async void SetRecordingDeviceState(bool mute)

@@ -51,6 +51,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         private DispatcherTimer timer;
 
         private readonly INavigationService _navigationService;
+        static string mbo = "";
         public MainWindow(ViewModels.MainWindowViewModel viewModel, ViewModels.AdvancedViewModel adViewModel, IPageService pageService, INavigationService navigationService)
         {
             ViewModel = viewModel;
@@ -86,6 +87,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             if (Settings.Default.isASUS == true) App.wmi.SubscribeToEvents(WatcherEventArrived);
 
             UpdatePreset("Default");
+
+            //Detect if an AYA Neo is being used
+            ManagementObjectSearcher baseboardSearcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_BaseBoard");
+            foreach (ManagementObject queryObj in baseboardSearcher.Get())
+            {
+                mbo = queryObj["Manufacturer"].ToString();
+                mbo = mbo.ToLower();
+            }
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
@@ -453,7 +462,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     }
                 }
 
-                if (App.mbo.Contains("AYA") && controllerNo == UserIndex.One)
+                if (mbo.Contains("aya") && controllerNo == UserIndex.One)
                 {
                     //detect if keyboard or controller combo is being activated
                     if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.F12) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.F12) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.LWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.LWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.RWin) & KeyStates.Down) > 0 || (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0 && (Keyboard.GetKeyStates(Key.RWin) & KeyStates.Down) > 0)
@@ -524,7 +533,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                 if (connected)
                 {
-                    if (controller.IsConnected && Settings.Default.isMouse == true && this.WindowState == WindowState.Minimized)
+                    if (controller.IsConnected && Settings.Default.isMouse == true && this.Visibility == Visibility.Hidden)
                     {
                         controller.GetState(out var state);
                         MouseControl.Movement(state);

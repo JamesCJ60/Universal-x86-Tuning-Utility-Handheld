@@ -193,7 +193,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             else toggleSwitch.IsChecked = true;
                         }
 
-                        if(cards[selected] == ccClose) System.Windows.Application.Current.Shutdown();
+                        if (cards[selected] == ccClose) Environment.Exit(0);
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadRight) || tx > 26000)

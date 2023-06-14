@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Diagnostics;
 using System.Windows.Input;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
@@ -67,7 +68,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
             switch (parameter)
             {
                 case "close":
-                    System.Windows.Application.Current.Shutdown();
+                    Environment.Exit(0);
                     return;
             }
         }

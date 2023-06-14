@@ -24,7 +24,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </ui:UiPage.Resources>
 
-    <Grid Margin="18,0,18,0" VerticalAlignment="Top">
+    <Grid Margin="16.5,0,18,0" VerticalAlignment="Top">
         <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
@@ -36,7 +36,7 @@
             <ui:CardControl
                 Name="ccSection1"
             IsEnabled="True"
-            Icon="Wifi124" Margin="0,18,0,0" DockPanel.Dock="Top" BorderThickness="2.5" BorderBrush="{DynamicResource TextFillColorPrimaryBrush}">
+            Icon="{Binding ViewModel.WifiIcon}" Margin="0,18,0,0" DockPanel.Dock="Top" BorderThickness="2.5" BorderBrush="{DynamicResource TextFillColorPrimaryBrush}">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -63,7 +63,7 @@
             <ui:CardControl
                 Name="ccSection2"
             IsEnabled="True"
-            Icon="Bluetooth24" Margin="0,9,0,0" DockPanel.Dock="Top">
+            Icon="{Binding ViewModel.BlueIcon}" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -90,7 +90,7 @@
             <ui:CardControl
                 Name="ccSection3"
             IsEnabled="True"
-            Icon="BrightnessHigh24" Margin="0,9,0,0" DockPanel.Dock="Top">
+            Icon="{Binding ViewModel.BrightIcon}" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -117,7 +117,7 @@
             <ui:CardControl
                 Name="ccSection4"
             IsEnabled="True"
-            Icon="Speaker248" Margin="0,9,0,0" DockPanel.Dock="Top">
+            Icon="{Binding ViewModel.VolIcon}" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -169,7 +169,7 @@
             <ui:CardControl
                 Name="ccSection6"
             IsEnabled="True"
-            Icon="Mic24" Margin="0,9,0,0" DockPanel.Dock="Top">
+            Icon="{Binding ViewModel.MicIcon}" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -180,11 +180,11 @@
                             <TextBlock
                             FontSize="16"
                             FontWeight="Medium"
-                            Text="Mute Recording Devices" />
+                            Text="Recording Devices Status" />
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Toggles input status of all recording devices"/>
+                            Text="Toggles input status of recording devices"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.Recording, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>

@@ -40,6 +40,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         private bool _isASUS = Settings.Default.isASUS;
         [ObservableProperty]
         private SymbolRegular _acModeIcon = SymbolRegular.Scales24;
+        [ObservableProperty]
+        private SymbolRegular _micIcon = SymbolRegular.Mic24;
+        [ObservableProperty]
+        private SymbolRegular _wifiIcon = SymbolRegular.Wifi120;
+        [ObservableProperty]
+        private SymbolRegular _blueIcon = SymbolRegular.Bluetooth24;
+        [ObservableProperty]
+        private SymbolRegular _volIcon = SymbolRegular.Speaker224;
+        [ObservableProperty]
+        private SymbolRegular _brightIcon = SymbolRegular.BrightnessHigh24;
 
         private ICommand _functions;
         public ICommand FunctionCommands => _functions ??= new RelayCommand<string>(Functions);

@@ -371,7 +371,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             Settings.Default.Save();
         }
 
-        static async void SetRecordingDeviceState(bool mute)
+        async void SetRecordingDeviceState(bool mute)
         {
             try
             {
@@ -384,6 +384,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     {
                         device.AudioEndpointVolume.Mute = mute;
                     }
+
+                    if(mute == true) ViewModel.MicIcon = SymbolRegular.MicOff24;
+                    else ViewModel.MicIcon = SymbolRegular.Mic24;
                 });
             }
             catch { }
@@ -406,6 +409,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         instance.InvokeMethod("WmiSetBrightness", args);
                     }
                 });
+
+                if (ViewModel.Brightness >= 50) ViewModel.BrightIcon = SymbolRegular.BrightnessHigh24;
+                else ViewModel.BrightIcon = SymbolRegular.BrightnessLow24;
             }
             catch { }
         }
@@ -422,6 +428,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     //Set volume of current sound device
                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = (float)newVolume / 100.0f;
                 });
+
+                if (ViewModel.Volume >= 50) ViewModel.VolIcon = SymbolRegular.Speaker224;
+                else if (ViewModel.Volume > 0) ViewModel.VolIcon = SymbolRegular.Speaker124;
+                else ViewModel.VolIcon = SymbolRegular.SpeakerMute24;
             }
             catch { }
         }
@@ -434,6 +444,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                 var wifiRadios = await Radio.GetRadiosAsync();
                 var wifiRadio = wifiRadios.FirstOrDefault(r => r.Kind == RadioKind.WiFi);
                 await wifiRadio.SetStateAsync(ViewModel.Wifi ? RadioState.On : RadioState.Off);
+
+                if (ViewModel.Wifi) ViewModel.WifiIcon = SymbolRegular.Wifi120;
+                else ViewModel.WifiIcon = SymbolRegular.WifiOff24;
             }
             catch { }
         }
@@ -446,6 +459,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                 var bluetoothRadios = await Radio.GetRadiosAsync();
                 var bluetoothRadio = bluetoothRadios.FirstOrDefault(r => r.Kind == RadioKind.Bluetooth);
                 await bluetoothRadio.SetStateAsync(ViewModel.Bluetooth ? RadioState.On : RadioState.Off);
+                if (ViewModel.Bluetooth) ViewModel.BlueIcon = SymbolRegular.Bluetooth24;
+                else ViewModel.BlueIcon = SymbolRegular.BluetoothDisabled24;
             }
             catch { }
         }
@@ -460,6 +475,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                 bool isWifiEnabled = (wifiRadio != null && wifiRadio.State == RadioState.On);
 
                 ViewModel.Wifi = isWifiEnabled;
+                if (ViewModel.Wifi) ViewModel.WifiIcon = SymbolRegular.Wifi120;
+                else ViewModel.WifiIcon = SymbolRegular.WifiOff24;
             }
             catch { }
         }
@@ -473,23 +490,31 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                 var bluetoothRadio = bluetoothRadios.FirstOrDefault(r => r.Kind == RadioKind.Bluetooth);
                 bool isBluetoothEnabled = (bluetoothRadio != null && bluetoothRadio.State == RadioState.On);
                 ViewModel.Bluetooth = isBluetoothEnabled;
+                if (ViewModel.Bluetooth) ViewModel.BlueIcon = SymbolRegular.Bluetooth24;
+                else ViewModel.BlueIcon = SymbolRegular.BluetoothDisabled24;
             }
             catch { }
         }
 
-        public void getBrightness()
+        public async void getBrightness()
         {
             try
             {
-                using var mclass = new ManagementClass("WmiMonitorBrightness")
+                await Task.Run(() =>
                 {
-                    Scope = new ManagementScope(@"\\.\root\wmi")
-                };
-                using var instances = mclass.GetInstances();
-                foreach (ManagementObject instance in instances)
-                {
-                    ViewModel.Brightness = (byte)instance.GetPropertyValue("CurrentBrightness");
-                }
+                    using var mclass = new ManagementClass("WmiMonitorBrightness")
+                    {
+                        Scope = new ManagementScope(@"\\.\root\wmi")
+                    };
+                    using var instances = mclass.GetInstances();
+                    foreach (ManagementObject instance in instances)
+                    {
+                        ViewModel.Brightness = (byte)instance.GetPropertyValue("CurrentBrightness");
+                    }
+                });
+
+                if (ViewModel.Brightness >= 50) ViewModel.BrightIcon = SymbolRegular.BrightnessHigh24;
+                else ViewModel.BrightIcon = SymbolRegular.BrightnessLow24;
             }
             catch { }
         }
@@ -498,11 +523,18 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         {
             try
             {
-                // Get the default audio playback device
-                MMDevice defaultDevice = new MMDeviceEnumerator().GetDefaultAudioEndpoint(DataFlow.Render, NAudio.CoreAudioApi.Role.Multimedia);
+                await Task.Run(() =>
+                {
+                    // Get the default audio playback device
+                    MMDevice defaultDevice = new MMDeviceEnumerator().GetDefaultAudioEndpoint(DataFlow.Render, NAudio.CoreAudioApi.Role.Multimedia);
 
-                // Get the current volume level of the device as an integer between 0 and 100
-                ViewModel.Volume = (int)Math.Round(defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar * 100.0);
+                    // Get the current volume level of the device as an integer between 0 and 100
+                    ViewModel.Volume = (int)Math.Round(defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar * 100.0);
+                });
+
+                if (ViewModel.Volume >= 50) ViewModel.VolIcon = SymbolRegular.Speaker224;
+                else if (ViewModel.Volume > 0) ViewModel.VolIcon = SymbolRegular.Speaker124;
+                else ViewModel.VolIcon = SymbolRegular.SpeakerMute24;
             }
             catch { }
         }

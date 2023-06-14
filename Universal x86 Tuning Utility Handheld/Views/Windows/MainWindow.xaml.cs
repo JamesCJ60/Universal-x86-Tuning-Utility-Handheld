@@ -80,6 +80,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
 
             UpdateInfo();
+            GetWifi();
             getBatteryTime();
 
             _navigationService = navigationService;
@@ -95,6 +96,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 mbo = queryObj["Manufacturer"].ToString();
                 mbo = mbo.ToLower();
             }
+
+            PowerPlans.HideAttribute("sub_processor", "PROCFREQMAX");
+            PowerPlans.HideAttribute("sub_processor", "PROCFREQMAX1");
+            PowerPlans.HideAttribute("sub_processor", "PERFEPP");
+            PowerPlans.HideAttribute("sub_processor", "PERFEPP1");
+            PowerPlans.HideAttribute("sub_processor", "CPMINCORES");
+            PowerPlans.HideAttribute("sub_processor", "CPMAXCORES");
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
@@ -115,7 +123,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             WindowStartupLocation = WindowStartupLocation.Manual;
             SetWindowPosition();
             if (Settings.Default.StartMini) this.Visibility = Visibility.Hidden;
-
+            Garbage.Garbage_Collect();
         }
         int i = 0;
         private void Timer_Tick(object sender, EventArgs e)
@@ -126,15 +134,15 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 HideFromTaskbar();
                 //MessageBox.Show(RootNavigation.Current.PageTag);
                 this.Topmost = true;
-                Garbage.Garbage_Collect();
-                timer.Interval = TimeSpan.FromSeconds(2.2);
+                timer.Interval = TimeSpan.FromSeconds(2.25);
                 timer.Start();
             }
             else
             {
                 UpdateInfo();
+                GetWifi();
                 getBatteryTime();
-                ApplySettings();
+
                 i++;
                 if (i >= 2)
                 {
@@ -171,6 +179,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (AdViewModel.IsMaxClock == true)
                     {
+                        
+
                         // Set the AC and DC values for PROCFREQMAX
                         PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, true);
                         PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, false);

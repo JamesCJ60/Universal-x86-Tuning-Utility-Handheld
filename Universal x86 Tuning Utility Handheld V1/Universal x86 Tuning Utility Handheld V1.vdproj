@@ -82,6 +82,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -201,15 +209,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Universal x86 Tuning Utility Handheld"
-        "ProductCode" = "8:{C24E11C3-6259-4981-A42E-F82145BA181D}"
-        "PackageCode" = "8:{F86FCB7E-CB93-41F9-B869-F60ABD16FC03}"
+        "ProductCode" = "8:{2F9F1436-3D5A-4D31-87D8-A33451A12716}"
+        "PackageCode" = "8:{A21F465D-F8CF-4656-8548-78A7038F9D55}"
         "UpgradeCode" = "8:{0D76B903-EDE8-4617-A061-D858BDA0D9B9}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.0.2"
+        "ProductVersion" = "8:0.0.3"
         "Manufacturer" = "8:JamesCJ"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

@@ -61,6 +61,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             checkInput.Interval = TimeSpan.FromSeconds(0.12);
             checkInput.Tick += checkInput_Tick;
             checkInput.Start();
+
+            Garbage.Garbage_Collect();
         }
 
         int selected = 0, lastSelected = 0;
@@ -352,19 +354,19 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             {
                 ViewModel.ACMode = "Silent Mode";
                 ViewModel.AcModeIcon = SymbolRegular.LeafTwo24;
-                if(GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF")) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceSilent);
+                if(Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceSilent);
             }
             if (ViewModel.AcMode == 1)
             {
                 ViewModel.ACMode = "Perf Mode";
                 ViewModel.AcModeIcon = SymbolRegular.Scales24;
-                if (GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF")) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceBalanced);
+                if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceBalanced);
             }
             if (ViewModel.AcMode == 2)
             {
                 ViewModel.ACMode = "Turbo Mode";
                 ViewModel.AcModeIcon = SymbolRegular.Gauge24;
-                if (GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF")) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
+                if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
             }
 
             Settings.Default.acMode = ViewModel.AcMode;

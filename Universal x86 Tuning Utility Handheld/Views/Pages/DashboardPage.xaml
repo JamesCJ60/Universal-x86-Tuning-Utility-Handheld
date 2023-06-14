@@ -180,7 +180,7 @@
                             <TextBlock
                             FontSize="16"
                             FontWeight="Medium"
-                            Text="Recording Devices Status" />
+                            Text="Mute Recording Devices" />
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"

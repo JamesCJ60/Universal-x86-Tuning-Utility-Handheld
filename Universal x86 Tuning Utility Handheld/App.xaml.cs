@@ -23,6 +23,7 @@ using System.Security.Cryptography;
 using Universal_x86_Tuning_Utility_Handheld.Scripts;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System.ServiceProcess;
+using System.Threading.Tasks;
 
 namespace Universal_x86_Tuning_Utility_Handheld
 {
@@ -151,7 +152,7 @@ namespace Universal_x86_Tuning_Utility_Handheld
 
                 if (File.Exists("C:\\Universal.x86.Tuning.Utility.Handheld.msi")) File.Delete("C:\\Universal.x86.Tuning.Utility.Handheld.msi");
 
-                mbo = GetSystemInfo.Product;
+                mbo = await Task.Run(() => GetSystemInfo.Product);
 
                 if (GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF"))
                 {

@@ -67,6 +67,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
             ViewModel.Battery = Global.batteryPer;
             ViewModel.BatteryIcon = Global.battery;
+
+            Garbage.Garbage_Collect();
         }
 
         int selected = 0, lastSelected = -1;

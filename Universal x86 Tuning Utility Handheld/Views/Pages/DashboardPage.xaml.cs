@@ -348,26 +348,29 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             UpdateASUS();
         }
 
-        private void UpdateASUS()
+        private async void UpdateASUS()
         {
-            if (ViewModel.AcMode == 0)
+            await Task.Run(() =>
             {
-                ViewModel.ACMode = "Silent Mode";
-                ViewModel.AcModeIcon = SymbolRegular.LeafTwo24;
-                if(Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceSilent);
-            }
-            if (ViewModel.AcMode == 1)
-            {
-                ViewModel.ACMode = "Perf Mode";
-                ViewModel.AcModeIcon = SymbolRegular.Scales24;
-                if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceBalanced);
-            }
-            if (ViewModel.AcMode == 2)
-            {
-                ViewModel.ACMode = "Turbo Mode";
-                ViewModel.AcModeIcon = SymbolRegular.Gauge24;
-                if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
-            }
+                if (ViewModel.AcMode == 0)
+                {
+                    ViewModel.ACMode = "Silent Mode";
+                    ViewModel.AcModeIcon = SymbolRegular.LeafTwo24;
+                    if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceSilent);
+                }
+                if (ViewModel.AcMode == 1)
+                {
+                    ViewModel.ACMode = "Perf Mode";
+                    ViewModel.AcModeIcon = SymbolRegular.Scales24;
+                    if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceBalanced);
+                }
+                if (ViewModel.AcMode == 2)
+                {
+                    ViewModel.ACMode = "Turbo Mode";
+                    ViewModel.AcModeIcon = SymbolRegular.Gauge24;
+                    if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
+                }
+            });
 
             Settings.Default.acMode = ViewModel.AcMode;
             Settings.Default.Save();

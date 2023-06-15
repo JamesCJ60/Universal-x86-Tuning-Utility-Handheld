@@ -249,7 +249,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         }
                     }
 
-                    if (selected != lastSelected && cards[selected].Visibility != Visibility.Collapsed)
+                    if (selected != lastSelected && cards[selected].Visibility != Visibility.Collapsed && cards[selected].BorderBrush != selectedBorderBrush)
                     {
                         if (selected < 0) selected = 0;
                         if (selected > cards.Length - 1) selected = cards.Length - 1;
@@ -295,6 +295,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         card.BorderBrush = normalBorderBrush;
                         card.BorderThickness = normalThickness;
                     }
+
+                    lastSelected = -1;
                 }
             } catch { }
         }        

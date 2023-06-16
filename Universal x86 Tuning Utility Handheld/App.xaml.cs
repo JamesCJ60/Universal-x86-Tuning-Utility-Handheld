@@ -154,7 +154,7 @@ namespace Universal_x86_Tuning_Utility_Handheld
 
                 mbo = await Task.Run(() => GetSystemInfo.Product);
 
-                if (GetSystemInfo.Product.Contains("ROG") || GetSystemInfo.Product.Contains("TUF"))
+                if (mbo.Contains("ROG") || mbo.Contains("TUF") || mbo.Contains("Ally"))
                 {
                     wmi = new ASUSWmi();
                     Settings.Default.isASUS = true;

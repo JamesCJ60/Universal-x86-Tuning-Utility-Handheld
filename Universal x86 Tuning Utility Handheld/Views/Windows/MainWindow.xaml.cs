@@ -595,10 +595,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             if (wifiRadio != null && wifiRadio.State == RadioState.On)
             {
-                if (wifi >= 4) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi124;
-                else if (wifi >= 3) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi224;
-                else if (wifi >= 2) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi324;
-                else if (wifi >= 1) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi424;
+                if (wifi == 4) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi124;
+                else if (wifi == 3) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi224;
+                else if (wifi == 2) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi324;
+                else if (wifi == 1) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi424;
                 else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
             }
             else if (wifiRadio != null && wifiRadio.State == RadioState.Off) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.WifiOff24;

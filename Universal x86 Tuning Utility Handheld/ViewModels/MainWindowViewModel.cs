@@ -103,14 +103,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
             //    }
             //};
 
-            TrayMenuItems = new ObservableCollection<MenuItem>
-            {
-                new MenuItem
-                {
-                    Header = "Home",
-                    Tag = "tray_home"
-                }
-            };
+            //TrayMenuItems = new ObservableCollection<MenuItem>
+            //{
+            //    new MenuItem
+            //    {
+            //        Header = "Home",
+            //        Tag = "tray_home"
+            //    }
+            //};
 
             _isInitialized = true;
         }

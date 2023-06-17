@@ -371,7 +371,7 @@
                             <TextBlock
                             FontSize="16"
                             FontWeight="Medium"
-                            Text="RTSS Frame Rate Limit" />
+                            Text="RTSS Framerate Limit" />
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"

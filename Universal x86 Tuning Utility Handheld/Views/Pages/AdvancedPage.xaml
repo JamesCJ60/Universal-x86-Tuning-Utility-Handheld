@@ -358,6 +358,58 @@
             </ui:CardControl>
 
             <ui:CardControl
+                Name="ccSection101"
+            IsEnabled="True"
+            Icon="TopSpeed24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="RTSS Frame Rate Limit" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Controls global RTSS FPS limit"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsFPS, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection102" Visibility="{Binding ViewModel.IsFPS, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.Fps,StringFormat={}{0} FPS}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="100" Value="{Binding ViewModel.Fps, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            
+            <ui:CardControl
                 Name="ccSection11"
             IsEnabled="True"
             Icon="BatterySaver24" Margin="0,9,0,0" DockPanel.Dock="Top">

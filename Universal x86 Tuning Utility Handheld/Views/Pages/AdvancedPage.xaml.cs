@@ -100,7 +100,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
                 if (Family.TYPE == Family.ProcessorType.Amd_Apu)
                 {
-                    CardControl[] cardsTemp = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection81, ccSection82, ccSection9, ccSection10, ccSection11, ccSection12, ccSection13, ccSection14 };
+                    CardControl[] cardsTemp = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection81, ccSection82, ccSection9, ccSection10, ccSection101, ccSection102, ccSection11, ccSection12, ccSection13, ccSection14 };
                     cards = cardsTemp;
                 }
                 if (Family.TYPE == Family.ProcessorType.Intel)
@@ -110,7 +110,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     ccSection5.Visibility = Visibility.Collapsed;
                     ccSection9.Visibility = Visibility.Collapsed;
                     ccSection13.Visibility = Visibility.Collapsed;
-                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection7, ccSection8, ccSection81, ccSection82, ccSection11, ccSection12};
+                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection7, ccSection8, ccSection81, ccSection82, ccSection101, ccSection102, ccSection11, ccSection12};
                     cards = cardsTemp;
                 }
 
@@ -353,7 +353,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     _isRSR = ViewModel.IsRSR,
                     _RSR = ViewModel.RSR,
                     _isCoreCount = ViewModel.IsCoreCount,
-                    _CoreCount = ViewModel.CoreCount
+                    _CoreCount = ViewModel.CoreCount,
+                    _isFPS = ViewModel.IsFPS,
+                    _fps = ViewModel.Fps,
                 };
                 adaptivePresetManager.SavePreset(Global.presetName, preset);
             }

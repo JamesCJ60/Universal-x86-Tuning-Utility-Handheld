@@ -258,7 +258,9 @@ namespace Universal_x86_Tuning_Utility_Handheld
                         _isRSR = false,
                         _RSR = 20,
                         _isCoreCount = false,
-                        _CoreCount = MaxCoreCount
+                        _CoreCount = MaxCoreCount,
+                        _isFPS = false,
+                        _fps = 0
                     };
                     adaptivePresetManager.SavePreset("Default", preset);
                 }

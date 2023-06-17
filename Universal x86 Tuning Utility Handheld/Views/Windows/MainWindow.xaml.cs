@@ -83,7 +83,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             GetWifi();
             getBatteryTime();
             ApplyController();
-
             _navigationService = navigationService;
 
             if (Settings.Default.isASUS == true) App.wmi.SubscribeToEvents(WatcherEventArrived);
@@ -150,6 +149,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 }
             }
         }
+
+        bool setFPS = false;
         private async void ApplySettings()
         {
             try
@@ -271,6 +272,26 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         ADLXBackend.SetRSRSharpness(AdViewModel.RSR);
                     }
                     else ADLXBackend.SetRSR(false);
+
+                    if (AdViewModel.IsFPS == true)
+                    {
+                        if (RTSS.RTSSRunning() == true)
+                        {
+                            RTSS.setRTSSFPSLimit(AdViewModel.Fps);
+                            setFPS = true;
+                        }
+                        else
+                        {
+                            RTSS.startRTSS();
+                            RTSS.setRTSSFPSLimit(AdViewModel.Fps);
+                            setFPS = true;
+                        }
+                    }
+                    else if (AdViewModel.IsFPS == false && setFPS)
+                    {
+                        RTSS.setRTSSFPSLimit(0);
+                        setFPS = false;
+                    }
                 });
             }
             catch { }
@@ -711,6 +732,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     AdViewModel.RSR = myPreset._RSR;
                     AdViewModel.IsCoreCount = myPreset._isCoreCount;
                     AdViewModel.CoreCount = myPreset._CoreCount;
+                    AdViewModel.IsFPS = myPreset._isFPS;
+                    AdViewModel.Fps = myPreset._fps;
                 }
 
                 if (AdViewModel.CoreCount > AdViewModel.MaxCoreCount) AdViewModel.CoreCount = MaxCoreCount;

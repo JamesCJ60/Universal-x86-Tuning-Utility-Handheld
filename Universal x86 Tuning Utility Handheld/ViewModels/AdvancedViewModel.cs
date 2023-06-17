@@ -78,6 +78,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         [ObservableProperty]
         private int _maxCoreCount = 8;
 
+        [ObservableProperty]
+        private bool _isFPS = false;
+
+        [ObservableProperty]
+        private int _fps = 0;
 
         public void OnNavigatedTo()
         {

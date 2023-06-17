@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Margin="12,0,12,6" Grid.Row="1">
-            <TextBlock FontSize="24" FontWeight="Medium" DockPanel.Dock="Top">Activate Your ROG XG Mobile</TextBlock>
+            <TextBlock FontSize="19" FontWeight="Medium" DockPanel.Dock="Top">Activate Your ROG XG Mobile</TextBlock>
             <StackPanel Name="spButtons" Orientation="Horizontal" DockPanel.Dock="Bottom" Height="45" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,9,0,0">
                 <Button Name="ToggleButton" Margin="0,0,32,0" Width="190" Height="38" Click="btn1_Click">Start Activation Process</Button>
                 <Button Name="CloseButton" Width="190" Height="38" Click="btn2_Click">Exit Activation Menu</Button>
@@ -33,8 +33,8 @@
 
             <DockPanel>
                 <ProgressBar Name="pbStatus" DockPanel.Dock="Bottom" Value="0" Minimum="0" Maximum="100" Margin="0,12,3,0" Visibility="Collapsed"></ProgressBar>
-                <Image Name="imgDiagram" Width="124" Height="124" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,18,0" DockPanel.Dock="Left"/>
-                <TextBlock Name="tbxInfo" VerticalAlignment="Center" FontSize="18" TextWrapping="WrapWithOverflow" FontWeight="Medium"></TextBlock>
+                <Image Name="imgDiagram" Width="130" Height="130" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,18,0" DockPanel.Dock="Left"/>
+                <TextBlock Name="tbxInfo" VerticalAlignment="Center" FontSize="13" TextWrapping="WrapWithOverflow" FontWeight="Medium"></TextBlock>
             </DockPanel>
         </DockPanel>
 

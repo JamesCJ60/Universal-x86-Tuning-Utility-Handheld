@@ -81,7 +81,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                     Process.GetCurrentProcess().Kill();
                     return;
                 case "xg":
-                    new XG_Mobile_Prompt(App.xgMobileConnectionService, false).Show();
+                    new XG_Mobile_Prompt(false).Show();
                     return;
             }
         }

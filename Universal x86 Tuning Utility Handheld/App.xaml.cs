@@ -348,7 +348,7 @@ namespace Universal_x86_Tuning_Utility_Handheld
         {
             Dispatcher.Invoke(() =>
             {
-                new XG_Mobile_Prompt(xgMobileConnectionService, activate).Show();
+                new XG_Mobile_Prompt(activate).Show();
             });
         }
     }

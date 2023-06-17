@@ -228,7 +228,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             else toggleSwitch.IsChecked = true;
                         }
 
-                        if (cards[selected] == ccSection11) new XG_Mobile_Prompt(App.xgMobileConnectionService, false).Show();
+                        if (cards[selected] == ccSection11) new XG_Mobile_Prompt(false).Show();
                         if (cards[selected] == ccClose) Process.GetCurrentProcess().Kill();
                     }
 

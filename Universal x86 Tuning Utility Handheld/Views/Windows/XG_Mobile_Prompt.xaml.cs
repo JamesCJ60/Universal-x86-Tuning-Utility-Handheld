@@ -34,17 +34,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             Interval = TimeSpan.FromMilliseconds(100)
         };
 
-        public XG_Mobile_Prompt(XgMobileConnectionService xgMobileConnectionService) : this(xgMobileConnectionService, false)
-        {
-        }
-
-        public XG_Mobile_Prompt(XgMobileConnectionService xgMobileConnectionService, bool activate)
+        public XG_Mobile_Prompt(bool activate)
         {
             InitializeComponent();
-            this.xgMobileConnectionService = xgMobileConnectionService;
+            this.xgMobileConnectionService = App.xgMobileConnectionService;
 
             xgMobileConnectionService.XgMobileStatus += OnXgMobileDetected;
-
 
             UpdateImg(Settings.Default.Path + "Images\\XGMobile\\XGMobile-1.png");
 
@@ -85,7 +80,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private bool IsEGPUConnected()
         {
-            return xgMobileConnectionService.Connected;
+            return xgMobileConnectionService.IsEGPUConnected();
         }
 
         private void UpdateImg(string path)
@@ -97,7 +92,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         {
             this.Close();
         }
-
 
         private void btn1_Click(object sender, RoutedEventArgs e)
         {
@@ -127,7 +121,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             {
                 tbxInfo.Text = "Your ROG XG Mobile is now activated! \n\n\nWARNING: Do not remove ROG XG Mobile from device until it has been deactivated!";
                 updateLHM();
-
                 if (Settings.Default.xgMobileLED == true) xgMobileConnectionService.EnableXgMobileLight();
                 else xgMobileConnectionService.DisableXgMobileLight();
             }

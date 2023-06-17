@@ -70,7 +70,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Services
             return wmi.DeviceGet(ASUSWmi.eGPUConnected) == 1;
         }
 
-        private bool IsEGPUConnected()
+        public bool IsEGPUConnected()
         {
             int deviceStatus = wmi.DeviceGet(ASUSWmi.eGPU);
             if (deviceStatus != 0 && deviceStatus != 1)

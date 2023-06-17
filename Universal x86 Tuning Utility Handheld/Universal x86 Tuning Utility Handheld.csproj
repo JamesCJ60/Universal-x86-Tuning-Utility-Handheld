@@ -14,7 +14,7 @@
     <Company>JamesCJ</Company>
     <Copyright>UXTU Team © 2023</Copyright>
     <FileVersion>0.0.2</FileVersion>
-    <AssemblyVersion>0.0.2</AssemblyVersion>
+    <AssemblyVersion>0.0.3</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -156,15 +156,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             if (selected < 0) selected = lastSelected;
                         }
 
-                        GeneralTransform transform = cards[selected].TransformToAncestor(svMain);
-                        System.Windows.Point topPosition = transform.Transform(new System.Windows.Point(0, 0));
-                        System.Windows.Point bottomPosition = transform.Transform(new System.Windows.Point(0, cards[selected].ActualHeight));
+                        GeneralTransform transform = cards[selected].TransformToVisual(svMain);
+                        Point topPosition = transform.Transform(new Point(0, 0));
+                        Point bottomPosition = transform.Transform(new Point(0, cards[selected].ActualHeight));
 
-                        // Check if the border is not fully visible in the current viewport
-                        if (topPosition.Y < svMain.VerticalOffset || bottomPosition.Y > svMain.VerticalOffset + svMain.ViewportHeight)
+                        if (topPosition.Y < 0 || bottomPosition.Y > svMain.ActualHeight)
                         {
-                            // Scroll to the position of the top of the border
-                            svMain.ScrollToVerticalOffset(topPosition.Y);
+                            double targetOffset = svMain.VerticalOffset + topPosition.Y - 12;
+                            svMain.ScrollToVerticalOffset(targetOffset);
                         }
 
                         if (selected <= 1) svMain.ScrollToTop();
@@ -183,15 +182,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             if (selected > cards.Length - 1) selected = lastSelected;
                         }
 
-                        GeneralTransform transform = cards[selected].TransformToAncestor(svMain);
-                        System.Windows.Point topPosition = transform.Transform(new System.Windows.Point(0, 0));
-                        System.Windows.Point bottomPosition = transform.Transform(new System.Windows.Point(0, cards[selected].ActualHeight));
+                        GeneralTransform transform = cards[selected].TransformToVisual(svMain);
+                        Point topPosition = transform.Transform(new Point(0, 0));
+                        Point bottomPosition = transform.Transform(new Point(0, cards[selected].ActualHeight));
 
-                        // Check if the border is not fully visible in the current viewport
-                        if (topPosition.Y < svMain.VerticalOffset || bottomPosition.Y > svMain.VerticalOffset + svMain.ViewportHeight)
+                        if (topPosition.Y < 0 || bottomPosition.Y > svMain.ActualHeight)
                         {
-                            // Scroll to the position of the top of the border
-                            svMain.ScrollToVerticalOffset(bottomPosition.Y);
+                            double targetOffset = svMain.VerticalOffset + bottomPosition.Y - svMain.ActualHeight + 12;
+                            svMain.ScrollToVerticalOffset(targetOffset);
                         }
 
                         if (selected >= cards.Length - 2) svMain.ScrollToBottom();

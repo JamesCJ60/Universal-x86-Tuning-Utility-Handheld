@@ -103,12 +103,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             PowerPlans.HideAttribute("sub_processor", "PERFEPP1");
             PowerPlans.HideAttribute("sub_processor", "CPMINCORES");
             PowerPlans.HideAttribute("sub_processor", "CPMAXCORES");
-
-            Wpf.Ui.Appearance.Watcher.Watch(
-                this,
-                Wpf.Ui.Appearance.BackgroundType.Mica,
-                true
-                );
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
@@ -126,6 +120,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             WindowStartupLocation = WindowStartupLocation.Manual;
             SetWindowPosition();
+            Wpf.Ui.Appearance.Watcher.Watch(
+    this,
+    Wpf.Ui.Appearance.BackgroundType.Mica,
+    true
+    );
             if (Settings.Default.StartMini) this.Visibility = Visibility.Hidden;
             Garbage.Garbage_Collect();
         }
@@ -185,7 +184,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (AdViewModel.IsMaxClock == true)
                     {
-                        
+
 
                         // Set the AC and DC values for PROCFREQMAX
                         PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, true);
@@ -362,7 +361,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             this.Top = primaryScreen.Top + 12;
             this.Height = screenHeight - 24;
             this.MaxHeight = screenHeight - 24;
-            if(isDisplayChange) this.MinHeight = screenHeight - 24;
+            if (isDisplayChange) this.MinHeight = screenHeight - 24;
             else this.MinHeight = 0;
 
             this.WindowStyle = WindowStyle.None;
@@ -702,7 +701,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     }
                     else AdViewModel.IsDischarge = false;
                 });
-            } catch
+            }
+            catch
             { }
         }
 
@@ -718,9 +718,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 AdaptivePreset myPreset = adaptivePresetManager.GetPreset(presetName);
 
                 int MaxCoreCount = 0;
-                foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get()){ MaxCoreCount = Convert.ToInt32(item["NumberOfCores"]); }
+                foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get()) { MaxCoreCount = Convert.ToInt32(item["NumberOfCores"]); }
 
-                    AdViewModel.MaxCoreCount = MaxCoreCount;
+                AdViewModel.MaxCoreCount = MaxCoreCount;
 
                 if (myPreset != null)
                 {

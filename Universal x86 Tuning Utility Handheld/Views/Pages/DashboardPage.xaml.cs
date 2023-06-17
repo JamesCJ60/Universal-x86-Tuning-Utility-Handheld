@@ -27,6 +27,7 @@ using Universal_x86_Tuning_Utility_Handheld.Scripts;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using System.Diagnostics;
 using Universal_x86_Tuning_Utility_Handheld.Services;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -227,6 +228,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             else toggleSwitch.IsChecked = true;
                         }
 
+                        if (cards[selected] == ccSection11) new XG_Mobile_Prompt(App.xgMobileConnectionService, false).Show();
                         if (cards[selected] == ccClose) Process.GetCurrentProcess().Kill();
                     }
 

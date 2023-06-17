@@ -173,10 +173,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         string name = GetSystemInfo.GetGPUName(1);
                         name.Replace("GPU", null);
 
-                        if (name.Contains("4090")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"Armoury Control has detected ROG XG Mobile GC33Y ({name}) has been activated!");
-                        if (name.Contains("6850M")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"Armoury Control has detected ROG XG Mobile GC32L ({name}) has been activated!");
-                        if (name.Contains("3080")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"Armoury Control has detected ROG XG Mobile GC31S ({name}) has been activated!");
-                        if (name.Contains("3070")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"Armoury Control has detected ROG XG Mobile GC31R ({name}) has been activated!");
+                        if (name.Contains("4090")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"ROG XG Mobile GC33Y ({name}) has been activated!");
+                        if (name.Contains("6850M")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"ROG XG Mobile GC32L ({name}) has been activated!");
+                        if (name.Contains("3080")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"ROG XG Mobile GC31S ({name}) has been activated!");
+                        if (name.Contains("3070")) ToastNotification.ShowToastNotification(true, "ROG XG Mobile Detected", $"ROG XG Mobile GC31R ({name}) has been activated!");
                     }
                 }
                 catch { }

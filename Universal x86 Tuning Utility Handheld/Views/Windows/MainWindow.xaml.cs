@@ -103,6 +103,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             PowerPlans.HideAttribute("sub_processor", "PERFEPP1");
             PowerPlans.HideAttribute("sub_processor", "CPMINCORES");
             PowerPlans.HideAttribute("sub_processor", "CPMAXCORES");
+
+            Wpf.Ui.Appearance.Watcher.Watch(
+                this,
+                Wpf.Ui.Appearance.BackgroundType.Mica,
+                true
+                );
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)

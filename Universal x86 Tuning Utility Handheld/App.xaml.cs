@@ -89,9 +89,12 @@ namespace Universal_x86_Tuning_Utility_Handheld
             {
                 mbo = await Task.Run(() => GetSystemInfo.Product);
 
-                if (mbo.Contains("ROG") || mbo.Contains("TUF") || mbo.Contains("Ally"))
+                if (mbo.Contains("ROG") || mbo.Contains("TUF") || mbo.Contains("Ally") || mbo.Contains("Flow"))
                 {
                     wmi = new ASUSWmi();
+                    Settings.Default.isASUS = true;
+                    Settings.Default.Save();
+
                     _host = Host
               .CreateDefaultBuilder()
               .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
@@ -133,15 +136,12 @@ namespace Universal_x86_Tuning_Utility_Handheld
                   // Configuration
                   services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
               }).Build();
-
-                    
-                    xgMobileConnectionService = GetService<XgMobileConnectionService>();
-                    SetUpXgMobileDetection();
-                    Settings.Default.isASUS = true;
-                    Settings.Default.Save();
                 }
                 else
                 {
+                    Settings.Default.isASUS = false;
+                    Settings.Default.Save();
+
                     _host = Host
               .CreateDefaultBuilder()
               .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
@@ -181,9 +181,6 @@ namespace Universal_x86_Tuning_Utility_Handheld
                   // Configuration
                   services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
               }).Build();
-
-                    Settings.Default.isASUS = false;
-                    Settings.Default.Save();
                 }
 
                 _ = Tablet.TabletDevices;
@@ -191,6 +188,12 @@ namespace Universal_x86_Tuning_Utility_Handheld
 
                 Family.setCpuFamily();
                 Family.setCpuFamily();
+
+                if (mbo.Contains("ROG") || mbo.Contains("TUF") || mbo.Contains("Ally") || mbo.Contains("Flow"))
+                {
+                    xgMobileConnectionService = GetService<XgMobileConnectionService>();
+                    SetUpXgMobileDetection();
+                }
 
                 try
                 {

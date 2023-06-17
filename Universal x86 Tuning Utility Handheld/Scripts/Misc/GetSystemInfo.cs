@@ -4,6 +4,7 @@ using System.Linq;
 using System.Management;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Universal_x86_Tuning_Utility.Scripts.Misc
 {
@@ -12,6 +13,44 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
         private static ManagementObjectSearcher baseboardSearcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_BaseBoard");
         private static ManagementObjectSearcher motherboardSearcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_MotherboardDevice");
         private static ManagementObjectSearcher ComputerSsystemInfo = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
+
+        public static string GetCPUName()
+        {
+            try
+            {
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+                ManagementObjectCollection collection = searcher.Get();
+                foreach (ManagementObject obj in collection)
+                {
+                    return obj["Name"].ToString();
+                }
+            }
+            catch (Exception ex) { }
+            return "";
+        }
+        public static string GetGPUName(int i)
+        {
+            try
+            {
+                int count = 0;
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController"); // Change AdapterCompatibility as per your requirement
+                ManagementObjectCollection collection = searcher.Get();
+
+                foreach (ManagementObject obj in collection)
+                {
+                    if (count == i)
+                    {
+                        Garbage.Garbage_Collect();
+                        return obj["Name"].ToString();
+                    }
+                    count++;
+                }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+
+            Garbage.Garbage_Collect();
+            return "";
+        }
 
         static public string Availability
         {

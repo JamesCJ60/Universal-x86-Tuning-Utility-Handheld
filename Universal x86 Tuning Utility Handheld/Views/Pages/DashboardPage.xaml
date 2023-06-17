@@ -343,7 +343,7 @@
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Switch on/off ROG XG Mobile LED"/>
+                            Text="Toggle on/off ROG XG Mobile LED"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsXgMobileLED, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>

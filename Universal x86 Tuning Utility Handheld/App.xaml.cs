@@ -24,6 +24,8 @@ using Universal_x86_Tuning_Utility_Handheld.Scripts;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System.ServiceProcess;
 using System.Threading.Tasks;
+using Universal_x86_Tuning_Utility_Handheld.Views.Windows;
+using ToastNotification = Universal_x86_Tuning_Utility_Handheld.Scripts.ToastNotification;
 
 namespace Universal_x86_Tuning_Utility_Handheld
 {
@@ -34,50 +36,14 @@ namespace Universal_x86_Tuning_Utility_Handheld
     {
 
         public static ASUSWmi wmi;
+        public static XgMobileConnectionService xgMobileConnectionService;
 
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
         // https://docs.microsoft.com/dotnet/core/extensions/configuration
         // https://docs.microsoft.com/dotnet/core/extensions/logging
-        private static readonly IHost _host = Host
-            .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
-            .ConfigureServices((context, services) =>
-            {
-                // App Host
-                services.AddHostedService<ApplicationHostService>();
-
-                // Page resolver service
-                services.AddSingleton<IPageService, PageService>();
-
-                // Theme manipulation
-                services.AddSingleton<IThemeService, ThemeService>();
-
-                // TaskBar manipulation
-                services.AddSingleton<ITaskBarService, TaskBarService>();
-
-                // Service containing navigation, same as INavigationWindow... but without window
-                services.AddSingleton<INavigationService, NavigationService>();
-
-                // Main window with navigation
-                services.AddScoped<INavigationWindow, Views.Windows.MainWindow>();
-                services.AddScoped<ViewModels.MainWindowViewModel>();
-
-
-                // Views and ViewModels
-                services.AddScoped<Views.Pages.DashboardPage>();
-                services.AddScoped<ViewModels.DashboardViewModel>();
-                services.AddScoped<Views.Pages.AdvancedPage>();
-                services.AddScoped<ViewModels.AdvancedViewModel>();
-                services.AddScoped<Views.Pages.DataPage>();
-                services.AddScoped<ViewModels.DataViewModel>();
-                services.AddScoped<Views.Pages.SettingsPage>();
-                services.AddScoped<ViewModels.SettingsViewModel>();
-
-                // Configuration
-                services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
-            }).Build();
+        private static IHost _host;
 
         /// <summary>
         /// Gets registered service.
@@ -121,6 +87,104 @@ namespace Universal_x86_Tuning_Utility_Handheld
             }
             else
             {
+                mbo = await Task.Run(() => GetSystemInfo.Product);
+
+                if (mbo.Contains("ROG") || mbo.Contains("TUF") || mbo.Contains("Ally"))
+                {
+                    wmi = new ASUSWmi();
+                    _host = Host
+              .CreateDefaultBuilder()
+              .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
+              .ConfigureServices((context, services) =>
+              {
+                  // App Host
+                  services.AddHostedService<ApplicationHostService>();
+
+                  // Page resolver service
+                  services.AddSingleton<IPageService, PageService>();
+
+                  // Theme manipulation
+                  services.AddSingleton<IThemeService, ThemeService>();
+
+                  // TaskBar manipulation
+                  services.AddSingleton<ITaskBarService, TaskBarService>();
+
+                  // Service containing navigation, same as INavigationWindow... but without window
+                  services.AddSingleton<INavigationService, NavigationService>();
+                  services.AddSingleton(wmi);
+                  services.AddSingleton<XgMobileConnectionService>();
+
+                  // Main window with navigation
+                  services.AddScoped<INavigationWindow, Views.Windows.MainWindow>();
+                  services.AddScoped<ViewModels.MainWindowViewModel>();
+
+                  // Views and ViewModels
+                  services.AddScoped<Views.Pages.DashboardPage>();
+                  services.AddScoped<ViewModels.DashboardViewModel>();
+                  services.AddScoped<Views.Pages.AdvancedPage>();
+                  services.AddScoped<ViewModels.AdvancedViewModel>();
+                  services.AddScoped<Views.Pages.ControllerPage>();
+                  services.AddScoped<ViewModels.ControllerViewModel>();
+                  services.AddScoped<Views.Pages.DataPage>();
+                  services.AddScoped<ViewModels.DataViewModel>();
+                  services.AddScoped<Views.Pages.SettingsPage>();
+                  services.AddScoped<ViewModels.SettingsViewModel>();
+
+                  // Configuration
+                  services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
+              }).Build();
+
+                    
+                    xgMobileConnectionService = GetService<XgMobileConnectionService>();
+                    SetUpXgMobileDetection();
+                    Settings.Default.isASUS = true;
+                    Settings.Default.Save();
+                }
+                else
+                {
+                    _host = Host
+              .CreateDefaultBuilder()
+              .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
+              .ConfigureServices((context, services) =>
+              {
+                  // App Host
+                  services.AddHostedService<ApplicationHostService>();
+
+                  // Page resolver service
+                  services.AddSingleton<IPageService, PageService>();
+
+                  // Theme manipulation
+                  services.AddSingleton<IThemeService, ThemeService>();
+
+                  // TaskBar manipulation
+                  services.AddSingleton<ITaskBarService, TaskBarService>();
+
+                  // Service containing navigation, same as INavigationWindow... but without window
+                  services.AddSingleton<INavigationService, NavigationService>();
+
+                  // Main window with navigation
+                  services.AddScoped<INavigationWindow, Views.Windows.MainWindow>();
+                  services.AddScoped<ViewModels.MainWindowViewModel>();
+
+                  // Views and ViewModels
+                  services.AddScoped<Views.Pages.DashboardPage>();
+                  services.AddScoped<ViewModels.DashboardViewModel>();
+                  services.AddScoped<Views.Pages.AdvancedPage>();
+                  services.AddScoped<ViewModels.AdvancedViewModel>();
+                  services.AddScoped<Views.Pages.ControllerPage>();
+                  services.AddScoped<ViewModels.ControllerViewModel>();
+                  services.AddScoped<Views.Pages.DataPage>();
+                  services.AddScoped<ViewModels.DataViewModel>();
+                  services.AddScoped<Views.Pages.SettingsPage>();
+                  services.AddScoped<ViewModels.SettingsViewModel>();
+
+                  // Configuration
+                  services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
+              }).Build();
+
+                    Settings.Default.isASUS = false;
+                    Settings.Default.Save();
+                }
 
                 _ = Tablet.TabletDevices;
                 bool firstBoot = false;
@@ -151,20 +215,6 @@ namespace Universal_x86_Tuning_Utility_Handheld
                 }
 
                 if (File.Exists("C:\\Universal.x86.Tuning.Utility.Handheld.msi")) File.Delete("C:\\Universal.x86.Tuning.Utility.Handheld.msi");
-
-                mbo = await Task.Run(() => GetSystemInfo.Product);
-
-                if (mbo.Contains("ROG") || mbo.Contains("TUF") || mbo.Contains("Ally"))
-                {
-                    wmi = new ASUSWmi();
-                    Settings.Default.isASUS = true;
-                    Settings.Default.Save();
-                }
-                else
-                {
-                    Settings.Default.isASUS = false;
-                    Settings.Default.Save();
-                }
 
                 if (firstBoot)
                 {
@@ -249,6 +299,52 @@ namespace Universal_x86_Tuning_Utility_Handheld
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
+        }
+
+        private void SetUpXgMobileDetection()
+        {
+            xgMobileConnectionService.XgMobileStatus += (_, e) =>
+            {
+                if (e.DetectedChanged)
+                {
+                    ShowDetectedToast(e.Detected);
+                }
+                if (e.Connected)
+                {
+                    ToastNotification.HideXgMobileActivateToasts();
+                }
+            };
+            ToastNotificationManagerCompat.OnActivated += toastArgs =>
+            {
+                if (ToastNotification.IsActivateXgMobileToastButtonClicked(toastArgs))
+                {
+                    HandleXgMobileToast(true);
+                }
+                else if (ToastNotification.IsOpenXgMobileToastClicked(toastArgs))
+                {
+                    HandleXgMobileToast(false);
+                }
+            };
+        }
+
+        private void ShowDetectedToast(bool detected)
+        {
+            if (detected)
+            {
+                ToastNotification.PromptXgMobileActivate();
+            }
+            else
+            {
+                ToastNotification.HideXgMobileActivateToasts();
+            }
+        }
+
+        private void HandleXgMobileToast(bool activate)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                new XG_Mobile_Prompt(xgMobileConnectionService, activate).Show();
+            });
         }
     }
 }

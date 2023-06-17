@@ -178,5 +178,53 @@ namespace Universal_x86_Tuning_Utility_Handheld.Properties {
                 this["isASUS"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isVib {
+            get {
+                return ((bool)(this["isVib"]));
+            }
+            set {
+                this["isVib"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int LeftMotor {
+            get {
+                return ((int)(this["LeftMotor"]));
+            }
+            set {
+                this["LeftMotor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int RightMotor {
+            get {
+                return ((int)(this["RightMotor"]));
+            }
+            set {
+                this["RightMotor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool xgMobileLED {
+            get {
+                return ((bool)(this["xgMobileLED"]));
+            }
+            set {
+                this["xgMobileLED"] = value;
+            }
+        }
     }
 }

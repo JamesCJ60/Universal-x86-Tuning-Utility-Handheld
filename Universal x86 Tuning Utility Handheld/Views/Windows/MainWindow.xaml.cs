@@ -82,6 +82,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             UpdateInfo();
             GetWifi();
             getBatteryTime();
+            ApplyController();
 
             _navigationService = navigationService;
 
@@ -107,10 +108,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
-            SetWindowPosition();
+            SetWindowPosition(true);
             this.UpdateLayout();
-            this.WindowState = WindowState.Normal;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -320,7 +319,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             ShowInTaskbar = false;
         }
 
-        private void SetWindowPosition()
+        private void SetWindowPosition(bool isDisplayChange = false)
         {
             this.Topmost = true;
             this.MaxWidth = 500;
@@ -336,7 +335,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             this.Top = primaryScreen.Top + 12;
             this.Height = screenHeight - 24;
             this.MaxHeight = screenHeight - 24;
-            this.MinHeight = screenHeight - 24;
+            if(isDisplayChange) this.MinHeight = screenHeight - 24;
+            else this.MinHeight = 0;
 
             this.WindowStyle = WindowStyle.None;
 
@@ -378,6 +378,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             // Make sure that closing this window will begin the process of closing the application.
             Application.Current.Shutdown();
+            Environment.Exit(0);
         }
 
         private void UiWindow_LocationChanged(object sender, EventArgs e)
@@ -403,6 +404,29 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             UpdateLayout();
 
             Global._appVis = this.Visibility;
+        }
+
+        private void ApplyController()
+        {
+            //if (Settings.Default.isVib == true)
+            //{
+            //    // Create an instance of the XInput controller
+            //    Controller controller = new Controller(UserIndex.One);
+
+            //    // Check if the controller is connected
+            //    if (controller.IsConnected)
+            //    {
+            //        // Set the vibration parameters
+            //        Vibration vibration = new Vibration
+            //        {
+            //            LeftMotorSpeed = (ushort)((Settings.Default.LeftMotor / 100.0) * 65535),
+            //            RightMotorSpeed = (ushort)((Settings.Default.RightMotor / 100.0) * 65535)
+            //        };
+
+            //        // Apply the vibration
+            //        controller.SetVibration(vibration);
+            //    }
+            //}
         }
 
         private void UiWindow_StateChanged(object sender, EventArgs e)
@@ -466,6 +490,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         current--;
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
+                        else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightShoulder) && this.Visibility != Visibility.Hidden && Global.shortCut == false)
@@ -474,6 +499,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         current++;
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
+                        else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
                     }
                 }
 

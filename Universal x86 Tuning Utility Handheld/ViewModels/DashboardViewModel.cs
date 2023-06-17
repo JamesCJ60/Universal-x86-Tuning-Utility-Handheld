@@ -2,9 +2,12 @@
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
+using Universal_x86_Tuning_Utility_Handheld.Views.Windows;
 using Wpf.Ui.Common;
 using Wpf.Ui.Common.Interfaces;
 using Wpf.Ui.Controls;
@@ -52,6 +55,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         [ObservableProperty]
         private SymbolRegular _brightIcon = SymbolRegular.BrightnessHigh24;
 
+        [ObservableProperty]
+        private string _xgMobileTag = "Activate ROG XG Mobile";
+        [ObservableProperty]
+        private bool _isXgMobile = false;
+
         private ICommand _functions;
         public ICommand FunctionCommands => _functions ??= new RelayCommand<string>(Functions);
 
@@ -68,7 +76,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
             switch (parameter)
             {
                 case "close":
-                    Environment.Exit(0);
+                    Process.GetCurrentProcess().Kill();
+                    return;
+                case "xg":
+                    new XG_Mobile_Prompt(App.xgMobileConnectionService, false).Show();
                     return;
             }
         }

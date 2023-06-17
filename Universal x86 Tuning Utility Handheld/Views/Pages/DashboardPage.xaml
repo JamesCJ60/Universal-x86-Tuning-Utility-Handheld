@@ -97,7 +97,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="122">
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="130">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -124,7 +124,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="122">
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="130">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -151,7 +151,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="122">
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="130">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -297,6 +297,29 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <ui:ToggleSwitch IsChecked="{Binding ViewModel.StartMini, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsXgMobile, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection11"
+            IsEnabled="True"
+            Icon="TvUsb24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.XgMobileTag}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button Width="120" Name="btnXg" Command="{Binding ViewModel.FunctionCommands}" CommandParameter="xg">Toggle</Button>
                         </StackPanel>
 
                     </Grid>

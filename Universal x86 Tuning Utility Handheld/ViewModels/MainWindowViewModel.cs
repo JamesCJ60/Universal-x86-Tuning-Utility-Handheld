@@ -62,20 +62,20 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                     Icon = SymbolRegular.Battery924,
                     PageType = typeof(Views.Pages.AdvancedPage)
                 },
-                new NavigationItem()
-                {
-                    Content = "Games",
-                    PageTag = "games",
-                    Icon = SymbolRegular.Games24,
-                    //PageType = typeof(Views.Pages.DataPage)
-                },
-                new NavigationItem()
-                {
-                    Content = "Display",
-                    PageTag = "display",
-                    Icon = SymbolRegular.Desktop24,
-                    //PageType = typeof(Views.Pages.DataPage)
-                },
+                //new NavigationItem()
+                //{
+                //    Content = "Games",
+                //    PageTag = "games",
+                //    Icon = SymbolRegular.Games24,
+                //    //PageType = typeof(Views.Pages.DataPage)
+                //},
+                //new NavigationItem()
+                //{
+                //    Content = "Display",
+                //    PageTag = "display",
+                //    Icon = SymbolRegular.Desktop24,
+                //    //PageType = typeof(Views.Pages.DataPage)
+                //},
                 //new NavigationItem()
                 //{
                 //    Content = "FSR",
@@ -83,13 +83,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                 //    Icon = SymbolRegular.ZoomIn24,
                 //    PageType = typeof(Views.Pages.DataPage)
                 //},
-                new NavigationItem()
-                {
-                    Content = "Controller",
-                    PageTag = "gamepad",
-                    Icon = SymbolRegular.XboxController24,
-                    //PageType = typeof(Views.Pages.DataPage)
-                }
+                //new NavigationItem()
+                //{
+                //    Content = "Controller",
+                //    PageTag = "gamepad",
+                //    Icon = SymbolRegular.XboxController24,
+                //    PageType = typeof(Views.Pages.ControllerPage)
+                //}
             };
 
             //NavigationFooter = new ObservableCollection<INavigationControl>

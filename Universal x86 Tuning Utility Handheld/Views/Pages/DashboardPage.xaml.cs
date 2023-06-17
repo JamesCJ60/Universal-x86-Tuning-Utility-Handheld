@@ -25,6 +25,8 @@ using Task = System.Threading.Tasks.Task;
 using Wpf.Ui.Common;
 using Universal_x86_Tuning_Utility_Handheld.Scripts;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
+using System.Diagnostics;
+using Universal_x86_Tuning_Utility_Handheld.Services;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -42,6 +44,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             get; set;
         }
         private DispatcherTimer checkInput = new DispatcherTimer();
+
+        private readonly XgMobileConnectionService xgMobileConnectionService;
+
         public DashboardPage(ViewModels.DashboardViewModel viewModel)
         {
             ViewModel = viewModel;
@@ -62,7 +67,36 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             checkInput.Tick += checkInput_Tick;
             checkInput.Start();
 
+            if (Settings.Default.isASUS)
+            {
+                this.xgMobileConnectionService = App.xgMobileConnectionService;
+                xgMobileConnectionService.XgMobileStatus += OnXgMobileStatusUpdate;
+                this.Unloaded += (_, _) => xgMobileConnectionService.XgMobileStatus -= OnXgMobileStatusUpdate;
+                UpdateXgMobileStatus(xgMobileConnectionService.Detected, xgMobileConnectionService.Connected);
+            }
+
             Garbage.Garbage_Collect();
+        }
+
+        int eGPU = 1;
+
+        private void OnXgMobileStatusUpdate(object? _, XgMobileConnectionService.XgMobileStatusEvent e)
+        {
+            Dispatcher.Invoke(() => UpdateXgMobileStatus(e.Detected, e.Connected));
+        }
+
+        private async void UpdateXgMobileStatus(bool detected, bool connected)
+        {
+            try
+            {
+                if (!detected) ViewModel.IsXgMobile = false;
+                else ViewModel.IsXgMobile = true;
+
+                eGPU = detected && connected ? 1 : 0;
+                if (eGPU == 0 && ViewModel.XgMobileTag != "Activate ROG XG Mobile") ViewModel.XgMobileTag = "Activate ROG XG Mobile"; 
+                if (eGPU == 1 && ViewModel.XgMobileTag != "Deactivate ROG XG Mobile")  ViewModel.XgMobileTag = "Deactivate ROG XG Mobile";
+            }
+            catch { }
         }
 
         int selected = 0, lastSelected = 0;
@@ -193,7 +227,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             else toggleSwitch.IsChecked = true;
                         }
 
-                        if (cards[selected] == ccClose) Environment.Exit(0);
+                        if (cards[selected] == ccClose) Process.GetCurrentProcess().Kill();
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadRight) || tx > 26000)

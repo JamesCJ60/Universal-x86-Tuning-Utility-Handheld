@@ -403,7 +403,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.Fps,StringFormat={}{0} FPS}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="100" Value="{Binding ViewModel.Fps, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="240" Value="{Binding ViewModel.Fps, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
 
                     </Grid>
                 </ui:CardControl.Header>

@@ -516,7 +516,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         current--;
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
-                        else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
+                        //else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightShoulder) && this.Visibility != Visibility.Hidden && Global.shortCut == false)
@@ -525,7 +525,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         current++;
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
-                        else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
+                        //else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
                     }
                 }
 

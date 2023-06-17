@@ -322,9 +322,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         private void SetWindowPosition(bool isDisplayChange = false)
         {
             this.Topmost = true;
-            this.MaxWidth = 500;
-            this.MinWidth = 500;
-            this.Width = 500;
+            this.MaxWidth = 520;
+            this.MinWidth = 520;
+            this.Width = 520;
 
             // Get the primary screen dimensions
             var primaryScreen = System.Windows.SystemParameters.WorkArea;

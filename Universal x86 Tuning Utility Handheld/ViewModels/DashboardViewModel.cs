@@ -59,6 +59,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         private string _xgMobileTag = "Activate ROG XG Mobile";
         [ObservableProperty]
         private bool _isXgMobile = false;
+        [ObservableProperty]
+        private bool _isXgMobileLED = Settings.Default.xgMobileLED;
 
         private ICommand _functions;
         public ICommand FunctionCommands => _functions ??= new RelayCommand<string>(Functions);

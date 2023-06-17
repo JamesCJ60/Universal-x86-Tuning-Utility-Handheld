@@ -128,7 +128,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     wasMini = false;
                 }
 
-                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccClose };
+                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccClose };
                 controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
 
@@ -308,6 +308,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             SetBluetoothEnabled();
             SetRecordingDeviceState(ViewModel.Recording);
 
+            if (ViewModel.IsXgMobile)
+            {
+                if(ViewModel.IsXgMobileLED) xgMobileConnectionService.EnableXgMobileLight();
+                else xgMobileConnectionService.DisableXgMobileLight();
+            }
+
             using (TaskService ts = new TaskService())
             {
                 if (ts.RootFolder.AllTasks.Any(t => t.Name == "UXTU Handheld"))
@@ -345,6 +351,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                 }
             }
 
+            Settings.Default.xgMobileLED = ViewModel.IsXgMobileLED;
             Settings.Default.isMute = ViewModel.Recording;
             Settings.Default.isRTSS = ViewModel.Overlay;
             Settings.Default.isMouse = ViewModel.Mouse;

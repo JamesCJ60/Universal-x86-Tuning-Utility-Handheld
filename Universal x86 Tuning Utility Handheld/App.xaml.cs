@@ -263,7 +263,10 @@ namespace Universal_x86_Tuning_Utility_Handheld
                         _isCoreCount = false,
                         _CoreCount = MaxCoreCount,
                         _isFPS = false,
-                        _fps = 0
+                        _fps = 0,
+                        _isAdaptiveFPS = false,
+                        _minFps = 0,
+                        _maxFps = 0,
                     };
                     adaptivePresetManager.SavePreset("Default", preset);
                 }

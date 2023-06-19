@@ -84,6 +84,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         [ObservableProperty]
         private int _fps = 0;
 
+        [ObservableProperty]
+        private bool _isAdaptiveFPS = false;
+
+        [ObservableProperty]
+        private int _minFps = 0;
+        [ObservableProperty]
+        private int _maxFps = 0;
+
         public void OnNavigatedTo()
         {
         }

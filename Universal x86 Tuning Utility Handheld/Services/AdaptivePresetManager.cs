@@ -28,6 +28,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Services
         public int _CoreCount { get; set; }
         public bool _isFPS { get; set; }
         public int _fps { get; set; }
+        public bool _isAdaptiveFPS { get; set; }
+        public int _minFps { get; set; }
+        public int _maxFps { get; set; }
     }
 
     public class AdaptivePresetManager

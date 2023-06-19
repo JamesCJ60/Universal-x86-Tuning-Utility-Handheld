@@ -20,6 +20,7 @@ using Universal_x86_Tuning_Utility.Scripts;
 using Universal_x86_Tuning_Utility.Scripts.AMD_Backend;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
+using Universal_x86_Tuning_Utility_Handheld.Scripts;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Intel;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Services;
@@ -71,6 +72,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             checkKeyInput.Interval = TimeSpan.FromSeconds(0.14);
             checkKeyInput.Tick += KeyShortCuts_Tick;
             checkKeyInput.Start();
+
+            DispatcherTimer adaptiveFPS = new DispatcherTimer();
+            adaptiveFPS.Interval = TimeSpan.FromSeconds(0.25);
+            adaptiveFPS.Tick += AdaptiveFPS_Tick;
+            adaptiveFPS.Start();
 
             DispatcherTimer _timer = new DispatcherTimer();
             _timer.Tick += Mouse_Tick;
@@ -278,7 +284,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     }
                     else ADLXBackend.SetRSR(false);
 
-                    if (AdViewModel.IsFPS == true)
+                    if (AdViewModel.IsFPS == true && AdViewModel.IsAdaptiveFPS == false)
                     {
                         if (RTSS.RTSSRunning() == true)
                         {
@@ -294,7 +300,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     }
                     else if (AdViewModel.IsFPS == false && setFPS)
                     {
-                        RTSS.setRTSSFPSLimit(0);
+                        //RTSS.setRTSSFPSLimit(0);
                         setFPS = false;
                     }
                 });
@@ -464,10 +470,39 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         {
         }
 
+        public static int inactiveFPS = 60;
+        public static int activeFPS = 165;
+        bool isAnyKeyHeldDown;
+        bool isControllerOne;
+        bool isControllerTwo;
+        bool isActive = false;
         async void KeyShortCuts_Tick(object sender, EventArgs e)
         {
             ControllerInput(UserIndex.One);
             ControllerInput(UserIndex.Two);
+
+            if (AdViewModel.IsAdaptiveFPS)
+            {
+                inactiveFPS = AdViewModel.MinFps;
+                activeFPS = AdViewModel.MaxFps;
+
+                isAnyKeyHeldDown = UserActivityDetector.IsAnyKeyDown();
+                isControllerOne = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.One);
+                isControllerTwo = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.Two);
+                if (Win32.GetIdleTime() > 250 && !isAnyKeyHeldDown && !isControllerOne && !isControllerTwo) isActive = false;
+                else isActive = true;
+            }
+        }
+
+        async void AdaptiveFPS_Tick(object sender, EventArgs e)
+        {
+            if (AdViewModel.IsAdaptiveFPS)
+            {
+                if (RTSS.RTSSRunning() != true) RTSS.startRTSS();
+                RTSS.getRTSSFPSLimit();
+                if (!isActive && RTSS.fps != inactiveFPS) RTSS.setRTSSFPSLimit(inactiveFPS);
+                if (isActive && RTSS.fps != activeFPS) RTSS.setRTSSFPSLimit(activeFPS);
+            }
         }
 
         private static Controller controller;
@@ -740,6 +775,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     AdViewModel.CoreCount = myPreset._CoreCount;
                     AdViewModel.IsFPS = myPreset._isFPS;
                     AdViewModel.Fps = myPreset._fps;
+                    AdViewModel.IsAdaptiveFPS = myPreset._isAdaptiveFPS;
+                    AdViewModel.MinFps = myPreset._minFps;
+                    AdViewModel.MaxFps = myPreset._maxFps;
                 }
 
                 if (AdViewModel.CoreCount > AdViewModel.MaxCoreCount) AdViewModel.CoreCount = MaxCoreCount;

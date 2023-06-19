@@ -8,7 +8,7 @@
     Title="AdvancedPage"
     d:DataContext="{d:DesignInstance local:AdvancedPage, IsDesignTimeCreatable=False}"
     d:DesignHeight="2000"
-    d:DesignWidth="800"
+    d:DesignWidth="520"
     d:Background="{DynamicResource ApplicationBackgroundBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d" Scrollable="True" 
@@ -299,7 +299,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.CoreCount,StringFormat={}{0} Cores}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" TickFrequency="25" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="2" SmallChange="1" LargeChange="2" Maximum="{Binding ViewModel.MaxCoreCount}" Value="{Binding ViewModel.CoreCount, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" TickFrequency="25" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="2" SmallChange="1" LargeChange="1" Maximum="{Binding ViewModel.MaxCoreCount}" Value="{Binding ViewModel.CoreCount, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
 
                     </Grid>
                 </ui:CardControl.Header>
@@ -371,7 +371,7 @@
                             <TextBlock
                             FontSize="16"
                             FontWeight="Medium"
-                            Text="RTSS Framerate Limit" />
+                            Text="RTSS Framerate Limit (FPS)" />
                             <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
@@ -403,12 +403,87 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.Fps,StringFormat={}{0} FPS}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="240" Value="{Binding ViewModel.Fps, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="5" Maximum="240" Value="{Binding ViewModel.Fps, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
 
                     </Grid>
                 </ui:CardControl.Header>
             </ui:CardControl>
-            
+
+            <ui:CardControl
+                Name="ccSection103"
+            IsEnabled="True"
+            Icon="TopSpeed24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Adaptive Framerate (FPS)" />
+                            <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Controls RTSS FPS limit based on user input"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsAdaptiveFPS, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection104" Visibility="{Binding ViewModel.IsAdaptiveFPS, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.MinFps,StringFormat={}Min {0}}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="5" Maximum="240" Value="{Binding ViewModel.MinFps, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
+                Name="ccSection105" Visibility="{Binding ViewModel.IsAdaptiveFPS, Converter={StaticResource BooleanToVisibilityConverter}}"
+            IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="75">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="{Binding ViewModel.MaxFps,StringFormat={}Max {0}}" />
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="5" Maximum="240" Value="{Binding ViewModel.MaxFps, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
             <ui:CardControl
                 Name="ccSection11"
             IsEnabled="True"
@@ -455,7 +530,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.EPP,StringFormat={}{0}%}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="100" Value="{Binding ViewModel.EPP, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="5" Maximum="100" Value="{Binding ViewModel.EPP, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
 
                     </Grid>
                 </ui:CardControl.Header>
@@ -507,7 +582,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.RSR,StringFormat={}{0}%}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="50" Maximum="100" Value="{Binding ViewModel.RSR, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" SmallChange="1" LargeChange="5" Maximum="100" Value="{Binding ViewModel.RSR, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
 
                     </Grid>
                 </ui:CardControl.Header>

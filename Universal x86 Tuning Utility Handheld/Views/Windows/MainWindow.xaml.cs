@@ -74,7 +74,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             checkKeyInput.Start();
 
             DispatcherTimer adaptiveFPS = new DispatcherTimer();
-            adaptiveFPS.Interval = TimeSpan.FromSeconds(0.25);
+            adaptiveFPS.Interval = TimeSpan.FromSeconds(0.2);
             adaptiveFPS.Tick += AdaptiveFPS_Tick;
             adaptiveFPS.Start();
 
@@ -286,21 +286,22 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (AdViewModel.IsFPS == true && AdViewModel.IsAdaptiveFPS == false)
                     {
+                        RTSS.getRTSSFPSLimit();
                         if (RTSS.RTSSRunning() == true)
                         {
-                            RTSS.setRTSSFPSLimit(AdViewModel.Fps);
+                            if(RTSS.fps != AdViewModel.Fps) RTSS.setRTSSFPSLimit(AdViewModel.Fps);
                             setFPS = true;
                         }
                         else
                         {
                             RTSS.startRTSS();
-                            RTSS.setRTSSFPSLimit(AdViewModel.Fps);
+                            if (RTSS.fps != AdViewModel.Fps) RTSS.setRTSSFPSLimit(AdViewModel.Fps);
                             setFPS = true;
                         }
                     }
-                    else if (AdViewModel.IsFPS == false && setFPS)
+                    else if (AdViewModel.IsFPS == false && setFPS && AdViewModel.IsAdaptiveFPS == false)
                     {
-                        //RTSS.setRTSSFPSLimit(0);
+                        RTSS.setRTSSFPSLimit(0);
                         setFPS = false;
                     }
                 });
@@ -489,7 +490,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 isAnyKeyHeldDown = UserActivityDetector.IsAnyKeyDown();
                 isControllerOne = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.One);
                 isControllerTwo = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.Two);
-                if (Win32.GetIdleTime() > 250 && !isAnyKeyHeldDown && !isControllerOne && !isControllerTwo) isActive = false;
+                if (Win32.GetIdleTime() > 200 && !isAnyKeyHeldDown && !isControllerOne && !isControllerTwo) isActive = false;
                 else isActive = true;
             }
         }
@@ -502,6 +503,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 RTSS.getRTSSFPSLimit();
                 if (!isActive && RTSS.fps != inactiveFPS) RTSS.setRTSSFPSLimit(inactiveFPS);
                 if (isActive && RTSS.fps != activeFPS) RTSS.setRTSSFPSLimit(activeFPS);
+
+                setFPS = true;
             }
         }
 

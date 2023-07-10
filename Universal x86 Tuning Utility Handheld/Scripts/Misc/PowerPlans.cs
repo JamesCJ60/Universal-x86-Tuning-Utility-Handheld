@@ -15,15 +15,15 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
             {
                 // Execute the "powercfg -attributes" command to hide the attribute
                 var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
                     {
-                        StartInfo = new ProcessStartInfo
-                        {
-                            FileName = "powercfg",
-                            Arguments = $"-attributes {subGroup} {attribute} -ATTRIB_HIDE",
-                            UseShellExecute = false,
-                            CreateNoWindow = true,
-                        }
-                    };
+                        FileName = "powercfg",
+                        Arguments = $"-attributes {subGroup} {attribute} -ATTRIB_HIDE",
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                    }
+                };
                 try
                 {
                     process.Start();

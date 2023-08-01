@@ -5,7 +5,7 @@
 [![Donations](https://img.shields.io/badge/PayPal-00457C?style=flat-square&color=orange&label=Donations&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/JamesCJ60)
 [![Support us on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Duxtusoftware%26type%3Dpatrons&style=flat-square&color=orange&label=Patreon&logoColor=white)](https://patreon.com/uxtusoftware)
 
-![Github banner #2](https://github.com/JamesCJ60/Universal-x86-Tuning-Utility-Handheld/assets/20888782/5068ad9a-a540-44a9-8f2e-15fe769f06d5)
+![Github banner #2](https://github.com/JamesCJ60/Universal-x86-Tuning-Utility/assets/20888782/2b3256b6-814e-47ca-bfa8-ff07636d63de)
 
 This project is still very much a WORK IN PROGRESS!
 

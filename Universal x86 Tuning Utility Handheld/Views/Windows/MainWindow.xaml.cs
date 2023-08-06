@@ -286,18 +286,22 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (AdViewModel.IsFPS == true && AdViewModel.IsAdaptiveFPS == false)
                     {
-                        RTSS.getRTSSFPSLimit();
-                        if (RTSS.RTSSRunning() == true)
+                        try
                         {
-                            if(RTSS.fps != AdViewModel.Fps) RTSS.setRTSSFPSLimit(AdViewModel.Fps);
-                            setFPS = true;
-                        }
-                        else
-                        {
-                            RTSS.startRTSS();
-                            if (RTSS.fps != AdViewModel.Fps) RTSS.setRTSSFPSLimit(AdViewModel.Fps);
-                            setFPS = true;
-                        }
+                            if (RTSS.RTSSRunning() == true)
+                            {
+                                RTSS.getRTSSFPSLimit();
+                                if (RTSS.fps != AdViewModel.Fps) RTSS.setRTSSFPSLimit(AdViewModel.Fps);
+                                setFPS = true;
+                            }
+                            else
+                            {
+                                RTSS.startRTSS();
+                                RTSS.getRTSSFPSLimit();
+                                if (RTSS.fps != AdViewModel.Fps) RTSS.setRTSSFPSLimit(AdViewModel.Fps);
+                                setFPS = true;
+                            }
+                        } catch { }
                     }
                     else if (AdViewModel.IsFPS == false && setFPS && AdViewModel.IsAdaptiveFPS == false)
                     {
@@ -319,7 +323,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     int batteryLifePercent = (int)(powerStatus.BatteryLifePercent * 100);
                     ViewModel.Battery = batteryLifePercent;
                     ViewModel.Time = DateTime.Now;
-                    bool isBatteryCharging = powerStatus.PowerLineStatus == System.Windows.Forms.PowerLineStatus.Online && powerStatus.BatteryChargeStatus.HasFlag(BatteryChargeStatus.Charging);
+                    bool isBatteryCharging = powerStatus.PowerLineStatus == System.Windows.Forms.PowerLineStatus.Online;
                     if (!isBatteryCharging)
                     {
                         if (batteryLifePercent >= 100) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery1024;
@@ -482,30 +486,37 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             ControllerInput(UserIndex.One);
             ControllerInput(UserIndex.Two);
 
-            if (AdViewModel.IsAdaptiveFPS)
+            try
             {
-                inactiveFPS = AdViewModel.MinFps;
-                activeFPS = AdViewModel.MaxFps;
+                if (AdViewModel.IsAdaptiveFPS)
+                {
+                    inactiveFPS = AdViewModel.MinFps;
+                    activeFPS = AdViewModel.MaxFps;
 
-                isAnyKeyHeldDown = UserActivityDetector.IsAnyKeyDown();
-                isControllerOne = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.One);
-                isControllerTwo = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.Two);
-                if (Win32.GetIdleTime() > 200 && !isAnyKeyHeldDown && !isControllerOne && !isControllerTwo) isActive = false;
-                else isActive = true;
-            }
+                    isAnyKeyHeldDown = UserActivityDetector.IsAnyKeyDown();
+                    isControllerOne = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.One);
+                    isControllerTwo = UserActivityDetector.IsAnyControllerButtonPressed(UserIndex.Two);
+                    if (Win32.GetIdleTime() > 200 && !isAnyKeyHeldDown && !isControllerOne && !isControllerTwo) isActive = false;
+                    else isActive = true;
+                }
+            } catch { }
         }
 
         async void AdaptiveFPS_Tick(object sender, EventArgs e)
         {
-            if (AdViewModel.IsAdaptiveFPS)
+            try
             {
-                if (RTSS.RTSSRunning() != true) RTSS.startRTSS();
-                RTSS.getRTSSFPSLimit();
-                if (!isActive && RTSS.fps != inactiveFPS) RTSS.setRTSSFPSLimit(inactiveFPS);
-                if (isActive && RTSS.fps != activeFPS) RTSS.setRTSSFPSLimit(activeFPS);
+                if (AdViewModel.IsAdaptiveFPS)
+                {
+                    if (RTSS.RTSSRunning() != true) RTSS.startRTSS();
+                    RTSS.getRTSSFPSLimit();
+                    if (!isActive && RTSS.fps != inactiveFPS) RTSS.setRTSSFPSLimit(inactiveFPS);
+                    if (isActive && RTSS.fps != activeFPS) RTSS.setRTSSFPSLimit(activeFPS);
 
-                setFPS = true;
+                    setFPS = true;
+                }
             }
+            catch { }
         }
 
         private static Controller controller;
@@ -692,16 +703,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
             }
             else if (wifiRadio != null && wifiRadio.State == RadioState.Off) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.WifiOff24;
-            else if (internetConnectionProfile != null)
-            {
-                var interfaceType = internetConnectionProfile.NetworkAdapter.IanaInterfaceType;
-
-                if (interfaceType == 71)
-                {
-                    ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.UsbPlug24;
-                }
-            }
-
         }
 
         public async void getBatteryTime()
@@ -722,27 +723,57 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         batTime = 0;
                         isCharging = true;
                     }
+
                     var time = TimeSpan.FromSeconds(batTime);
 
-                    AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
+                    decimal batRate = GetSystemInfo.GetBatteryRate() / 1000;
+                    if (isCharging == true && ViewModel.Battery < 100 || !isCharging) AdViewModel.IsDischarge = true;
+                    AdViewModel.ChargeRate = $"{batRate.ToString("0.##")}W Charge Rate";
 
+                    if (isCharging == true)
+                    {
+                        decimal batDesignCap = GetSystemInfo.ReadFullChargeCapacity() / 1000;
+                        decimal batCurrentCap = GetSystemInfo.ReadRemainingChargeCapacity() / 1000;
+                        if (batDesignCap > 0 && batCurrentCap > 0)
+                        {
+                            //System.Windows.MessageBox.Show(((batDesignCap - batCurrentCap) / batRate).ToString());
+
+                            if (isCharging == true && ViewModel.Battery >= 99)
+                            {
+                                AdViewModel.BatteryTime = $"Battery Charged";
+                                AdViewModel.IsDischarge = false;
+                            }
+                            else if (batRate > 0)
+                            {
+                                decimal batteryChargeTime = CalculateBatteryChargeTime(batDesignCap, batCurrentCap, batRate);
+                                AdViewModel.BatteryTime = $"{FormatTime(batteryChargeTime)}";
+                            }
+                            else AdViewModel.BatteryTime = "Calculating";
+                        }
+                    } 
+
+                    AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
                     if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == true) AdViewModel.BatteryTime = "Battery Charging";
                     if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == false) AdViewModel.BatteryTime = "Calculating";
-
-                    PerfCounters.ReadSensors();
-                    float dischargeRate = (float)PerfCounters.BatteryDischarge;
-
-                    if (dischargeRate != 0)
-                    {
-                        AdViewModel.IsDischarge = true;
-                        AdViewModel.ChargeRate = $"-{dischargeRate.ToString("0.00")}W Charge Rate";
-                    }
-                    else AdViewModel.IsDischarge = false;
                 });
             }
             catch
             { }
         }
+
+        static string FormatTime(decimal hours)
+        {
+            int totalMinutes = (int)Math.Round(hours * 60);
+            int formattedHours = totalMinutes / 60;
+            int formattedMinutes = totalMinutes % 60;
+            return $"{formattedHours} Hours {formattedMinutes} Minutes Until Charged";
+        }
+
+        static decimal CalculateBatteryChargeTime(decimal designCapacity, decimal currentCapacity, decimal chargeRate)
+        {
+            return (designCapacity - currentCapacity) / chargeRate;
+        }
+
 
         private static AdaptivePresetManager adaptivePresetManager = new AdaptivePresetManager(Settings.Default.Path + "adaptivePresets.json");
         private void UpdatePreset(string presetName)
@@ -772,6 +803,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     AdViewModel.IsIGPUClock = myPreset._isIGPUClock;
                     AdViewModel.IGPUClock = myPreset.iGPUClock;
                     AdViewModel.IsEPP = myPreset._isEPP;
+                    AdViewModel.EPP = myPreset._EPP;
                     AdViewModel.IsRSR = myPreset._isRSR;
                     AdViewModel.RSR = myPreset._RSR;
                     AdViewModel.IsCoreCount = myPreset._isCoreCount;

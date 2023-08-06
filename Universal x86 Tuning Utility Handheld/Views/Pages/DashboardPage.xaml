@@ -353,6 +353,29 @@
                 </ui:CardControl.Header>
             </ui:CardControl>
             <ui:CardControl
+                Name="ccMini"
+            IsEnabled="True"
+            Icon="ArrowMinimize24" Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Minimise Application" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button Width="120" Name="btnMinimise" Command="{Binding ViewModel.FunctionCommands}" CommandParameter="minimise">Minimise</Button>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl
                 Name="ccClose"
             IsEnabled="True"
             Icon="Power24" Margin="0,9,0,18" DockPanel.Dock="Top">

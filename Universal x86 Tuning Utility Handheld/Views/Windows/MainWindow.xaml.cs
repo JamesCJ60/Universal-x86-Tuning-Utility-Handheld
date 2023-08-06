@@ -481,6 +481,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         bool isControllerOne;
         bool isControllerTwo;
         bool isActive = false;
+        public static int minimise = 0;
         async void KeyShortCuts_Tick(object sender, EventArgs e)
         {
             ControllerInput(UserIndex.One);
@@ -527,6 +528,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 controller = new Controller(controllerNo);
 
                 bool connected = controller.IsConnected;
+
+                if(minimise == 1)
+                {
+                    if (Visibility == Visibility.Visible)
+                    {
+                        Visibility = Visibility.Hidden;
+                    }
+
+                    minimise = 0;
+                }
 
                 if (connected)
                 {

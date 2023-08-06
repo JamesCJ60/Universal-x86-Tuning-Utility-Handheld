@@ -129,7 +129,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     wasMini = false;
                 }
 
-                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccClose };
+                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccMini, ccClose };
                 controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
 
@@ -227,6 +227,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         }
 
                         if (cards[selected] == ccSection11) new XG_Mobile_Prompt(false).Show();
+                        if (cards[selected] == ccMini) MainWindow.minimise = 1;
                         if (cards[selected] == ccClose) Process.GetCurrentProcess().Kill();
                     }
 

@@ -13,8 +13,9 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Company>JamesCJ</Company>
     <Copyright>UXTU Team © 2023</Copyright>
-    <FileVersion>0.0.4</FileVersion>
-    <AssemblyVersion>0.0.4</AssemblyVersion>
+    <FileVersion>0.0.5</FileVersion>
+    <AssemblyVersion>0.0.5</AssemblyVersion>
+    <Version>$(VersionPrefix)</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

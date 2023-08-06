@@ -80,6 +80,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                 case "close":
                     Process.GetCurrentProcess().Kill();
                     return;
+                case "minimise":
+                    MainWindow.minimise = 1;
+                    return;
                 case "xg":
                     new XG_Mobile_Prompt(false).Show();
                     return;

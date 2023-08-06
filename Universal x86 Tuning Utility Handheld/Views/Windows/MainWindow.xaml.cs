@@ -702,7 +702,25 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 else if (wifi == 1) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi424;
                 else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
             }
+            else if (CheckEthernetConnection()) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.UsbPlug24;
             else if (wifiRadio != null && wifiRadio.State == RadioState.Off) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.WifiOff24;
+            else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
+        }
+
+        static bool CheckEthernetConnection()
+        {
+            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface networkInterface in networkInterfaces)
+            {
+                if (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet &&
+                    networkInterface.OperationalStatus == OperationalStatus.Up)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public async void getBatteryTime()

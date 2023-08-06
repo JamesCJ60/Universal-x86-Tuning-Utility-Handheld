@@ -781,7 +781,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         }
                     } 
 
-                    AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
+                    if (isCharging == false) AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
                     if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == true) AdViewModel.BatteryTime = "Battery Charging";
                     if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == false) AdViewModel.BatteryTime = "Calculating";
                 });

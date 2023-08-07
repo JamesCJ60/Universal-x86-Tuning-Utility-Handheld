@@ -129,7 +129,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     wasMini = false;
                 }
 
-                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccMini, ccClose };
+                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection51, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccMini, ccClose };
                 controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
 
@@ -358,7 +358,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             Settings.Default.isMouse = ViewModel.Mouse;
             Settings.Default.StartOnBoot = ViewModel.StartOnBoot;
             Settings.Default.StartMini = ViewModel.StartMini;
-            Settings.Default.chargeLimit = ViewModel.ChargeLimit;
             Settings.Default.Save();
         }
 
@@ -382,7 +381,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             Settings.Default.isMouse = ViewModel.Mouse;
             Settings.Default.StartOnBoot = ViewModel.StartOnBoot;
             Settings.Default.StartMini = ViewModel.StartMini;
-            Settings.Default.chargeLimit = ViewModel.ChargeLimit;
             Settings.Default.Save();
         }
 
@@ -416,7 +414,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
                 }
 
-                App.wmi.DeviceSet(ASUSWmi.BatteryLimit, ViewModel.ChargeLimit);
+               if(ViewModel.ChargeLimit >= 50 && Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.BatteryLimit, ViewModel.ChargeLimit);
             });
 
             Settings.Default.acMode = ViewModel.AcMode;

@@ -172,8 +172,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (Family.TYPE == Family.ProcessorType.Amd_Apu)
                     {
-                        if (AdViewModel.IsTemp == true && AdViewModel.IsAdaptiveTDP == false) commandString = $"--tctl-temp={AdViewModel.TempLimit} --skin-temp-limit={AdViewModel.TempLimit} ";
-                        if (AdViewModel.IsPower == true) commandString = commandString + $"--stapm-limit={AdViewModel.PowerLimit * 1000} --slow-limit={AdViewModel.PowerLimit * 1000} --fast-limit={AdViewModel.PowerLimit * 1000} --vrm-current={(AdViewModel.PowerLimit * 1000) * 2} --vrmmax-current={(AdViewModel.PowerLimit * 1000) * 2} ";
+                        if (AdViewModel.IsTemp == true) commandString = $"--tctl-temp={AdViewModel.TempLimit} --skin-temp-limit={AdViewModel.TempLimit} ";
+                        if (AdViewModel.IsPower == true && AdViewModel.IsAdaptiveTDP == false) commandString = commandString + $"--stapm-limit={AdViewModel.PowerLimit * 1000} --slow-limit={AdViewModel.PowerLimit * 1000} --fast-limit={AdViewModel.PowerLimit * 1000} --vrm-current={(AdViewModel.PowerLimit * 1000) * 2} --vrmmax-current={(AdViewModel.PowerLimit * 1000) * 2} ";
                         if (AdViewModel.IsUndervolt == true)
                         {
                             if (AdViewModel.UnderVolt >= 0) commandString = commandString + $"--set-coall={AdViewModel.UnderVolt} ";

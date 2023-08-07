@@ -19,7 +19,7 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
         public static void updateSensor()
         {
             var hardware = thisPC.Hardware;
-            
+
         }
 
         public static void closeSensor()

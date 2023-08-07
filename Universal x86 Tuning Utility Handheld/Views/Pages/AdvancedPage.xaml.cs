@@ -100,7 +100,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
                 if (Family.TYPE == Family.ProcessorType.Amd_Apu)
                 {
-                    CardControl[] cardsTemp = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection6, ccSection7, ccSection8, ccSection81, ccSection82, ccSection9, ccSection10, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12, ccSection13, ccSection14 };
+                    CardControl[] cardsTemp = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection44, ccSection45, ccSection46, ccSection5, ccSection6, ccSection7, ccSection8, ccSection81, ccSection82, ccSection9, ccSection10, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12, ccSection13, ccSection14 };
                     cards = cardsTemp;
                 }
                 if (Family.TYPE == Family.ProcessorType.Intel)
@@ -110,9 +110,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     ccSection5.Visibility = Visibility.Collapsed;
                     ccSection9.Visibility = Visibility.Collapsed;
                     ccSection13.Visibility = Visibility.Collapsed;
-                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection7, ccSection8, ccSection81, ccSection82, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12};
+                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection44, ccSection45, ccSection46, ccSection7, ccSection8, ccSection81, ccSection82, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12};
                     cards = cardsTemp;
                 }
+
+                if (ViewModel.IsAdaptiveTDP == false && ViewModel.IsAdaptiveiGPU == true) ViewModel.IsAdaptiveiGPU = false;
 
                     controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
@@ -358,6 +360,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     _isAdaptiveFPS = ViewModel.IsAdaptiveFPS,
                     _minFps = ViewModel.MinFps,
                     _maxFps = ViewModel.MaxFps,
+                    _isAdaptiveTDP = ViewModel.IsAdaptiveTDP,
+                    _isAdaptiveiGPU = ViewModel.IsAdaptiveiGPU,
+                    _maxTDP = ViewModel.MaxTDP,
+                    _maxTemp = ViewModel.MaxTemp,
+                    _maxiGPU = ViewModel.MaxiGPU,
+                    _miniGPU = ViewModel.MiniGPU,
                 };
                 adaptivePresetManager.SavePreset(Global.presetName, preset);
             }

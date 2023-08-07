@@ -31,6 +31,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Services
         public bool _isAdaptiveFPS { get; set; }
         public int _minFps { get; set; }
         public int _maxFps { get; set; }
+        public bool _isAdaptiveTDP { get; set; }
+        public int _maxTemp { get; set; }
+        public int _maxTDP { get; set; }
+        public bool _isAdaptiveiGPU { get; set; }
+        public int _maxiGPU { get; set; }
+        public int _miniGPU { get; set; }
     }
 
     public class AdaptivePresetManager

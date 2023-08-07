@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using LibreHardwareMonitor.Hardware;
+using Microsoft.Win32;
 using SharpDX.XInput;
 using System;
 using System.Linq;
@@ -21,6 +22,7 @@ using Universal_x86_Tuning_Utility.Scripts.AMD_Backend;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Universal_x86_Tuning_Utility_Handheld.Scripts;
+using Universal_x86_Tuning_Utility_Handheld.Scripts.Adaptive;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Intel;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Services;
@@ -32,6 +34,7 @@ using Windows.Networking.Connectivity;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 {
@@ -143,7 +146,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 HideFromTaskbar();
                 //MessageBox.Show(RootNavigation.Current.PageTag);
                 this.Topmost = true;
-                timer.Interval = TimeSpan.FromSeconds(2.25);
+                timer.Interval = TimeSpan.FromSeconds(2);
                 timer.Start();
             }
             else
@@ -151,13 +154,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 UpdateInfo();
                 GetWifi();
                 getBatteryTime();
-
-                i++;
-                if (i >= 2)
-                {
-                    ApplySettings();
-                    i = 0;
-                }
+                ApplySettings();
             }
         }
 
@@ -179,14 +176,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             if (AdViewModel.UnderVolt >= 0) commandString = commandString + $"--set-coall={AdViewModel.UnderVolt} ";
                             if (AdViewModel.UnderVolt < 0) commandString = commandString + $"--set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * AdViewModel.UnderVolt))} ";
                         }
-                        if (AdViewModel.IsIGPUClock == true) commandString = commandString + $"--gfx-clk={AdViewModel.IGPUClock} ";
+                        if (AdViewModel.IsIGPUClock == true && AdViewModel.IsAdaptiveiGPU == false) commandString = commandString + $"--gfx-clk={AdViewModel.IGPUClock} ";
 
                         if (commandString != null && commandString != "") RyzenAdj_To_UXTU.Translate(commandString);
                     }
-                    if (Family.TYPE == Family.ProcessorType.Intel)
+                    if (Family.TYPE == Family.ProcessorType.Intel && AdViewModel.IsAdaptiveTDP == false)
                     {
                         TDP_Management.changeTDP(AdViewModel.PowerLimit, AdViewModel.PowerLimit);
                     }
+
+                    if(AdViewModel.IsAdaptiveTDP == true) adaptiveTDP_iGPU();
 
                     if (AdViewModel.IsMaxClock == true)
                     {
@@ -319,7 +318,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             {
                 await Task.Run(() =>
                 {
-                    PowerStatus powerStatus = SystemInformation.PowerStatus;
+                    PowerStatus powerStatus = System.Windows.Forms.SystemInformation.PowerStatus;
                     int batteryLifePercent = (int)(powerStatus.BatteryLifePercent * 100);
                     ViewModel.Battery = batteryLifePercent;
                     ViewModel.Time = DateTime.Now;
@@ -842,6 +841,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     AdViewModel.IsAdaptiveFPS = myPreset._isAdaptiveFPS;
                     AdViewModel.MinFps = myPreset._minFps;
                     AdViewModel.MaxFps = myPreset._maxFps;
+                    AdViewModel.IsAdaptiveTDP = myPreset._isAdaptiveTDP;
+                    AdViewModel.IsAdaptiveiGPU = myPreset._isAdaptiveiGPU;
+                    AdViewModel.MaxTDP = myPreset._maxTDP;
+                    AdViewModel.MaxTemp = myPreset._maxTemp;
+                    AdViewModel.MiniGPU = myPreset._miniGPU;
+                    AdViewModel.MaxiGPU = myPreset._maxiGPU;
+
                 }
 
                 if (AdViewModel.CoreCount > AdViewModel.MaxCoreCount) AdViewModel.CoreCount = MaxCoreCount;
@@ -849,6 +855,128 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             catch (Exception ex) { System.Windows.MessageBox.Show(ex.ToString()); }
 
             Global.updatingPreset = false;
+        }
+        string lastCPU = "";
+        string lastCO = "";
+        string lastiGPU = "";
+        public static int CPUTemp, CPULoad, CPUClock, CPUPower, GPULoad, GPUClock, GPUMemClock, coreCount = 0, newMinCPUClock = 2300;
+        bool started = false;
+        int runs = 0;
+        private async void adaptiveTDP_iGPU()
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    bool tdp = AdViewModel.IsAdaptiveTDP;
+                    bool iGPU = AdViewModel.IsAdaptiveiGPU;
+                    int minCPUClock = 2250;
+                    coreCount = AdViewModel.MaxCoreCount;
+                    if (tdp)
+                    {
+                        if (started == false) GetSensor.openSensor();
+                        //GetSensor.updateSensor();
+                        GetSensor.updateCPU = true;
+                        GetSensor.updateAMDGPU = true;
+                        if (Family.TYPE == Family.ProcessorType.Intel) CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Package");
+                        else CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Core");
+                        CPULoad = (int)GetSensor.getCPUInfo(SensorType.Load, "Total");
+
+                        int core = 1;
+                        do
+                        {
+                            if(core <= coreCount) CPUClock = CPUClock + (int)GetSensor.getCPUInfo(SensorType.Clock, $"Core #{core}");
+                            core++;
+                        }
+                        while (core <= coreCount);
+
+                        CPUClock = (int)(CPUClock / coreCount);
+
+                        if (CPULoad < (100 / coreCount) + 5) newMinCPUClock = minCPUClock + 500;
+                        else newMinCPUClock = minCPUClock;
+
+                        //MessageBox.Show(CPUClock.ToString());
+
+                        //CPUPower = (int)GetSensor.getCPUInfo(SensorType.Power, "Package");
+
+                        if (GetRadeonGPUCount() >= 0)
+                        {
+                            GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
+                            GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
+                            GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
+                        }
+
+                        if (runs < 4)
+                        {
+                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                            runs++;
+                        }
+                        else
+                        {
+                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+
+                            if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+
+                            string commandString = "";
+                            if (CPUControl.cpuCommand != lastCPU && Family.TYPE != Family.ProcessorType.Intel)
+                            {
+                                commandString = commandString + CPUControl.cpuCommand;
+                                lastCPU = CPUControl.cpuCommand;
+                            }
+
+                            if (iGPUControl.commmand != null && iGPUControl.commmand != "" && iGPU && iGPUControl.commmand != lastiGPU)
+                            {
+                                commandString = commandString + iGPUControl.commmand;
+                                lastiGPU = iGPUControl.commmand;
+                            }
+
+                            if (commandString != null && commandString != "" && Family.TYPE != Family.ProcessorType.Intel) RyzenAdj_To_UXTU.Translate(commandString);
+                        }
+                    }
+                    else if (started && !tdp)
+                    {
+                        GetSensor.closeSensor();
+                        started = false;
+                    }
+                });
+            }
+            catch (Exception ex) { System.Windows.MessageBox.Show(ex.Message); }
+        }
+
+        public static int GetRadeonGPUCount()
+        {
+            int count = 0;
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController"))
+            {
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    string name = obj["Name"] as string;
+                    if (name != null && name.Contains("Radeon"))
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        public static int GetNVIDIAGPUCount()
+        {
+            int count = 0;
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController"))
+            {
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    string name = obj["Name"] as string;
+                    if (name != null && name.Contains("NVIDIA"))
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
         }
     }
 }

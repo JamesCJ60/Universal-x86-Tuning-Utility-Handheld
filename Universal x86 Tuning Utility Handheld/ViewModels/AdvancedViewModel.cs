@@ -92,6 +92,24 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         [ObservableProperty]
         private int _maxFps = 0;
 
+        [ObservableProperty]
+        private bool _isAdaptiveTDP = false;
+
+        [ObservableProperty]
+        private int _maxTemp = 95;
+
+        [ObservableProperty]
+        private int _maxTDP = 15;
+
+        [ObservableProperty]
+        private bool _isAdaptiveiGPU = false;
+
+        [ObservableProperty]
+        private int _maxiGPU = 1900;
+
+        [ObservableProperty]
+        private int _miniGPU = 400;
+
         public void OnNavigatedTo()
         {
         }

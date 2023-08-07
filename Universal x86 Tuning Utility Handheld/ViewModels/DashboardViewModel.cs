@@ -27,6 +27,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         [ObservableProperty]
         private int _volume = 35;
         [ObservableProperty]
+        private int _chargeLimit = Settings.Default.chargeLimit;
+        [ObservableProperty]
         private bool _recording = Settings.Default.isMute;
         [ObservableProperty]
         private bool _overlay = Settings.Default.isRTSS;

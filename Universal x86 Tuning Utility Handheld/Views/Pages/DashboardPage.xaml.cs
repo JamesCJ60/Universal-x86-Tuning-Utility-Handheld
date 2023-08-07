@@ -358,6 +358,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             Settings.Default.isMouse = ViewModel.Mouse;
             Settings.Default.StartOnBoot = ViewModel.StartOnBoot;
             Settings.Default.StartMini = ViewModel.StartMini;
+            Settings.Default.chargeLimit = ViewModel.ChargeLimit;
             Settings.Default.Save();
         }
 
@@ -381,6 +382,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             Settings.Default.isMouse = ViewModel.Mouse;
             Settings.Default.StartOnBoot = ViewModel.StartOnBoot;
             Settings.Default.StartMini = ViewModel.StartMini;
+            Settings.Default.chargeLimit = ViewModel.ChargeLimit;
             Settings.Default.Save();
         }
 
@@ -413,9 +415,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     ViewModel.AcModeIcon = SymbolRegular.Gauge24;
                     if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
                 }
+
+                App.wmi.DeviceSet(ASUSWmi.BatteryLimit, ViewModel.ChargeLimit);
             });
 
             Settings.Default.acMode = ViewModel.AcMode;
+            Settings.Default.chargeLimit = ViewModel.ChargeLimit;
             Settings.Default.Save();
         }
 

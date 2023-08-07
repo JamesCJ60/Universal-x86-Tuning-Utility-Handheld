@@ -172,7 +172,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (Family.TYPE == Family.ProcessorType.Amd_Apu)
                     {
-                        if (AdViewModel.IsTemp == true) commandString = $"--tctl-temp={AdViewModel.TempLimit} --skin-temp-limit={AdViewModel.TempLimit} ";
+                        if (AdViewModel.IsTemp == true && AdViewModel.IsAdaptiveTDP == false) commandString = $"--tctl-temp={AdViewModel.TempLimit} --skin-temp-limit={AdViewModel.TempLimit} ";
                         if (AdViewModel.IsPower == true && AdViewModel.IsAdaptiveTDP == false) commandString = commandString + $"--stapm-limit={AdViewModel.PowerLimit * 1000} --slow-limit={AdViewModel.PowerLimit * 1000} --fast-limit={AdViewModel.PowerLimit * 1000} --vrm-current={(AdViewModel.PowerLimit * 1000) * 2} --vrmmax-current={(AdViewModel.PowerLimit * 1000) * 2} ";
                         if (AdViewModel.IsUndervolt == true)
                         {
@@ -763,7 +763,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (isCharging == true)
                     {
-                        decimal batDesignCap = GetSystemInfo.ReadFullChargeCapacity() / 1000;
+                        decimal batDesignCap = (GetSystemInfo.ReadFullChargeCapacity() / 1000) / 100 * Settings.Default.chargeLimit;
                         decimal batCurrentCap = GetSystemInfo.ReadRemainingChargeCapacity() / 1000;
                         if (batDesignCap > 0 && batCurrentCap > 0)
                         {

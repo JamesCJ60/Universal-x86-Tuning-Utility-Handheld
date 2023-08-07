@@ -102,6 +102,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         private int _maxTDP = 15;
 
         [ObservableProperty]
+        private bool _showAdaptiveiGPU = false;
+
+        [ObservableProperty]
         private bool _isAdaptiveiGPU = false;
 
         [ObservableProperty]

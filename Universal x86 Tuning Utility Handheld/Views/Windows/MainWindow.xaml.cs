@@ -151,9 +151,12 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             }
             else
             {
-                UpdateInfo();
-                GetWifi();
-                getBatteryTime();
+                if (Visibility == Visibility.Visible)
+                {
+                    UpdateInfo();
+                    GetWifi();
+                    getBatteryTime();
+                }
                 ApplySettings();
             }
         }
@@ -169,7 +172,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                     if (Family.TYPE == Family.ProcessorType.Amd_Apu)
                     {
-                        if (AdViewModel.IsTemp == true) commandString = $"--tctl-temp={AdViewModel.TempLimit} --skin-temp-limit={AdViewModel.TempLimit} ";
+                        if (AdViewModel.IsTemp == true && AdViewModel.IsAdaptiveTDP == false) commandString = $"--tctl-temp={AdViewModel.TempLimit} --skin-temp-limit={AdViewModel.TempLimit} ";
                         if (AdViewModel.IsPower == true) commandString = commandString + $"--stapm-limit={AdViewModel.PowerLimit * 1000} --slow-limit={AdViewModel.PowerLimit * 1000} --fast-limit={AdViewModel.PowerLimit * 1000} --vrm-current={(AdViewModel.PowerLimit * 1000) * 2} --vrmmax-current={(AdViewModel.PowerLimit * 1000) * 2} ";
                         if (AdViewModel.IsUndervolt == true)
                         {
@@ -860,6 +863,17 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         string lastCO = "";
         string lastiGPU = "";
         public static int CPUTemp, CPULoad, CPUClock, CPUPower, GPULoad, GPUClock, GPUMemClock, coreCount = 0, newMinCPUClock = 2300;
+
+        private void UiWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                UpdateInfo();
+                GetWifi();
+                getBatteryTime();
+            }
+        }
+
         bool started = false;
         int runs = 0;
         private async void adaptiveTDP_iGPU()

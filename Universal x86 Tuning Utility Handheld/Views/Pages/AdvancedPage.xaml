@@ -227,7 +227,7 @@
             </ui:CardControl>
 
             <ui:CardControl
-                Name="ccSection44" Visibility="{Binding ViewModel.IsAdaptiveTDP, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection44" Visibility="{Binding ViewModel.ShowAdaptiveiGPU, Converter={StaticResource BooleanToVisibilityConverter}}"
             IsEnabled="True"
             Icon="Pulse24" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>

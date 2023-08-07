@@ -110,13 +110,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     ccSection5.Visibility = Visibility.Collapsed;
                     ccSection9.Visibility = Visibility.Collapsed;
                     ccSection13.Visibility = Visibility.Collapsed;
-                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection44, ccSection45, ccSection46, ccSection7, ccSection8, ccSection81, ccSection82, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12};
+                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection44, ccSection45, ccSection46, ccSection7, ccSection8, ccSection81, ccSection82, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12 };
                     cards = cardsTemp;
                 }
 
                 if (ViewModel.IsAdaptiveTDP == false && ViewModel.IsAdaptiveiGPU == true) ViewModel.IsAdaptiveiGPU = false;
 
-                    controller = new Controller(controllerNo);
+                if (ViewModel.IsAdaptiveTDP == true) { if (Family.FAM == Family.RyzenFamily.Renoir || Family.FAM == Family.RyzenFamily.Mendocino || Family.FAM == Family.RyzenFamily.Rembrandt || Family.FAM == Family.RyzenFamily.PhoenixPoint) ViewModel.ShowAdaptiveiGPU = true; }
+                else ViewModel.ShowAdaptiveiGPU = false;
+
+                controller = new Controller(controllerNo);
                 bool connected = controller.IsConnected;
 
                 if (cards[cards.Length - 1].Visibility == Visibility.Visible)
@@ -222,7 +225,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
                         if (toggleSwitch != null)
                         {
-                            if(toggleSwitch.IsChecked == true) toggleSwitch.IsChecked = false;
+                            if (toggleSwitch.IsChecked == true) toggleSwitch.IsChecked = false;
                             else toggleSwitch.IsChecked = true;
                         }
                     }
@@ -267,7 +270,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     }
                     else if (selected == lastSelected && cards[selected].Visibility == Visibility.Collapsed)
                     {
-                        if(selected > cards.Length / 2)
+                        if (selected > cards.Length / 2)
                         {
                             if (cards[selected].Visibility == Visibility.Collapsed)
                             {
@@ -299,8 +302,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
                     lastSelected = -1;
                 }
-            } catch { }
-        }        
+            }
+            catch { }
+        }
 
         private void ToggleSwitch_Checked(object sender, RoutedEventArgs e)
         {

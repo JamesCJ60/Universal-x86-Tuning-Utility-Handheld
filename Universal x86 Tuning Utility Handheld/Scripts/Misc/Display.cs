@@ -72,7 +72,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Misc
             public int dmDisplayFrequency;
         }
 
-        public static string targetDisplayName = FindLaptopScreen(); // Replace with your desired display name
+        public static string targetDisplayName = FindLaptopScreen();
         public static List<string> uniqueResolutions = GetSupportedResolutions(targetDisplayName);
         public static List<int> uniqueRefreshRates = GetSupportedRefreshRates(targetDisplayName);
 
@@ -170,6 +170,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Misc
 
         public static void ApplySettings(string input, int newHz)
         {
+            targetDisplayName = FindLaptopScreen();
             string[] dimensions = input.Split('x');
             if (dimensions.Length == 2)
             {
@@ -230,7 +231,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Misc
                     {
                         displayNum = count;
                     }
-                  
+
                     count++;
                 }
 

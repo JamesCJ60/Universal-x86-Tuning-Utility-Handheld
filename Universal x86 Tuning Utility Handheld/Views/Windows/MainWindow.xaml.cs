@@ -386,6 +386,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             this.Left = screenWidth - this.Width - 12;
             this.Top = primaryScreen.Top + 12;
+
+            this.Height = 0;
+            this.MaxHeight = 0;
+            this.MinHeight = 0;
+
             this.Height = screenHeight - 24;
             this.MaxHeight = screenHeight - 24;
             this.MinHeight = screenHeight - 24;

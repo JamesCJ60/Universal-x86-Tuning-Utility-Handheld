@@ -238,5 +238,41 @@ namespace Universal_x86_Tuning_Utility_Handheld.Properties {
                 this["chargeLimit"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int DisplayRes {
+            get {
+                return ((int)(this["DisplayRes"]));
+            }
+            set {
+                this["DisplayRes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int DisplayBatHz {
+            get {
+                return ((int)(this["DisplayBatHz"]));
+            }
+            set {
+                this["DisplayBatHz"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int DisplayPlugHz {
+            get {
+                return ((int)(this["DisplayPlugHz"]));
+            }
+            set {
+                this["DisplayPlugHz"] = value;
+            }
+        }
     }
 }

@@ -69,13 +69,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                 //    Icon = SymbolRegular.Games24,
                 //    //PageType = typeof(Views.Pages.DataPage)
                 //},
-                //new NavigationItem()
-                //{
-                //    Content = "Display",
-                //    PageTag = "display",
-                //    Icon = SymbolRegular.Desktop24,
-                //    //PageType = typeof(Views.Pages.DataPage)
-                //},
+                new NavigationItem()
+                {
+                    Content = "Display",
+                    PageTag = "display",
+                    Icon = SymbolRegular.Desktop24,
+                    PageType = typeof(Views.Pages.DisplaySettings)
+                },
                 //new NavigationItem()
                 //{
                 //    Content = "FSR",

@@ -40,15 +40,12 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
                 {
                     if (count == i)
                     {
-                        Garbage.Garbage_Collect();
                         return obj["Name"].ToString();
                     }
                     count++;
                 }
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-
-            Garbage.Garbage_Collect();
             return "";
         }
 

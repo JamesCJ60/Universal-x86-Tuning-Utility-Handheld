@@ -126,6 +126,8 @@ namespace Universal_x86_Tuning_Utility_Handheld
                   services.AddScoped<ViewModels.DashboardViewModel>();
                   services.AddScoped<Views.Pages.AdvancedPage>();
                   services.AddScoped<ViewModels.AdvancedViewModel>();
+                  services.AddScoped<Views.Pages.DisplaySettings>();
+                  services.AddScoped<ViewModels.DisplaySettingsViewModel>();
                   services.AddScoped<Views.Pages.ControllerPage>();
                   services.AddScoped<ViewModels.ControllerViewModel>();
                   services.AddScoped<Views.Pages.DataPage>();
@@ -171,6 +173,8 @@ namespace Universal_x86_Tuning_Utility_Handheld
                   services.AddScoped<ViewModels.DashboardViewModel>();
                   services.AddScoped<Views.Pages.AdvancedPage>();
                   services.AddScoped<ViewModels.AdvancedViewModel>();
+                  services.AddScoped<Views.Pages.DisplaySettings>();
+                  services.AddScoped<ViewModels.DisplaySettingsViewModel>();
                   services.AddScoped<Views.Pages.ControllerPage>();
                   services.AddScoped<ViewModels.ControllerViewModel>();
                   services.AddScoped<Views.Pages.DataPage>();

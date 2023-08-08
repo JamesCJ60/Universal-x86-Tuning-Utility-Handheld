@@ -55,7 +55,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         private DispatcherTimer timer;
 
         private readonly INavigationService _navigationService;
-        static string mbo = "";
+        public static string mbo = "";
         public MainWindow(ViewModels.MainWindowViewModel viewModel, ViewModels.AdvancedViewModel adViewModel, IPageService pageService, INavigationService navigationService)
         {
             ViewModel = viewModel;
@@ -64,6 +64,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             InitializeComponent();
             SetPageService(pageService);
+
+            _ = Tablet.TabletDevices;
 
             navigationService.SetNavigationControl(RootNavigation);
             SetWindowPosition();
@@ -121,13 +123,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             this.UpdateLayout();
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
             timer.Start();
-
+            await Task.Run(() => Display.setUpLists());
             WindowStartupLocation = WindowStartupLocation.Manual;
             SetWindowPosition();
             Wpf.Ui.Appearance.Watcher.Watch(
@@ -136,6 +138,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
     true
     );
             if (Settings.Default.StartMini) this.Visibility = Visibility.Hidden;
+            if (Settings.Default.DisplayBatHz < 0 || Settings.Default.DisplayBatHz > Display.uniqueRefreshRates.Count - 1 || Settings.Default.DisplayPlugHz < 0 || Settings.Default.DisplayPlugHz > Display.uniqueRefreshRates.Count - 1 || Settings.Default.DisplayRes < 0 || Settings.Default.DisplayRes > Display.uniqueResolutions.Count - 1)
+            {
+                Settings.Default.DisplayBatHz = -1;
+                Settings.Default.DisplayPlugHz = -1;
+                Settings.Default.DisplayRes = -1;
+                Settings.Default.Save();
+            }
+
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+
             Garbage.Garbage_Collect();
         }
         int i = 0;
@@ -189,7 +201,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         TDP_Management.changeTDP(AdViewModel.PowerLimit, AdViewModel.PowerLimit);
                     }
 
-                    if(AdViewModel.IsAdaptiveTDP == true) adaptiveTDP_iGPU();
+                    if (AdViewModel.IsAdaptiveTDP == true) adaptiveTDP_iGPU();
 
                     if (AdViewModel.IsMaxClock == true)
                     {
@@ -304,7 +316,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                                 if (RTSS.fps != AdViewModel.Fps) RTSS.setRTSSFPSLimit(AdViewModel.Fps);
                                 setFPS = true;
                             }
-                        } catch { }
+                        }
+                        catch { }
                     }
                     else if (AdViewModel.IsFPS == false && setFPS && AdViewModel.IsAdaptiveFPS == false)
                     {
@@ -504,7 +517,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     if (Win32.GetIdleTime() > 200 && !isAnyKeyHeldDown && !isControllerOne && !isControllerTwo) isActive = false;
                     else isActive = true;
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         async void AdaptiveFPS_Tick(object sender, EventArgs e)
@@ -533,11 +547,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                 bool connected = controller.IsConnected;
 
-                if(minimise == 1)
+                if (minimise == 1)
                 {
                     if (Visibility == Visibility.Visible)
                     {
                         Visibility = Visibility.Hidden;
+
+                        SetWindowPosition();
+                        UpdateLayout();
                     }
 
                     minimise = 0;
@@ -580,7 +597,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         current--;
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
-                        //else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
+                        else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.DisplaySettings));
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightShoulder) && this.Visibility != Visibility.Hidden && Global.shortCut == false)
@@ -589,7 +606,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         current++;
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
-                        //else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.ControllerPage));
+                        else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.DisplaySettings));
                     }
                 }
 
@@ -631,6 +648,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             switch (EventID)
             {
+                case 166:
                 case 56:    // Rog button
                     if (Visibility == Visibility.Visible)
                     {
@@ -783,7 +801,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             }
                             else AdViewModel.BatteryTime = "Calculating";
                         }
-                    } 
+                    }
 
                     if (isCharging == false) AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
                     if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == true) AdViewModel.BatteryTime = "Battery Charging";
@@ -856,6 +874,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 }
 
                 if (AdViewModel.CoreCount > AdViewModel.MaxCoreCount) AdViewModel.CoreCount = MaxCoreCount;
+                if (AdViewModel.MaxTDP < 5) AdViewModel.MaxTDP = 15;
+                if (AdViewModel.MaxTemp < 5) AdViewModel.MaxTemp = 95;
+                if (AdViewModel.MaxiGPU < 5) AdViewModel.MaxiGPU = 1800;
+                if (AdViewModel.MiniGPU < 5) AdViewModel.MiniGPU = 400;
             }
             catch (Exception ex) { System.Windows.MessageBox.Show(ex.ToString()); }
 
@@ -901,7 +923,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         int core = 1;
                         do
                         {
-                            if(core <= coreCount) CPUClock = CPUClock + (int)GetSensor.getCPUInfo(SensorType.Clock, $"Core #{core}");
+                            if (core <= coreCount) CPUClock = CPUClock + (int)GetSensor.getCPUInfo(SensorType.Clock, $"Core #{core}");
                             core++;
                         }
                         while (core <= coreCount);
@@ -993,6 +1015,52 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 }
             }
             return count;
+        }
+
+        private async void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+
+            if (e.Mode == PowerModes.StatusChange)
+            {
+                await Task.Run(() => getBattery());
+                await Task.Run(() => getBattery());
+
+                if (statuscode == 2 || statuscode == 6 || statuscode == 7 || statuscode == 8)
+                {
+                    if (Settings.Default.DisplayRes >= 0) Display.ApplySettings(Display.uniqueResolutions[Settings.Default.DisplayRes], Display.uniqueRefreshRates[Settings.Default.DisplayPlugHz]);
+                }
+                else
+                {
+                    if (Settings.Default.DisplayRes >= 0) Display.ApplySettings(Display.uniqueResolutions[Settings.Default.DisplayRes], Display.uniqueRefreshRates[Settings.Default.DisplayBatHz]);
+                }
+            }
+
+        }
+
+        static UInt16 statuscode = 0;
+        public static void getBattery()
+        {
+            int i = 0;
+            do
+            {
+                try
+                {
+                    ManagementClass wmi = new ManagementClass("Win32_Battery");
+                    ManagementObjectCollection allBatteries = wmi.GetInstances();
+
+                    //Get battery level from each system battery detected
+                    foreach (var battery in allBatteries)
+                    {
+                        statuscode = (UInt16)battery["BatteryStatus"];
+                    }
+
+                    i++;
+                }
+                catch (Exception ex)
+                {
+
+                }
+            } while (i < 2);
         }
     }
 }

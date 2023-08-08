@@ -30,7 +30,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Adaptive
                     // Reduce power limit if temperature is too high
                     _newPowerLimit = Math.Max(MinPowerLimit, _newPowerLimit - PowerLimitIncrement);
                 }
-                else if (cpuLoad > 10 && temperature <= (MaxTemperature - 5))
+                else if (temperature <= (MaxTemperature - 5))
                 {
                     // Increase power limit if temperature allows and CPU load is high
                     _newPowerLimit = Math.Min(MaxPowerLimit, _newPowerLimit + PowerLimitIncrement);

@@ -117,6 +117,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
             SetWindowPosition(true);
+            SetWindowPosition(true);
             this.UpdateLayout();
         }
 
@@ -374,8 +375,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             this.Top = primaryScreen.Top + 12;
             this.Height = screenHeight - 24;
             this.MaxHeight = screenHeight - 24;
-            if (isDisplayChange) this.MinHeight = screenHeight - 24;
-            else this.MinHeight = 0;
+            this.MinHeight = screenHeight - 24;
 
             this.WindowStyle = WindowStyle.None;
 
@@ -423,6 +423,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         private void UiWindow_LocationChanged(object sender, EventArgs e)
         {
             SetWindowPosition();
+            UpdateLayout();
         }
 
         private IntPtr Handle => new WindowInteropHelper(this).Handle;
@@ -470,7 +471,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void UiWindow_StateChanged(object sender, EventArgs e)
         {
-
+            SetWindowPosition();
+            UpdateLayout();
         }
 
         private void TitleBar_MinimizeClicked(object sender, RoutedEventArgs e)

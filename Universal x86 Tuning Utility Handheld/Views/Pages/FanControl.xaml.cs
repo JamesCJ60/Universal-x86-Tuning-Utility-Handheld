@@ -92,7 +92,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         bool setup = false;
         async void checkInput_Tick(object sender, EventArgs e)
         {
-            if (Global._mainWindowNav.SelectedPageIndex == 2 && Global._appVis == Visibility.Visible && Global.shortCut == false)
+            if (Global._mainWindowNav.SelectedPageIndex == 3 && Global._appVis == Visibility.Visible && Global.shortCut == false)
             {
                 UpdateGUI(UserIndex.One);
                 UpdateGUI(UserIndex.Two);

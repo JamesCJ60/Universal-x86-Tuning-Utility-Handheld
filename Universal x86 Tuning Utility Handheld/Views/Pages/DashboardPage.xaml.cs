@@ -28,6 +28,7 @@ using Universal_x86_Tuning_Utility.Scripts.Misc;
 using System.Diagnostics;
 using Universal_x86_Tuning_Utility_Handheld.Services;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
+using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -228,7 +229,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
                         if (cards[selected] == ccSection11) new XG_Mobile_Prompt(false).Show();
                         if (cards[selected] == ccMini) MainWindow.minimise = 1;
-                        if (cards[selected] == ccClose) Process.GetCurrentProcess().Kill();
+                        if (cards[selected] == ccClose)
+                        {
+                            if (Fan_Control.isSupported) Fan_Control.disableFanControl();
+                            Process.GetCurrentProcess().Kill();
+                        }
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadRight) || tx > 26000)

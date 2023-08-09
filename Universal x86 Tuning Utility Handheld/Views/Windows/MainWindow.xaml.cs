@@ -23,6 +23,7 @@ using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
 using Universal_x86_Tuning_Utility_Handheld.Scripts;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Adaptive;
+using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Intel;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Services;
@@ -149,6 +150,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
             Garbage.Garbage_Collect();
+
+            Fan_Control.UpdateAddresses();
+
+            MessageBox.Show(Fan_Control.isSupported.ToString());
         }
         int i = 0;
         private void Timer_Tick(object sender, EventArgs e)
@@ -901,6 +906,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 GetWifi();
                 getBatteryTime();
             }
+        }
+
+        private void UiWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+           if (Fan_Control.isSupported) Fan_Control.disableFanControl();
         }
 
         bool started = false;

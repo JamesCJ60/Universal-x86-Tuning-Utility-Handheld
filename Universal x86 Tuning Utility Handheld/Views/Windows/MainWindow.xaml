@@ -21,7 +21,7 @@
     LocationChanged="UiWindow_LocationChanged"
     WindowStyle="None"
     AllowsTransparency="True"
-    StateChanged="UiWindow_StateChanged" ResizeMode="NoResize" IsVisibleChanged="UiWindow_IsVisibleChanged" >
+    StateChanged="UiWindow_StateChanged" ResizeMode="NoResize" IsVisibleChanged="UiWindow_IsVisibleChanged" Closing="UiWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

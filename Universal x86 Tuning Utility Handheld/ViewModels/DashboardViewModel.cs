@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
+using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Views.Windows;
 using Wpf.Ui.Common;
@@ -80,6 +81,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
             switch (parameter)
             {
                 case "close":
+                    if (Fan_Control.isSupported) Fan_Control.disableFanControl();
                     Process.GetCurrentProcess().Kill();
                     return;
                 case "minimise":

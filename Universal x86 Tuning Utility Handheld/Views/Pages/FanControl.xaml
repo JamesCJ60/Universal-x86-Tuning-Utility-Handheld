@@ -291,7 +291,7 @@
                             Text="Apply Settings" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                            <Button Width="120" Name="btnApply" Click="btnApply_Click">Apply Settings</Button>
+                            <Button Width="120" Name="btnApply" Click="btnApply_Click" IsEnabled="{Binding ElementName=isSupported, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">Apply Settings</Button>
                         </StackPanel>
 
                     </Grid>

@@ -150,8 +150,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
-            Garbage.Garbage_Collect();
-
             Fan_Control.UpdateAddresses();
         }
 
@@ -184,6 +182,15 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         bool setFan = false;
         string lastFan = "";
         int perfMode = -1;
+
+        bool lastEpp = false;
+        bool lastMaxClock = false;
+        bool lastCores = false;
+        bool lastRSR = false;
+        int lastEppVal = -1;
+        int lastMaxClockVal = -1;
+        int lastCoresVal = -1;
+        int lastRSRVal = -1;
         private async void ApplySettings()
         {
             try
@@ -211,102 +218,121 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     }
 
                     if (AdViewModel.IsAdaptiveTDP == true) adaptiveTDP_iGPU();
-
-                    if (AdViewModel.IsMaxClock == true)
+                    if (lastMaxClock != AdViewModel.IsMaxClock || lastMaxClockVal != AdViewModel.MaxClock)
                     {
+                        if (AdViewModel.IsMaxClock == true)
+                        {
 
+                            // Set the AC and DC values for PROCFREQMAX
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, false);
 
-                        // Set the AC and DC values for PROCFREQMAX
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", (uint)AdViewModel.MaxClock, false);
+                            // Set the AC and DC values for PROCFREQMAX1
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", (uint)AdViewModel.MaxClock, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", (uint)AdViewModel.MaxClock, false);
 
-                        // Set the AC and DC values for PROCFREQMAX1
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", (uint)AdViewModel.MaxClock, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", (uint)AdViewModel.MaxClock, false);
+                            // Activate the current power scheme
+                            PowerPlans.SetActiveScheme("scheme_current");
+                        }
+                        else
+                        {
+                            // Set the AC and DC values for PROCFREQMAX
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", 0, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", 0, false);
 
-                        // Activate the current power scheme
-                        PowerPlans.SetActiveScheme("scheme_current");
+                            // Set the AC and DC values for PROCFREQMAX1
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", 0, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", 0, false);
+
+                            // Activate the current power scheme
+                            PowerPlans.SetActiveScheme("scheme_current");
+                        }
+
+                        lastMaxClock = AdViewModel.IsMaxClock;
+                        lastMaxClockVal = AdViewModel.MaxClock;
                     }
-                    else
+                    if (lastEpp != AdViewModel.IsEPP || lastEppVal != AdViewModel.EPP)
                     {
-                        // Set the AC and DC values for PROCFREQMAX
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", 0, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX", 0, false);
+                        if (AdViewModel.IsEPP == true)
+                        {
 
-                        // Set the AC and DC values for PROCFREQMAX1
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", 0, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PROCFREQMAX1", 0, false);
+                            // Set the AC and DC values for PROCFREQMAX
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP", (uint)AdViewModel.EPP, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP", (uint)AdViewModel.EPP, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", (uint)AdViewModel.EPP, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", (uint)AdViewModel.EPP, false);
 
-                        // Activate the current power scheme
-                        PowerPlans.SetActiveScheme("scheme_current");
+                            // Activate the current power scheme
+                            PowerPlans.SetActiveScheme("scheme_current");
+                        }
+                        else
+                        {
+
+                            // Set the AC and DC values for EPP
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP ", 40, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP ", 40, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 25, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 25, false);
+
+                            // Activate the current power scheme
+                            PowerPlans.SetActiveScheme("scheme_current");
+                        }
+
+                        lastEpp = AdViewModel.IsEPP;
+                        lastEppVal = AdViewModel.EPP;
                     }
-
-                    if (AdViewModel.IsEPP == true)
+                    if (lastCores != AdViewModel.IsCoreCount || lastCoresVal != AdViewModel.CoreCount)
                     {
+                        if (AdViewModel.IsCoreCount == true)
+                        {
+                            int MaxCoreCount = 0;
+                            foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get()) { MaxCoreCount = Convert.ToInt32(item["NumberOfCores"]); }
 
-                        // Set the AC and DC values for PROCFREQMAX
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP", (uint)AdViewModel.EPP, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP", (uint)AdViewModel.EPP, false);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", (uint)AdViewModel.EPP, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", (uint)AdViewModel.EPP, false);
+                            MaxCoreCount = (int)((100 / MaxCoreCount) * AdViewModel.CoreCount);
 
-                        // Activate the current power scheme
-                        PowerPlans.SetActiveScheme("scheme_current");
-                    }
-                    else
-                    {
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, false);
 
-                        // Set the AC and DC values for EPP
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP ", 40, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP ", 40, false);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 25, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "PERFEPP1", 25, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, false);
 
-                        // Activate the current power scheme
-                        PowerPlans.SetActiveScheme("scheme_current");
-                    }
+                            // Activate the current power scheme
+                            PowerPlans.SetActiveScheme("scheme_current");
+                        }
+                        else
+                        {
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, false);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, true);
+                            PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, false);
 
-                    if (AdViewModel.IsCoreCount == true)
-                    {
-                        int MaxCoreCount = 0;
-                        foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get()) { MaxCoreCount = Convert.ToInt32(item["NumberOfCores"]); }
+                            // Activate the current power scheme
+                            PowerPlans.SetActiveScheme("scheme_current");
+                        }
 
-                        MaxCoreCount = (int)((100 / MaxCoreCount) * AdViewModel.CoreCount);
-
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, false);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", (uint)MaxCoreCount, false);
-
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, false);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", (uint)MaxCoreCount, false);
-
-                        // Activate the current power scheme
-                        PowerPlans.SetActiveScheme("scheme_current");
-                    }
-                    else
-                    {
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, false);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMINCORES ", 100, false);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, false);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, true);
-                        PowerPlans.SetPowerValue("scheme_current", "sub_processor", "CPMAXCORES  ", 100, false);
-
-                        // Activate the current power scheme
-                        PowerPlans.SetActiveScheme("scheme_current");
+                        lastCores = AdViewModel.IsCoreCount;
+                        lastCoresVal = AdViewModel.CoreCount;
                     }
 
-                    if (AdViewModel.IsRSR == true)
-                    {
-                        ADLXBackend.SetRSR(true);
-                        ADLXBackend.SetRSRSharpness(AdViewModel.RSR);
+                    if (lastRSR != AdViewModel.IsRSR == true || lastRSRVal != AdViewModel.RSR) 
+                    { 
+                        if (AdViewModel.IsRSR == true)
+                        {
+                            ADLXBackend.SetRSR(true);
+                            ADLXBackend.SetRSRSharpness(AdViewModel.RSR);
+                        }
+                        else ADLXBackend.SetRSR(false);
+                        lastRSR = AdViewModel.IsRSR;
+                        lastRSRVal = AdViewModel.RSR;
                     }
-                    else ADLXBackend.SetRSR(false);
 
                     if (AdViewModel.IsFPS == true && AdViewModel.IsAdaptiveFPS == false)
                     {
@@ -388,40 +414,43 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private async void UpdateInfo()
         {
-            try
+            if (Visibility == Visibility.Visible)
             {
-                await Task.Run(() =>
+                try
                 {
-                    PowerStatus powerStatus = System.Windows.Forms.SystemInformation.PowerStatus;
-                    int batteryLifePercent = (int)(powerStatus.BatteryLifePercent * 100);
-                    ViewModel.Battery = batteryLifePercent;
-                    ViewModel.Time = DateTime.Now;
-                    bool isBatteryCharging = powerStatus.PowerLineStatus == System.Windows.Forms.PowerLineStatus.Online;
-                    if (!isBatteryCharging)
+                    await Task.Run(() =>
                     {
-                        if (batteryLifePercent >= 100) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery1024;
-                        else if (batteryLifePercent >= 90) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery924;
-                        else if (batteryLifePercent >= 80) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery824;
-                        else if (batteryLifePercent >= 70) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery724;
-                        else if (batteryLifePercent >= 60) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery624;
-                        else if (batteryLifePercent >= 50) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery524;
-                        else if (batteryLifePercent >= 40) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery424;
-                        else if (batteryLifePercent >= 30) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery324;
-                        else if (batteryLifePercent >= 20) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery224;
-                        else if (batteryLifePercent >= 10) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery124;
-                        else if (batteryLifePercent >= 0) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery024;
-                        else ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery024;
-                    }
-                    else ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.BatteryCharge24;
+                        PowerStatus powerStatus = System.Windows.Forms.SystemInformation.PowerStatus;
+                        int batteryLifePercent = (int)(powerStatus.BatteryLifePercent * 100);
+                        ViewModel.Battery = batteryLifePercent;
+                        ViewModel.Time = DateTime.Now;
+                        bool isBatteryCharging = powerStatus.PowerLineStatus == System.Windows.Forms.PowerLineStatus.Online;
+                        if (!isBatteryCharging)
+                        {
+                            if (batteryLifePercent >= 100) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery1024;
+                            else if (batteryLifePercent >= 90) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery924;
+                            else if (batteryLifePercent >= 80) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery824;
+                            else if (batteryLifePercent >= 70) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery724;
+                            else if (batteryLifePercent >= 60) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery624;
+                            else if (batteryLifePercent >= 50) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery524;
+                            else if (batteryLifePercent >= 40) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery424;
+                            else if (batteryLifePercent >= 30) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery324;
+                            else if (batteryLifePercent >= 20) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery224;
+                            else if (batteryLifePercent >= 10) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery124;
+                            else if (batteryLifePercent >= 0) ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery024;
+                            else ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.Battery024;
+                        }
+                        else ViewModel.BatteryIcon = Wpf.Ui.Common.SymbolRegular.BatteryCharge24;
 
-                    GetWifi();
+                        GetWifi();
 
-                    Global.wifi = ViewModel.WifiIcon;
-                    Global.battery = ViewModel.BatteryIcon;
-                    Global.batteryPer = ViewModel.Battery;
-                });
+                        Global.wifi = ViewModel.WifiIcon;
+                        Global.battery = ViewModel.BatteryIcon;
+                        Global.batteryPer = ViewModel.Battery;
+                    });
+                }
+                catch { }
             }
-            catch { }
         }
 
         private void HideFromTaskbar()
@@ -649,8 +678,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             SetWindowPosition();
                             UpdateLayout();
                         }
-
-                        UpdateLayout();
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.LeftShoulder) && this.Visibility != Visibility.Hidden && Global.shortCut == false)
@@ -691,8 +718,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             SetWindowPosition();
                             UpdateLayout();
                         }
-
-                        UpdateLayout();
                     }
                 }
 
@@ -738,25 +763,28 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         async void Mouse_Tick(object sender, EventArgs e)
         {
-            try
+            if (Settings.Default.isMouse == true)
             {
-                controller = new Controller(UserIndex.One);
-
-                bool connected = controller.IsConnected;
-
-                if (connected)
+                try
                 {
-                    if (controller.IsConnected && Settings.Default.isMouse == true && this.Visibility == Visibility.Hidden)
+                    controller = new Controller(UserIndex.One);
+
+                    bool connected = controller.IsConnected;
+
+                    if (connected)
                     {
-                        controller.GetState(out var state);
-                        MouseControl.Movement(state);
-                        MouseControl.Scroll(state);
-                        MouseControl.LeftButton(state);
-                        MouseControl.RightButton(state);
+                        if (controller.IsConnected && Settings.Default.isMouse == true && this.Visibility == Visibility.Hidden)
+                        {
+                            controller.GetState(out var state);
+                            MouseControl.Movement(state);
+                            MouseControl.Scroll(state);
+                            MouseControl.LeftButton(state);
+                            MouseControl.RightButton(state);
+                        }
                     }
                 }
+                catch { }
             }
-            catch { }
         }
         static double lastWifi = 0;
         public static async Task<double> RetrieveSignalStrengthAsync()
@@ -783,25 +811,28 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         public async void GetWifi()
         {
-            string wifiURL = "";
-            double wifi = await Task.Run(() => RetrieveSignalStrengthAsync().Result);
-            wifi = await Task.Run(() => RetrieveSignalStrengthAsync().Result);
-
-            var wifiRadios = await Radio.GetRadiosAsync();
-            var wifiRadio = await Task.Run(() => wifiRadios.FirstOrDefault(r => r.Kind == RadioKind.WiFi));
-            var internetConnectionProfile = await Task.Run(() => NetworkInformation.GetInternetConnectionProfile());
-
-            if (wifiRadio != null && wifiRadio.State == RadioState.On)
+            if (Visibility == Visibility.Visible)
             {
-                if (wifi == 4) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi124;
-                else if (wifi == 3) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi224;
-                else if (wifi == 2) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi324;
-                else if (wifi == 1) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi424;
+                string wifiURL = "";
+                double wifi = await Task.Run(() => RetrieveSignalStrengthAsync().Result);
+                wifi = await Task.Run(() => RetrieveSignalStrengthAsync().Result);
+
+                var wifiRadios = await Radio.GetRadiosAsync();
+                var wifiRadio = await Task.Run(() => wifiRadios.FirstOrDefault(r => r.Kind == RadioKind.WiFi));
+                var internetConnectionProfile = await Task.Run(() => NetworkInformation.GetInternetConnectionProfile());
+
+                if (wifiRadio != null && wifiRadio.State == RadioState.On)
+                {
+                    if (wifi == 4) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi124;
+                    else if (wifi == 3) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi224;
+                    else if (wifi == 2) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi324;
+                    else if (wifi == 1) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.Wifi424;
+                    else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
+                }
+                else if (CheckEthernetConnection()) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.UsbPlug24;
+                else if (wifiRadio != null && wifiRadio.State == RadioState.Off) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.WifiOff24;
                 else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
             }
-            else if (CheckEthernetConnection()) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.UsbPlug24;
-            else if (wifiRadio != null && wifiRadio.State == RadioState.Off) ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.WifiOff24;
-            else ViewModel.WifiIcon = Wpf.Ui.Common.SymbolRegular.GlobeProhibited20;
         }
 
         static bool CheckEthernetConnection()
@@ -822,58 +853,61 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         public async void getBatteryTime()
         {
-            try
+            if (Visibility == Visibility.Visible)
             {
-                await Task.Run(() =>
+                try
                 {
-                    PowerStatus pwr = System.Windows.Forms.SystemInformation.PowerStatus;
-                    //Get battery life
-
-                    var batTime = (float)pwr.BatteryLifeRemaining;
-
-                    bool isCharging = false;
-
-                    if (ViewModel.BatteryIcon == Wpf.Ui.Common.SymbolRegular.BatteryCharge24)
+                    await Task.Run(() =>
                     {
-                        batTime = 0;
-                        isCharging = true;
-                    }
+                        PowerStatus pwr = System.Windows.Forms.SystemInformation.PowerStatus;
+                        //Get battery life
 
-                    var time = TimeSpan.FromSeconds(batTime);
+                        var batTime = (float)pwr.BatteryLifeRemaining;
 
-                    decimal batRate = GetSystemInfo.GetBatteryRate() / 1000;
-                    if (isCharging == true && ViewModel.Battery < 100 || !isCharging) AdViewModel.IsDischarge = true;
-                    AdViewModel.ChargeRate = $"{batRate.ToString("0.##")}W Charge Rate";
+                        bool isCharging = false;
 
-                    if (isCharging == true)
-                    {
-                        decimal batDesignCap = (GetSystemInfo.ReadFullChargeCapacity() / 1000) / 100 * Settings.Default.chargeLimit;
-                        decimal batCurrentCap = GetSystemInfo.ReadRemainingChargeCapacity() / 1000;
-                        if (batDesignCap > 0 && batCurrentCap > 0)
+                        if (ViewModel.BatteryIcon == Wpf.Ui.Common.SymbolRegular.BatteryCharge24)
                         {
-                            //System.Windows.MessageBox.Show(((batDesignCap - batCurrentCap) / batRate).ToString());
-
-                            if (isCharging == true && ViewModel.Battery >= 99)
-                            {
-                                AdViewModel.BatteryTime = $"Battery Charged";
-                                AdViewModel.IsDischarge = false;
-                            }
-                            else if (batRate > 0)
-                            {
-                                decimal batteryChargeTime = CalculateBatteryChargeTime(batDesignCap, batCurrentCap, batRate);
-                                AdViewModel.BatteryTime = $"{FormatTime(batteryChargeTime)}";
-                            }
-                            else AdViewModel.BatteryTime = "Calculating";
+                            batTime = 0;
+                            isCharging = true;
                         }
-                    }
 
-                    if (isCharging == false) AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
-                    if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == true) AdViewModel.BatteryTime = "Battery Charging";
-                    if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == false) AdViewModel.BatteryTime = "Calculating";
-                });
+                        var time = TimeSpan.FromSeconds(batTime);
+
+                        decimal batRate = GetSystemInfo.GetBatteryRate() / 1000;
+                        if (isCharging == true && ViewModel.Battery < 100 || !isCharging) AdViewModel.IsDischarge = true;
+                        AdViewModel.ChargeRate = $"{batRate.ToString("0.##")}W Charge Rate";
+
+                        if (isCharging == true)
+                        {
+                            decimal batDesignCap = (GetSystemInfo.ReadFullChargeCapacity() / 1000) / 100 * Settings.Default.chargeLimit;
+                            decimal batCurrentCap = GetSystemInfo.ReadRemainingChargeCapacity() / 1000;
+                            if (batDesignCap > 0 && batCurrentCap > 0)
+                            {
+                                //System.Windows.MessageBox.Show(((batDesignCap - batCurrentCap) / batRate).ToString());
+
+                                if (isCharging == true && ViewModel.Battery >= 99)
+                                {
+                                    AdViewModel.BatteryTime = $"Battery Charged";
+                                    AdViewModel.IsDischarge = false;
+                                }
+                                else if (batRate > 0)
+                                {
+                                    decimal batteryChargeTime = CalculateBatteryChargeTime(batDesignCap, batCurrentCap, batRate);
+                                    AdViewModel.BatteryTime = $"{FormatTime(batteryChargeTime)}";
+                                }
+                                else AdViewModel.BatteryTime = "Calculating";
+                            }
+                        }
+
+                        if (isCharging == false) AdViewModel.BatteryTime = $"{time:%h} Hours {time:%m} Minutes Remaining";
+                        if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == true) AdViewModel.BatteryTime = "Battery Charging";
+                        if (AdViewModel.BatteryTime == "0 Hours 0 Minutes Remaining" && isCharging == false) AdViewModel.BatteryTime = "Calculating";
+                    });
+                }
+                catch
+                { }
             }
-            catch
-            { }
         }
 
         static string FormatTime(decimal hours)

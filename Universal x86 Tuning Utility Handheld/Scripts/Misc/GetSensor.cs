@@ -24,10 +24,7 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
 
         public static void closeSensor()
         {
-            var cpu = thisPC.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
-            cpu.Update();
-            var gpu = thisPC.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuAmd);
-            gpu.Update();
+            thisPC.Close();
         }
 
         public static Computer thisPC = new Computer
@@ -45,11 +42,6 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
             float value = 0;
             try
             {
-                //Computer computer = new Computer
-                //{
-                //    IsCpuEnabled = true,
-                //};
-                //computer.Open();
                 if (updateCPU)
                 {
                     cpu.Update();

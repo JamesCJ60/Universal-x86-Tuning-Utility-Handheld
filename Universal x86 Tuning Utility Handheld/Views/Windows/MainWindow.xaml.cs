@@ -911,6 +911,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     AdViewModel.IsPower = myPreset._isPower;
                     AdViewModel.PowerLimit = myPreset.powerLimit;
                     AdViewModel.IsUndervolt = myPreset._isUndervolt;
+                    AdViewModel.UnderVolt = myPreset.underVolt;
                     AdViewModel.IsMaxClock = myPreset._isMaxClock;
                     AdViewModel.MaxClock = myPreset.maxClock;
                     AdViewModel.IsIGPUClock = myPreset._isIGPUClock;

@@ -34,6 +34,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         private int option8 = 50;
         [ObservableProperty]
         private bool isFan = false;
+        [ObservableProperty]
+        private bool isSupported = false;
 
         private ICommand _functions;
         public ICommand FunctionCommands => _functions ??= new RelayCommand<string>(Functions);

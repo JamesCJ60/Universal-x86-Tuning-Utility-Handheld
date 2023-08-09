@@ -78,7 +78,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                 },
                 new NavigationItem()
                 {
-                    Content = "Fan",
+                    Content = "Fan Curve",
                     PageTag = "fan",
                     Icon = SymbolRegular.WeatherDuststorm24,
                     PageType = typeof(Views.Pages.FanControl)

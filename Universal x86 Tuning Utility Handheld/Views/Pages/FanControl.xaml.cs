@@ -32,6 +32,7 @@ using Wpf.Ui.Mvvm.Interfaces;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
 using Windows.Graphics;
+using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -57,6 +58,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             InitializeComponent();
 
             _ = Tablet.TabletDevices;
+
+            if (Fan_Control.isSupported || Settings.Default.isASUS == true) ViewModel.IsSupported = true;
 
             normalBorderBrush = ccApply.BorderBrush;
             checkInput.Interval = TimeSpan.FromSeconds(0.12);
@@ -202,7 +205,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             else toggleSwitch.IsChecked = true;
                         }
 
-                        if (cards[selected] == ccApply)
+                        if (cards[selected] == ccApply && ccApply.IsEnabled == true)
                         {
                             Settings.Default.isFanContol = ViewModel.IsFan;
                             Settings.Default.fanCurve = $"{ViewModel.Option1}-{ViewModel.Option2}-{ViewModel.Option3}-{ViewModel.Option4}-{ViewModel.Option5}-{ViewModel.Option6}-{ViewModel.Option7}-{ViewModel.Option8}";

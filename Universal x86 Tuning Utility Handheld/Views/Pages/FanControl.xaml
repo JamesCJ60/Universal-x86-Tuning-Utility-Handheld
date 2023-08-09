@@ -275,9 +275,8 @@
                 </ui:CardControl.Header>
             </ui:CardControl>
             <!--Visibility="{Binding ElementName=test, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"-->
-            <ui:CardControl
+            <ui:CardControl IsEnabled="{Binding ElementName=isSupported, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Name="ccApply"
-            IsEnabled="True"
             Icon="DocumentCheckmark24" Margin="0,9,0,18" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
                     <Grid>

@@ -1,0 +1,303 @@
+﻿<ui:UiPage x:Class="Universal_x86_Tuning_Utility_Handheld.Views.Pages.FanControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Universal_x86_Tuning_Utility_Handheld.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="DisplaySettings"
+    d:DataContext="{d:DesignInstance local:FanControl, IsDesignTimeCreatable=False}"
+    d:DesignHeight="1000"
+    d:DesignWidth="520"
+    d:Background="{DynamicResource ApplicationBackgroundBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d" Scrollable="True" 
+           ScrollViewer.CanContentScroll="False" 
+           ScrollViewer.VerticalScrollBarVisibility="Auto" 
+           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           ScrollViewer.PanningMode="VerticalFirst"
+    Stylus.IsFlicksEnabled="False"
+    Stylus.IsTouchFeedbackEnabled="True"
+    ScrollViewer.IsDeferredScrollingEnabled="False">
+
+    <ui:UiPage.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:UiPage.Resources>
+
+    <Grid Margin="16.5,0,18,0" VerticalAlignment="Top">
+        <!--<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <ui:Button Grid.Column="0" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Click me!" Icon="Fluent24" />
+        <TextBlock Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" Text="{Binding ViewModel.Counter, Mode=OneWay}" />-->
+        <StackPanel>
+
+            <ui:CardControl
+                Name="ccSection1"
+            IsEnabled="True"
+            Icon="WeatherDuststorm24" Margin="0,18,0,0" DockPanel.Dock="Top" BorderThickness="2.5" BorderBrush="{DynamicResource TextFillColorPrimaryBrush}">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Toggle Custom Fan Curve" />
+
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsFan, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection2"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="25°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option1,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.Option1, Mode=TwoWay}" Margin="12,0,0,0"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection3"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="35°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option2,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.Option2, Mode=TwoWay}" Margin="12,0,0,0"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection4"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="45°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option3,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.Option3, Mode=TwoWay}" Margin="12,0,0,0"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection5"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="55°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option4,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.Option4, Mode=TwoWay}" Margin="12,0,0,0"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection6"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="65°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option5,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.Option5, Mode=TwoWay}" Margin="12,0,0,0" />
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection7"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="75°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option6,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="30" Maximum="100" Value="{Binding ViewModel.Option6, Mode=TwoWay}" Margin="12,0,0,0"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection8"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="85°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option7,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="30" Maximum="100" Value="{Binding ViewModel.Option7, Mode=TwoWay}" Margin="12,0,0,0"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <ui:CardControl Visibility="{Binding ViewModel.IsFan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Name="ccSection9"
+            IsEnabled="True"
+            Margin="0,9,0,0" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" VerticalAlignment="Center" Width="95">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="95°C" />
+                            <TextBlock Grid.Column="1"
+                            FontSize="14" TextAlignment="Right" VerticalAlignment="Center" Text="{Binding ViewModel.Option8,StringFormat={}{0}%}"/>
+                        </Grid>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="30" Maximum="100" Value="{Binding ViewModel.Option8, Mode=TwoWay}" Margin="12,0,0,0"/>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+            <!--Visibility="{Binding ElementName=test, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"-->
+            <ui:CardControl
+                Name="ccApply"
+            IsEnabled="True"
+            Icon="DocumentCheckmark24" Margin="0,9,0,18" DockPanel.Dock="Top">
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                            FontSize="16"
+                            FontWeight="Medium"
+                            Text="Apply Settings" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button Width="120" Name="btnApply" Click="btnApply_Click">Apply Settings</Button>
+                        </StackPanel>
+
+                    </Grid>
+                </ui:CardControl.Header>
+            </ui:CardControl>
+        </StackPanel>
+    </Grid>
+</ui:UiPage>

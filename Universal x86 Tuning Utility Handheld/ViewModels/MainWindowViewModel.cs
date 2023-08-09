@@ -76,6 +76,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
                     Icon = SymbolRegular.Desktop24,
                     PageType = typeof(Views.Pages.DisplaySettings)
                 },
+                new NavigationItem()
+                {
+                    Content = "Fan",
+                    PageTag = "fan",
+                    Icon = SymbolRegular.WeatherDuststorm24,
+                    PageType = typeof(Views.Pages.FanControl)
+                },
                 //new NavigationItem()
                 //{
                 //    Content = "FSR",

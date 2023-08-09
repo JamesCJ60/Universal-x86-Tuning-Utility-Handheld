@@ -274,5 +274,29 @@ namespace Universal_x86_Tuning_Utility_Handheld.Properties {
                 this["DisplayPlugHz"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isFanContol {
+            get {
+                return ((bool)(this["isFanContol"]));
+            }
+            set {
+                this["isFanContol"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0-5-15-25-40-55-70-100")]
+        public string fanCurve {
+            get {
+                return ((string)(this["fanCurve"]));
+            }
+            set {
+                this["fanCurve"] = value;
+            }
+        }
     }
 }

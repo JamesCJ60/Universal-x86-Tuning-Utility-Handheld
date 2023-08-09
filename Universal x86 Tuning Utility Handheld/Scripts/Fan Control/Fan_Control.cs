@@ -1,9 +1,11 @@
-﻿using System;
+﻿using LibreHardwareMonitor.Hardware;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Services;
 
@@ -103,6 +105,83 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control
 
             double fanPercentage = Math.Round(100 * (Convert.ToDouble(returnvalue) / MaxFanSpeed), 0);
             FanSpeed = fanPercentage;
+        }
+
+        public static int GetCpuTemperature()
+        {
+            try
+            {
+                Computer computer = new Computer
+                {
+                    IsCpuEnabled = true,
+                };
+                computer.Open();
+                var cpu = computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+                cpu.Update();
+                var temperature = cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Temperature);
+                int temp = 0;
+                if (temperature != null)
+                {
+                    temp = (int)temperature.Value;
+                }
+                else
+                {
+                    temp = 0;
+                }
+                //computer.Close();
+                return temp;
+            }
+            catch (Exception ex)
+            {
+                // Log exception
+                return 0;
+            }
+        }
+
+        public static void UpdateFanCurve(int[] speeds)
+        {
+            try
+            {
+                int[] temps = { 25, 35, 45, 55, 65, 75, 85, 95 };
+
+                int cpuTemperature = GetCpuTemperature();
+
+                var fanSpeed = Interpolate(speeds, temps, cpuTemperature);
+
+                if (fanControlEnabled) setFanSpeed(fanSpeed);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private static int Interpolate(int[] yValues, int[] xValues, int x)
+        {
+            int i = Array.FindIndex(xValues, t => t >= x);
+
+            if (i == -1) // temperature is lower than the first input point
+            {
+                return yValues[0];
+            }
+            else if (i == 0) // temperature is equal to or higher than the first input point
+            {
+                return yValues[0];
+            }
+            else if (i == xValues.Length) // temperature is higher than the last input point
+            {
+                return yValues[xValues.Length - 1];
+            }
+            else // interpolate between two closest input points
+            {
+                return Interpolate(yValues[i - 1], xValues[i - 1], yValues[i], xValues[i], x);
+            }
+        }
+
+        private static int Interpolate(int y1, int x1, int y2, int x2, int x)
+        {
+            return (y1 * (x2 - x) + y2 * (x - x1)) / (x2 - x1);
         }
     }
 }

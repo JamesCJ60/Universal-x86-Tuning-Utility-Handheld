@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using SharpDX.XInput;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Management;
@@ -152,9 +153,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             Garbage.Garbage_Collect();
 
             Fan_Control.UpdateAddresses();
-
-            MessageBox.Show(Fan_Control.isSupported.ToString());
         }
+
         int i = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
@@ -175,11 +175,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     GetWifi();
                     getBatteryTime();
                 }
+
                 ApplySettings();
             }
         }
 
         bool setFPS = false;
+        bool setFan = false;
         private async void ApplySettings()
         {
             try
@@ -329,6 +331,51 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         RTSS.setRTSSFPSLimit(0);
                         setFPS = false;
                     }
+
+
+                    if (Settings.Default.isFanContol)
+                    {
+                        if (!Settings.Default.isASUS && Fan_Control.isSupported)
+                        {
+                            setFan = true;
+                            string speedString = Settings.Default.fanCurve;
+                            string[] speedStringArray = speedString.Split('-');
+                            int[] speeds = Array.ConvertAll(speedStringArray, int.Parse);
+                            Fan_Control.UpdateFanCurve(speeds);
+                            Fan_Control.enableFanControl();
+                        }
+                        else if (Settings.Default.isASUS)
+                        {
+                            string speedString = Settings.Default.fanCurve;
+                            string[] speedStringArray = speedString.Split('-');
+                            int[] speeds = Array.ConvertAll(speedStringArray, int.Parse);
+
+                            byte[] curve = new byte[16];
+                            curve[0] = (byte)25;
+                            curve[1] = (byte)35;
+                            curve[2] = (byte)45;
+                            curve[3] = (byte)55;
+                            curve[4] = (byte)65;
+                            curve[5] = (byte)75;
+                            curve[6] = (byte)85;
+                            curve[7] = (byte)95;
+                            curve[8] = (byte)speeds[0];
+                            curve[9] = (byte)speeds[1];
+                            curve[10] = (byte)speeds[2];
+                            curve[11] = (byte)speeds[3];
+                            curve[12] = (byte)speeds[4];
+                            curve[13] = (byte)speeds[5];
+                            curve[14] = (byte)speeds[6];
+                            curve[15] = (byte)speeds[7];
+                            string bitCurve = BitConverter.ToString(curve);
+                            Debug.WriteLine(bitCurve);
+
+                            App.wmi.SetFanCurve(0, curve);
+                            App.wmi.SetFanCurve(1, curve);
+                        }
+                    }
+                    else if (setFan) Fan_Control.disableFanControl();
+                    
                 });
             }
             catch { }
@@ -608,6 +655,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
                         else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.DisplaySettings));
+                        else if (current == 3) _navigationService.Navigate(typeof(Views.Pages.FanControl));
                     }
 
                     if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.RightShoulder) && this.Visibility != Visibility.Hidden && Global.shortCut == false)
@@ -617,6 +665,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         if (current == 0) _navigationService.Navigate(typeof(Views.Pages.DashboardPage));
                         else if (current == 1) _navigationService.Navigate(typeof(Views.Pages.AdvancedPage));
                         else if (current == 2) _navigationService.Navigate(typeof(Views.Pages.DisplaySettings));
+                        else if (current == 3) _navigationService.Navigate(typeof(Views.Pages.FanControl));
                     }
                 }
 
@@ -906,11 +955,13 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 GetWifi();
                 getBatteryTime();
             }
+
+            Garbage.Garbage_Collect();
         }
 
         private void UiWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-           if (Fan_Control.isSupported) Fan_Control.disableFanControl();
+            if (Fan_Control.isSupported) Fan_Control.disableFanControl();
         }
 
         bool started = false;
@@ -923,7 +974,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 {
                     bool tdp = AdViewModel.IsAdaptiveTDP;
                     bool iGPU = AdViewModel.IsAdaptiveiGPU;
-                    int minCPUClock = 2250;
+                    int minCPUClock = 2150;
                     coreCount = AdViewModel.MaxCoreCount;
                     if (tdp)
                     {

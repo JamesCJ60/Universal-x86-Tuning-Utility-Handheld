@@ -112,7 +112,7 @@
             <ui:CardControl
                 Name="ccApply"
             IsEnabled="True"
-            Icon="DocumentCheckmark20" Margin="0,9,0,18" DockPanel.Dock="Top">
+            Icon="DocumentCheckmark24" Margin="0,9,0,18" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>

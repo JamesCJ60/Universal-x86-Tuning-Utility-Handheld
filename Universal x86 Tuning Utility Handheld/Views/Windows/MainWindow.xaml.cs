@@ -183,6 +183,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         bool setFPS = false;
         bool setFan = false;
         string lastFan = "";
+        int perfMode = -1;
         private async void ApplySettings()
         {
             try
@@ -345,7 +346,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             Fan_Control.UpdateFanCurve(speeds);
                             Fan_Control.enableFanControl();
                         }
-                        else if (Settings.Default.isASUS && lastFan != Settings.Default.fanCurve)
+                        else if (Settings.Default.isASUS && lastFan != Settings.Default.fanCurve || Settings.Default.isASUS && perfMode != Settings.Default.acMode)
                         {
                             string speedString = Settings.Default.fanCurve;
                             string[] speedStringArray = speedString.Split('-');
@@ -375,6 +376,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             App.wmi.SetFanCurve(1, curve);
 
                             lastFan = speedString;
+                            perfMode = Settings.Default.acMode;
                         }
                     }
                     else if (setFan) Fan_Control.disableFanControl();

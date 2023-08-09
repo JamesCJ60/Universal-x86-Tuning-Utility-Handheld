@@ -14,7 +14,7 @@
     <Company>JamesCJ</Company>
     <Copyright>UXTU Team © 2023</Copyright>
     <FileVersion>0.0.7</FileVersion>
-    <AssemblyVersion>0.0.7</AssemblyVersion>
+    <AssemblyVersion>0.0.8</AssemblyVersion>
     <Version>$(VersionPrefix)</Version>
   </PropertyGroup>
 

@@ -322,8 +322,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         lastCoresVal = AdViewModel.CoreCount;
                     }
 
-                    if (lastRSR != AdViewModel.IsRSR == true || lastRSRVal != AdViewModel.RSR) 
-                    { 
+                    if (lastRSR != AdViewModel.IsRSR == true || lastRSRVal != AdViewModel.RSR)
+                    {
                         if (AdViewModel.IsRSR == true)
                         {
                             ADLXBackend.SetRSR(true);
@@ -406,7 +406,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         }
                     }
                     else if (setFan) Fan_Control.disableFanControl();
-                    
+
                 });
             }
             catch { }
@@ -1010,13 +1010,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         {
             try
             {
-                await Task.Run(() =>
+
+                bool tdp = AdViewModel.IsAdaptiveTDP;
+                bool iGPU = AdViewModel.IsAdaptiveiGPU;
+                int minCPUClock = 2150;
+                coreCount = AdViewModel.MaxCoreCount;
+                if (tdp)
                 {
-                    bool tdp = AdViewModel.IsAdaptiveTDP;
-                    bool iGPU = AdViewModel.IsAdaptiveiGPU;
-                    int minCPUClock = 2150;
-                    coreCount = AdViewModel.MaxCoreCount;
-                    if (tdp)
+                    await Task.Run(() =>
                     {
                         if (started == false) GetSensor.openSensor();
                         //GetSensor.updateSensor();
@@ -1038,53 +1039,52 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
                         if (CPULoad < (100 / coreCount) + 5) newMinCPUClock = minCPUClock + 500;
                         else newMinCPUClock = minCPUClock;
+                    });
+                    //MessageBox.Show(CPUClock.ToString());
 
-                        //MessageBox.Show(CPUClock.ToString());
+                    //CPUPower = (int)GetSensor.getCPUInfo(SensorType.Power, "Package");
 
-                        //CPUPower = (int)GetSensor.getCPUInfo(SensorType.Power, "Package");
-
-                        if (GetRadeonGPUCount() >= 0)
-                        {
-                            GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
-                            GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
-                            GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
-                        }
-
-                        if (runs < 4)
-                        {
-                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                            runs++;
-                        }
-                        else
-                        {
-                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-
-                            if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
-
-                            string commandString = "";
-                            if (CPUControl.cpuCommand != lastCPU && Family.TYPE != Family.ProcessorType.Intel)
-                            {
-                                commandString = commandString + CPUControl.cpuCommand;
-                                lastCPU = CPUControl.cpuCommand;
-                            }
-
-                            if (iGPUControl.commmand != null && iGPUControl.commmand != "" && iGPU && iGPUControl.commmand != lastiGPU)
-                            {
-                                commandString = commandString + iGPUControl.commmand;
-                                lastiGPU = iGPUControl.commmand;
-                            }
-
-                            if (commandString != null && commandString != "" && Family.TYPE != Family.ProcessorType.Intel) RyzenAdj_To_UXTU.Translate(commandString);
-                        }
-                    }
-                    else if (started && !tdp)
+                    if (GetRadeonGPUCount() >= 0)
                     {
-                        GetSensor.closeSensor();
-                        started = false;
+                        GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
+                        GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
+                        GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
                     }
-                });
+
+                    if (runs < 4)
+                    {
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                        runs++;
+                    }
+                    else
+                    {
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+
+                        if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+
+                        string commandString = "";
+                        if (CPUControl.cpuCommand != lastCPU && Family.TYPE != Family.ProcessorType.Intel)
+                        {
+                            commandString = commandString + CPUControl.cpuCommand;
+                            lastCPU = CPUControl.cpuCommand;
+                        }
+
+                        if (iGPUControl.commmand != null && iGPUControl.commmand != "" && iGPU && iGPUControl.commmand != lastiGPU)
+                        {
+                            commandString = commandString + iGPUControl.commmand;
+                            lastiGPU = iGPUControl.commmand;
+                        }
+
+                        if (commandString != null && commandString != "" && Family.TYPE != Family.ProcessorType.Intel) RyzenAdj_To_UXTU.Translate(commandString);
+                    }
+                }
+                else if (started && !tdp)
+                {
+                    GetSensor.closeSensor();
+                    started = false;
+                }
             }
             catch (Exception ex) { System.Windows.MessageBox.Show(ex.Message); }
         }

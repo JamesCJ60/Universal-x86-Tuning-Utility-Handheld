@@ -1,6 +1,8 @@
 ﻿using LibreHardwareMonitor.Hardware;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Services;
+using Universal_x86_Tuning_Utility_Handheld.Views.Windows;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control
 {
@@ -144,7 +147,10 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control
             {
                 int[] temps = { 25, 35, 45, 55, 65, 75, 85, 95 };
 
-                int cpuTemperature = GetCpuTemperature();
+                int cpuTemperature = 0;
+
+                if (GetSensor.isOpen) cpuTemperature = MainWindow.CPUTemp;
+                else cpuTemperature = GetCpuTemperature();
 
                 var fanSpeed = Interpolate(speeds, temps, cpuTemperature);
 

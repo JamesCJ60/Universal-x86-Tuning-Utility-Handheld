@@ -9,11 +9,13 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
 {
     internal class GetSensor
     {
+        public static bool isOpen = false;
         public static void openSensor()
         {
             thisPC.Open();
             cpu = thisPC.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
             amdGPU = thisPC.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuAmd);
+            isOpen = true;
         }
 
         public static void updateSensor()
@@ -25,6 +27,7 @@ namespace Universal_x86_Tuning_Utility.Scripts.Misc
         public static void closeSensor()
         {
             thisPC.Close();
+            isOpen = false;
         }
 
         public static Computer thisPC = new Computer

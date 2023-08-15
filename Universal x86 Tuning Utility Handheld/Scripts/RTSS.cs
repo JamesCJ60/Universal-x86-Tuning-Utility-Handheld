@@ -65,6 +65,7 @@ namespace Universal_x86_Tuning_Utility.Scripts
             {
                 RTSS.LoadProfile();
                 RTSS.SetProfileProperty("FramerateLimit", frameLimit);
+                fps = frameLimit;
                 RTSS.SaveProfile();
                 RTSS.UpdateProfiles();
             }
@@ -184,7 +185,7 @@ namespace Universal_x86_Tuning_Utility.Scripts
 
     public static class RunningGames
     {
-        private static List<AppFlags> appFlags = new List<AppFlags>()
+        public static List<AppFlags> appFlags = new List<AppFlags>()
         {
             {AppFlags.Direct3D12 },
             {AppFlags.Direct3D12AFR },

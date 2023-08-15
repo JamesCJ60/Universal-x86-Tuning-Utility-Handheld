@@ -196,7 +196,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.MaxTemp,StringFormat={}{0}°C}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.MaxTemp, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="100" Value="{Binding ViewModel.MaxTemp, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
 
                     </Grid>
                 </ui:CardControl.Header>

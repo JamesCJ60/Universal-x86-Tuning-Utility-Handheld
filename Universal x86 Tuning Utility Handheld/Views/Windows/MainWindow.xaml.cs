@@ -1,7 +1,10 @@
 ﻿using LibreHardwareMonitor.Hardware;
+using LibreHardwareMonitor.Hardware.Cpu;
 using Microsoft.Win32;
+using RTSSSharedMemoryNET;
 using SharpDX.XInput;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,7 +12,9 @@ using System.Management;
 using System.Net.NetworkInformation;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,6 +63,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private readonly INavigationService _navigationService;
         public static string mbo = "";
+        static int RadeonCount = 0;
         public MainWindow(ViewModels.MainWindowViewModel viewModel, ViewModels.AdvancedViewModel adViewModel, IPageService pageService, INavigationService navigationService)
         {
             ViewModel = viewModel;
@@ -90,6 +96,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             _timer.Interval = TimeSpan.FromMilliseconds(1000 / MouseControl.RefreshRate);
             _timer.Start();
 
+            DispatcherTimer _sensor = new DispatcherTimer();
+            _sensor.Tick += Sensor_Tick;
+            _sensor.Interval = TimeSpan.FromSeconds(0.2);
+            _sensor.Start();
+
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
 
             UpdateInfo();
@@ -116,6 +127,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             PowerPlans.HideAttribute("sub_processor", "PERFEPP1");
             PowerPlans.HideAttribute("sub_processor", "CPMINCORES");
             PowerPlans.HideAttribute("sub_processor", "CPMAXCORES");
+
+            RadeonCount = GetRadeonGPUCount();
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
@@ -154,27 +167,28 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         }
 
         int i = 0;
+        int update = 0;
+        bool updatedTB = false;
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (timer.Interval == TimeSpan.FromSeconds(1))
+            if (!updatedTB)
             {
-                timer.Stop();
                 HideFromTaskbar();
-                //MessageBox.Show(RootNavigation.Current.PageTag);
-                this.Topmost = true;
-                timer.Interval = TimeSpan.FromSeconds(2);
-                timer.Start();
+                updatedTB = true;
             }
             else
             {
-                if (Visibility == Visibility.Visible)
+                if (Visibility == Visibility.Visible && update >= 2)
                 {
                     UpdateInfo();
                     GetWifi();
                     getBatteryTime();
                 }
+                if (update > 2) update = -1;
 
                 ApplySettings();
+
+                update++;
             }
         }
 
@@ -985,7 +999,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         string lastCPU = "";
         string lastCO = "";
         string lastiGPU = "";
-        public static int CPUTemp, CPULoad, CPUClock, CPUPower, GPULoad, GPUClock, GPUMemClock, coreCount = 0, newMinCPUClock = 2300;
+        public static int CPUTemp, CPULoad, CPUClock, CPUPower, GPULoad = 99, GPUClock = 800, GPUMemClock = 800, coreCount = 0, newMinCPUClock = 2300;
 
         private void UiWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -1006,87 +1020,210 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         bool started = false;
         int runs = 0;
-        private async void adaptiveTDP_iGPU()
+
+        static Queue<double> fpsQueue = new Queue<double>();
+        static int maxQueueSize = 32;
+        static bool tdp, iGPU;
+        static int minCPUClock = 2150;
+        static int fps = 0;
+        static int fpsLimit = 0;
+        static int minTDP = -1;
+        static double averageFps = 0;
+        int numRuns = 0;
+        private async void Sensor_Tick(object sender, EventArgs e)
         {
-            try
+            tdp = AdViewModel.IsAdaptiveTDP;
+            iGPU = AdViewModel.IsAdaptiveiGPU;
+            coreCount = AdViewModel.MaxCoreCount;
+
+            if (tdp)
             {
-
-                bool tdp = AdViewModel.IsAdaptiveTDP;
-                bool iGPU = AdViewModel.IsAdaptiveiGPU;
-                int minCPUClock = 2150;
-                coreCount = AdViewModel.MaxCoreCount;
-                if (tdp)
+                await Task.Run(() =>
                 {
-                    await Task.Run(() =>
+                    if (started == false) GetSensor.openSensor();
+                    //GetSensor.updateSensor();
+                    GetSensor.updateCPU = true;
+                    GetSensor.updateAMDGPU = true;
+                    if (Family.TYPE == Family.ProcessorType.Intel) CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Package");
+                    else CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Core");
+                    CPULoad = (int)GetSensor.getCPUInfo(SensorType.Load, "Total");
+
+                    int core = 1;
+                    do
                     {
-                        if (started == false) GetSensor.openSensor();
-                        //GetSensor.updateSensor();
-                        GetSensor.updateCPU = true;
-                        GetSensor.updateAMDGPU = true;
-                        if (Family.TYPE == Family.ProcessorType.Intel) CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Package");
-                        else CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Core");
-                        CPULoad = (int)GetSensor.getCPUInfo(SensorType.Load, "Total");
+                        if (core <= coreCount) CPUClock = CPUClock + (int)GetSensor.getCPUInfo(SensorType.Clock, $"Core #{core}");
+                        core++;
+                    }
+                    while (core <= coreCount);
 
-                        int core = 1;
-                        do
-                        {
-                            if (core <= coreCount) CPUClock = CPUClock + (int)GetSensor.getCPUInfo(SensorType.Clock, $"Core #{core}");
-                            core++;
-                        }
-                        while (core <= coreCount);
+                    CPUClock = (int)(CPUClock / coreCount);
 
-                        CPUClock = (int)(CPUClock / coreCount);
+                    if (CPULoad < (100 / coreCount) + 5) newMinCPUClock = minCPUClock + 500;
+                    else newMinCPUClock = minCPUClock;
 
-                        if (CPULoad < (100 / coreCount) + 5) newMinCPUClock = minCPUClock + 500;
-                        else newMinCPUClock = minCPUClock;
-                    });
                     //MessageBox.Show(CPUClock.ToString());
 
                     //CPUPower = (int)GetSensor.getCPUInfo(SensorType.Power, "Package");
 
-                    if (GetRadeonGPUCount() >= 0)
-                    {
-                        GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
-                        GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
-                        GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
-                    }
 
-                    if (runs < 4)
+                });
+
+
+                if (runs < 4)
+                {
+                    CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                    CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                    CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                    runs++;
+                }
+                else
+                {
+
+                    if (RTSS.directoryRTSSExists() && RTSS.RTSSRunning())
                     {
-                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                        runs++;
+                        bool exists = true;
+
+                        await Task.Run(() =>
+                        {
+                            var osdEntries = OSD.GetOSDEntries();
+
+                            fpsLimit = RTSS.fps;
+
+                            foreach (var flag in RunningGames.appFlags)
+                            {
+                                var appEntries = OSD.GetAppEntries(flag).Where(x => (x.Flags & AppFlags.MASK) != AppFlags.None).ToArray();
+                                foreach (var app in appEntries)
+                                {
+                                    fps = (int)app.InstantaneousFrames;
+                                }
+                            }
+
+                            // Enqueue the current FPS into the queue
+                            fpsQueue.Enqueue(fps);
+
+                            // If the queue size exceeds the maximum, dequeue the oldest value
+                            if (fpsQueue.Count > maxQueueSize)
+                            {
+                                fpsQueue.Dequeue();
+                            }
+
+                            // Calculate the average FPS over the time window
+                            averageFps = CalculateAverageFps(fpsQueue);
+
+                            if (averageFps == fpsLimit && fpsQueue.Count == (maxQueueSize - 1))
+                            {
+                                fpsLimit--;
+                                if (fpsQueue.Count == maxQueueSize) fpsQueue = new Queue<double>();
+                            }
+
+                            //exists = IsProcessRunning(appId);
+                        });
+
+                        if (i > 6)
+                        {
+                            GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
+                            GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
+                            GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
+                            i = -1;
+                        }
+
+                        if (CPUControl._currentPowerLimit >= 45) minCPUClock = 3600;
+                        else if (CPUControl._currentPowerLimit >= 38) minCPUClock = 3200;
+                        else if (CPUControl._currentPowerLimit >= 33) minCPUClock = 3000;
+                        else if (CPUControl._currentPowerLimit >= 29 || CPUControl._currentPowerLimit <= 32) minCPUClock = 2800;
+                        else if (CPUControl._currentPowerLimit >= 26 || CPUControl._currentPowerLimit <= 28) minCPUClock = 2650;
+                        else if (CPUControl._currentPowerLimit >= 23 || CPUControl._currentPowerLimit <= 25) minCPUClock = 2500;
+                        else if (CPUControl._currentPowerLimit >= 21 || CPUControl._currentPowerLimit <= 22) minCPUClock = 2350;
+                        else if (CPUControl._currentPowerLimit >= 18 || CPUControl._currentPowerLimit <= 20) minCPUClock = 2200;
+                        else if (CPUControl._currentPowerLimit >= 15 || CPUControl._currentPowerLimit <= 17) minCPUClock = 1950;
+                        else if (CPUControl._currentPowerLimit >= 12 || CPUControl._currentPowerLimit <= 14) minCPUClock = 1750;
+                        else if (CPUControl._currentPowerLimit >= 8 || CPUControl._currentPowerLimit <= 11) minCPUClock = 1650;
+
+                        if (AdViewModel.MaxTDP >= 35) minTDP = AdViewModel.MaxTDP - 12;
+                        else if (AdViewModel.MaxTDP >= 25) minTDP = AdViewModel.MaxTDP - 9;
+                        else if (AdViewModel.MaxTDP > 21) minTDP = AdViewModel.MaxTDP - 7;
+                        else if (AdViewModel.MaxTDP >= 15 && AdViewModel.MaxTDP <= 20) minTDP = AdViewModel.MaxTDP - 6;
+                        else if (AdViewModel.MaxTDP >= 10) minTDP = AdViewModel.MaxTDP - 5;
+                        if (minTDP < 5) minTDP = 5;
+
+                        if (exists && AdViewModel.IsAdaptiveFPS == true || exists && AdViewModel.IsFPS == true)
+                        {
+                            if (averageFps != fpsLimit) CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp, fps, fpsLimit);
+
+                            if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock, fps, fpsLimit);
+                        }
+                        else
+                        {
+                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
+
+                            if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+                        }
                     }
                     else
                     {
-                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
 
                         if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
-
-                        string commandString = "";
-                        if (CPUControl.cpuCommand != lastCPU && Family.TYPE != Family.ProcessorType.Intel)
-                        {
-                            commandString = commandString + CPUControl.cpuCommand;
-                            lastCPU = CPUControl.cpuCommand;
-                        }
-
-                        if (iGPUControl.commmand != null && iGPUControl.commmand != "" && iGPU && iGPUControl.commmand != lastiGPU)
-                        {
-                            commandString = commandString + iGPUControl.commmand;
-                            lastiGPU = iGPUControl.commmand;
-                        }
-
-                        if (commandString != null && commandString != "" && Family.TYPE != Family.ProcessorType.Intel) RyzenAdj_To_UXTU.Translate(commandString);
                     }
                 }
-                else if (started && !tdp)
+            }
+            else if (started && !tdp)
+            {
+                GetSensor.closeSensor();
+                started = false;
+            }
+            i++;
+        }
+
+        private async void adaptiveTDP_iGPU()
+        {
+            try
+            {
+                if (tdp)
                 {
-                    GetSensor.closeSensor();
-                    started = false;
+                    string commandString = "";
+                    if (CPUControl.cpuCommand != lastCPU && Family.TYPE != Family.ProcessorType.Intel)
+                    {
+                        commandString = commandString + CPUControl.cpuCommand;
+                        lastCPU = CPUControl.cpuCommand;
+                    }
+
+                    if (iGPUControl.commmand != null && iGPUControl.commmand != "" && iGPU && iGPUControl.commmand != lastiGPU)
+                    {
+                        commandString = commandString + iGPUControl.commmand;
+                        lastiGPU = iGPUControl.commmand;
+                    }
+
+                    if (commandString != null && commandString != "" && Family.TYPE != Family.ProcessorType.Intel) RyzenAdj_To_UXTU.Translate(commandString);
                 }
+
             }
             catch (Exception ex) { System.Windows.MessageBox.Show(ex.Message); }
+        }
+
+        static double CalculateAverageFps(Queue<double> fpsQueue)
+        {
+            double sumFps = 0.0;
+
+            foreach (double fps in fpsQueue)
+            {
+                sumFps += fps;
+            }
+
+            return sumFps / fpsQueue.Count;
+        }
+
+        static bool IsProcessRunning(int processId)
+        {
+            Process[] processes = Process.GetProcesses();
+            foreach (Process process in processes)
+            {
+                if (process.Id == processId)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static int GetRadeonGPUCount()

@@ -1022,7 +1022,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         int runs = 0;
 
         static Queue<double> fpsQueue = new Queue<double>();
-        static int maxQueueSize = 32;
+        static int maxQueueSize = 12;
         static bool tdp, iGPU;
         static int minCPUClock = 2150;
         static int fps = 0;
@@ -1032,125 +1032,134 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         int numRuns = 0;
         private async void Sensor_Tick(object sender, EventArgs e)
         {
-            tdp = AdViewModel.IsAdaptiveTDP;
-            iGPU = AdViewModel.IsAdaptiveiGPU;
-            coreCount = AdViewModel.MaxCoreCount;
-
-            if (tdp)
+            try
             {
-                await Task.Run(() =>
-                {
-                    if (started == false) GetSensor.openSensor();
-                    //GetSensor.updateSensor();
-                    GetSensor.updateCPU = true;
-                    GetSensor.updateAMDGPU = true;
-                    if (Family.TYPE == Family.ProcessorType.Intel) CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Package");
-                    else CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Core");
-                    CPULoad = (int)GetSensor.getCPUInfo(SensorType.Load, "Total");
+                tdp = AdViewModel.IsAdaptiveTDP;
+                iGPU = AdViewModel.IsAdaptiveiGPU;
+                coreCount = AdViewModel.MaxCoreCount;
 
-                    int core = 1;
-                    do
+                if (tdp)
+                {
+                    await Task.Run(() =>
                     {
-                        if (core <= coreCount) CPUClock = CPUClock + (int)GetSensor.getCPUInfo(SensorType.Clock, $"Core #{core}");
-                        core++;
-                    }
-                    while (core <= coreCount);
+                        if (started == false) GetSensor.openSensor();
+                        //GetSensor.updateSensor();
+                        GetSensor.updateCPU = true;
+                        GetSensor.updateAMDGPU = true;
+                        if (Family.TYPE == Family.ProcessorType.Intel) CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Package");
+                        else CPUTemp = (int)GetSensor.getCPUInfo(SensorType.Temperature, "Core");
+                        CPULoad = (int)GetSensor.getCPUInfo(SensorType.Load, "Total");
 
-                    CPUClock = (int)(CPUClock / coreCount);
-
-                    if (CPULoad < (100 / coreCount) + 5) newMinCPUClock = minCPUClock + 500;
-                    else newMinCPUClock = minCPUClock;
-
-                    //MessageBox.Show(CPUClock.ToString());
-
-                    //CPUPower = (int)GetSensor.getCPUInfo(SensorType.Power, "Package");
-
-
-                });
-
-
-                if (runs < 4)
-                {
-                    CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                    CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                    CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
-                    runs++;
-                }
-                else
-                {
-
-                    if (RTSS.directoryRTSSExists() && RTSS.RTSSRunning())
-                    {
-                        bool exists = true;
-
-                        await Task.Run(() =>
+                        int core = 1;
+                        do
                         {
-                            var osdEntries = OSD.GetOSDEntries();
-
-                            fpsLimit = RTSS.fps;
-
-                            foreach (var flag in RunningGames.appFlags)
-                            {
-                                var appEntries = OSD.GetAppEntries(flag).Where(x => (x.Flags & AppFlags.MASK) != AppFlags.None).ToArray();
-                                foreach (var app in appEntries)
-                                {
-                                    fps = (int)app.InstantaneousFrames;
-                                }
-                            }
-
-                            // Enqueue the current FPS into the queue
-                            fpsQueue.Enqueue(fps);
-
-                            // If the queue size exceeds the maximum, dequeue the oldest value
-                            if (fpsQueue.Count > maxQueueSize)
-                            {
-                                fpsQueue.Dequeue();
-                            }
-
-                            // Calculate the average FPS over the time window
-                            averageFps = CalculateAverageFps(fpsQueue);
-
-                            if (averageFps == fpsLimit && fpsQueue.Count == (maxQueueSize - 1))
-                            {
-                                fpsLimit--;
-                                if (fpsQueue.Count == maxQueueSize) fpsQueue = new Queue<double>();
-                            }
-
-                            //exists = IsProcessRunning(appId);
-                        });
-
-                        if (i > 6)
-                        {
-                            GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
-                            GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
-                            GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
-                            i = -1;
+                            if (core <= coreCount) CPUClock = CPUClock + (int)GetSensor.getCPUInfo(SensorType.Clock, $"Core #{core}");
+                            core++;
                         }
+                        while (core <= coreCount);
 
-                        if (CPUControl._currentPowerLimit >= 45) minCPUClock = 3600;
-                        else if (CPUControl._currentPowerLimit >= 38) minCPUClock = 3200;
-                        else if (CPUControl._currentPowerLimit >= 33) minCPUClock = 3000;
-                        else if (CPUControl._currentPowerLimit >= 29 || CPUControl._currentPowerLimit <= 32) minCPUClock = 2800;
-                        else if (CPUControl._currentPowerLimit >= 26 || CPUControl._currentPowerLimit <= 28) minCPUClock = 2650;
-                        else if (CPUControl._currentPowerLimit >= 23 || CPUControl._currentPowerLimit <= 25) minCPUClock = 2500;
-                        else if (CPUControl._currentPowerLimit >= 21 || CPUControl._currentPowerLimit <= 22) minCPUClock = 2350;
-                        else if (CPUControl._currentPowerLimit >= 18 || CPUControl._currentPowerLimit <= 20) minCPUClock = 2200;
-                        else if (CPUControl._currentPowerLimit >= 15 || CPUControl._currentPowerLimit <= 17) minCPUClock = 1950;
-                        else if (CPUControl._currentPowerLimit >= 12 || CPUControl._currentPowerLimit <= 14) minCPUClock = 1750;
-                        else if (CPUControl._currentPowerLimit >= 8 || CPUControl._currentPowerLimit <= 11) minCPUClock = 1650;
+                        CPUClock = (int)(CPUClock / coreCount);
 
-                        if (AdViewModel.MaxTDP >= 35) minTDP = AdViewModel.MaxTDP - 12;
-                        else if (AdViewModel.MaxTDP >= 25) minTDP = AdViewModel.MaxTDP - 9;
-                        else if (AdViewModel.MaxTDP > 21) minTDP = AdViewModel.MaxTDP - 7;
-                        else if (AdViewModel.MaxTDP >= 15 && AdViewModel.MaxTDP <= 20) minTDP = AdViewModel.MaxTDP - 6;
-                        else if (AdViewModel.MaxTDP >= 10) minTDP = AdViewModel.MaxTDP - 5;
-                        if (minTDP < 5) minTDP = 5;
+                        if (CPULoad < (100 / coreCount) + 5) newMinCPUClock = minCPUClock + 500;
+                        else newMinCPUClock = minCPUClock;
 
-                        if (exists && AdViewModel.IsAdaptiveFPS == true || exists && AdViewModel.IsFPS == true)
+                        //MessageBox.Show(CPUClock.ToString());
+
+                        //CPUPower = (int)GetSensor.getCPUInfo(SensorType.Power, "Package");
+
+
+                    });
+
+
+                    if (runs < 4)
+                    {
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, (int)(AdViewModel.MaxTDP / 2), AdViewModel.MaxTemp);
+                        runs++;
+                    }
+                    else
+                    {
+
+                        if (RTSS.directoryRTSSExists() && RTSS.RTSSRunning())
                         {
-                            if (averageFps != fpsLimit) CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp, fps, fpsLimit);
+                            bool exists = true;
 
-                            if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock, fps, fpsLimit);
+                            await Task.Run(() =>
+                            {
+                                var osdEntries = OSD.GetOSDEntries();
+
+                                fpsLimit = RTSS.fps;
+
+                                foreach (var flag in RunningGames.appFlags)
+                                {
+                                    var appEntries = OSD.GetAppEntries(flag).Where(x => (x.Flags & AppFlags.MASK) != AppFlags.None).ToArray();
+                                    foreach (var app in appEntries)
+                                    {
+                                        fps = (int)app.InstantaneousFrames;
+                                    }
+                                }
+
+                                // Enqueue the current FPS into the queue
+                                fpsQueue.Enqueue(fps);
+
+                                // If the queue size exceeds the maximum, dequeue the oldest value
+                                if (fpsQueue.Count > maxQueueSize)
+                                {
+                                    fpsQueue.Dequeue();
+                                }
+
+                                // Calculate the average FPS over the time window
+                                averageFps = CalculateAverageFps(fpsQueue);
+
+                                if (averageFps == fpsLimit && fpsQueue.Count == (maxQueueSize - 1))
+                                {
+                                    fpsLimit--;
+                                    if (fpsQueue.Count == maxQueueSize) fpsQueue.Clear();
+                                }
+
+                                //exists = IsProcessRunning(appId);
+                            });
+
+                            if (i > 6)
+                            {
+                                GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
+                                GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
+                                GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
+                                i = -1;
+                            }
+
+                            if (CPUControl._currentPowerLimit >= 45) minCPUClock = 3600;
+                            else if (CPUControl._currentPowerLimit >= 38) minCPUClock = 3200;
+                            else if (CPUControl._currentPowerLimit >= 33) minCPUClock = 3000;
+                            else if (CPUControl._currentPowerLimit >= 29 || CPUControl._currentPowerLimit <= 32) minCPUClock = 2800;
+                            else if (CPUControl._currentPowerLimit >= 26 || CPUControl._currentPowerLimit <= 28) minCPUClock = 2650;
+                            else if (CPUControl._currentPowerLimit >= 23 || CPUControl._currentPowerLimit <= 25) minCPUClock = 2500;
+                            else if (CPUControl._currentPowerLimit >= 21 || CPUControl._currentPowerLimit <= 22) minCPUClock = 2350;
+                            else if (CPUControl._currentPowerLimit >= 18 || CPUControl._currentPowerLimit <= 20) minCPUClock = 2200;
+                            else if (CPUControl._currentPowerLimit >= 15 || CPUControl._currentPowerLimit <= 17) minCPUClock = 1950;
+                            else if (CPUControl._currentPowerLimit >= 12 || CPUControl._currentPowerLimit <= 14) minCPUClock = 1750;
+                            else if (CPUControl._currentPowerLimit >= 8 || CPUControl._currentPowerLimit <= 11) minCPUClock = 1650;
+
+                            if (AdViewModel.MaxTDP >= 35) minTDP = AdViewModel.MaxTDP - 12;
+                            else if (AdViewModel.MaxTDP >= 25) minTDP = AdViewModel.MaxTDP - 9;
+                            else if (AdViewModel.MaxTDP > 21) minTDP = AdViewModel.MaxTDP - 7;
+                            else if (AdViewModel.MaxTDP >= 15 && AdViewModel.MaxTDP <= 20) minTDP = AdViewModel.MaxTDP - 6;
+                            else if (AdViewModel.MaxTDP >= 10) minTDP = AdViewModel.MaxTDP - 5;
+                            if (minTDP < 5) minTDP = 5;
+
+                            if (exists && AdViewModel.IsAdaptiveFPS == true || exists && AdViewModel.IsFPS == true)
+                            {
+                                if (averageFps != fpsLimit) CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp, fps, fpsLimit);
+
+                                if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock, fps, fpsLimit);
+                            }
+                            else
+                            {
+                                CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
+
+                                if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+                            }
                         }
                         else
                         {
@@ -1159,20 +1168,15 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
                         }
                     }
-                    else
-                    {
-                        CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
-
-                        if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
-                    }
                 }
+                else if (started && !tdp)
+                {
+                    GetSensor.closeSensor();
+                    started = false;
+                }
+                i++;
             }
-            else if (started && !tdp)
-            {
-                GetSensor.closeSensor();
-                started = false;
-            }
-            i++;
+            catch (Exception ex) { }
         }
 
         private async void adaptiveTDP_iGPU()

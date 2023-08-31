@@ -32,6 +32,7 @@ namespace RyzenSmu
             if (Family.FAM == Family.RyzenFamily.Mendocino || Family.FAM == Family.RyzenFamily.Rembrandt || Family.FAM == Family.RyzenFamily.PhoenixPoint || Family.FAM == Family.RyzenFamily.StrixPoint) Socket_FT6_FP7_FP8();
             if (Family.FAM == Family.RyzenFamily.Raphael || Family.FAM == Family.RyzenFamily.DragonRange || Family.FAM == Family.RyzenFamily.GraniteRidge || Family.FAM == Family.RyzenFamily.FireRange) Socket_AM5_V1();
 
+            SMUCommands.RyzenAccess.Initialize();
         }
 
         private static void Socket_FT5_FP5_AM4()
@@ -324,7 +325,6 @@ namespace RyzenSmu
 
         public static void applySettings(string commandName, uint value)
         {
-            RyzenAccess.Initialize();
             uint[] Args = new uint[6];
             Args[0] = value;
 
@@ -346,8 +346,6 @@ namespace RyzenSmu
                 Task.WaitAll(tasks.ToArray());
             }
             else throw new ArgumentException($"Command '{commandName}' not found");
-
-            RyzenAccess.Deinitialize();
         }
     }
 
@@ -373,12 +371,11 @@ namespace RyzenSmu
             { Smu.Status.CMD_REJECTED_BUSY, "CMD Rejected Busy" }
         };
 
-        Ols RyzenNbAccesss;
+        Ols RyzenNbAccesss = new Ols();
 
         public Smu(bool EnableDebug)
         {
             ShowDebug = EnableDebug;
-            RyzenNbAccesss = new Ols();
 
             // Check WinRing0 status
             switch (RyzenNbAccesss.GetDllStatus())

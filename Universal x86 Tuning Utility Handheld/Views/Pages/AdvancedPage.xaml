@@ -7,7 +7,7 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="AdvancedPage"
     d:DataContext="{d:DesignInstance local:AdvancedPage, IsDesignTimeCreatable=False}"
-    d:DesignHeight="2000"
+    d:DesignHeight="3000"
     d:DesignWidth="520"
     d:Background="{DynamicResource ApplicationBackgroundBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -25,7 +25,11 @@
     </ui:UiPage.Resources>
 
     <Grid Margin="16.5,0,18,0" VerticalAlignment="Top">
-        <StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="1993*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.RowSpan="2">
             <ui:Card Margin="0,18,0,0" Padding="10,12,10,12">
                 <StackPanel Orientation="Horizontal">
                     <ui:SymbolIcon Symbol="{Binding ViewModel.BatteryIcon, Mode=OneWay}" FontSize="70">
@@ -91,7 +95,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.TempLimit,StringFormat={}{0}°C}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.TempLimit, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ViewModel.TempLimit, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown" SmallChange="1"/>
 
                     </Grid>
                 </ui:CardControl.Header>
@@ -143,7 +147,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.PowerLimit,StringFormat={}{0}W}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="60" Value="{Binding ViewModel.PowerLimit, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="60" Value="{Binding ViewModel.PowerLimit, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown" SmallChange="1"/>
 
                     </Grid>
                 </ui:CardControl.Header>
@@ -196,7 +200,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.MaxTemp,StringFormat={}{0}°C}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="100" Value="{Binding ViewModel.MaxTemp, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="100" Value="{Binding ViewModel.MaxTemp, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown" SmallChange="1"/>
 
                     </Grid>
                 </ui:CardControl.Header>
@@ -220,12 +224,12 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.MaxTDP,StringFormat={}{0}W}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="60" Value="{Binding ViewModel.MaxTDP, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="5" Maximum="60" Value="{Binding ViewModel.MaxTDP, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown" SmallChange="1"/>
 
                     </Grid>
                 </ui:CardControl.Header>
             </ui:CardControl>
-            <ui:CardControl
+            <ui:CardControl Visibility="{Binding ViewModel.IsAdaptiveTDP, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Name="ccSection431"
             IsEnabled="True" Margin="0,9,0,0" DockPanel.Dock="Top">
                 <ui:CardControl.Header>
@@ -241,7 +245,7 @@
                             Text="Adjust based on RTSS FPS limits" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsAdaptiveTDP, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
+                            <ui:ToggleSwitch IsChecked="{Binding ViewModel.IsAdaptivePerf, Mode=TwoWay}" Checked="ToggleSwitch_Checked" Unchecked="ToggleSwitch_Unchecked"></ui:ToggleSwitch>
                         </StackPanel>
 
                     </Grid>
@@ -369,7 +373,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.UnderVolt}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="-50" Maximum="0" Value="{Binding ViewModel.UnderVolt, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="-50" Maximum="0" Value="{Binding ViewModel.UnderVolt, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown" SmallChange="1"/>
 
                     </Grid>
                 </ui:CardControl.Header>
@@ -473,7 +477,7 @@
                             FontWeight="Medium"
                             Text="{Binding ViewModel.CoreCount,StringFormat={}{0} Cores}" />
                         </Grid>
-                        <Slider VerticalAlignment="Center" TickFrequency="25" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="2" SmallChange="1" LargeChange="1" Maximum="{Binding ViewModel.MaxCoreCount}" Value="{Binding ViewModel.CoreCount, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown"/>
+                        <Slider VerticalAlignment="Center" TickFrequency="25" Grid.Column="1" HorizontalAlignment="Stretch" Minimum="2" SmallChange="1" LargeChange="1" Maximum="{Binding ViewModel.MaxCoreCount}" Value="{Binding ViewModel.CoreCount, Mode=TwoWay}" Margin="12,0,0,0" ValueChanged="Slider_ValueChanged" TouchDown="SizeSlider_TouchDown" />
 
                     </Grid>
                 </ui:CardControl.Header>

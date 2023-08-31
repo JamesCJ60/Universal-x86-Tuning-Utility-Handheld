@@ -37,6 +37,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Services
         public bool _isAdaptiveiGPU { get; set; }
         public int _maxiGPU { get; set; }
         public int _miniGPU { get; set; }
+
+        public bool _isAdaptivePerf { get; set; }
     }
 
     public class AdaptivePresetManager

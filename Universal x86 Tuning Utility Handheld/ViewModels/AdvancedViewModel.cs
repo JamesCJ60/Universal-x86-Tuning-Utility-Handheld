@@ -96,6 +96,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         private bool _isAdaptiveTDP = false;
 
         [ObservableProperty]
+        private bool _isAdaptivePerf = false;
+
+        [ObservableProperty]
         private int _maxTemp = 95;
 
         [ObservableProperty]

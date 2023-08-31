@@ -2,6 +2,7 @@
 using LibreHardwareMonitor.Hardware.Cpu;
 using Microsoft.Win32;
 using RTSSSharedMemoryNET;
+using RyzenSmu;
 using SharpDX.XInput;
 using System;
 using System.Collections.Generic;
@@ -983,7 +984,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     AdViewModel.MaxTemp = myPreset._maxTemp;
                     AdViewModel.MiniGPU = myPreset._miniGPU;
                     AdViewModel.MaxiGPU = myPreset._maxiGPU;
-
+                    AdViewModel.IsAdaptivePerf = myPreset._isAdaptivePerf;
                 }
 
                 if (AdViewModel.CoreCount > AdViewModel.MaxCoreCount) AdViewModel.CoreCount = MaxCoreCount;
@@ -1015,6 +1016,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
         private void UiWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if(Family.TYPE != Family.ProcessorType.Intel) SMUCommands.RyzenAccess.Deinitialize();
             if (Fan_Control.isSupported) Fan_Control.disableFanControl();
         }
 
@@ -1022,7 +1024,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         int runs = 0;
 
         static Queue<double> fpsQueue = new Queue<double>();
-        static int maxQueueSize = 12;
+        static int maxQueueSize = 8;
         static bool tdp, iGPU;
         static int minCPUClock = 2150;
         static int fps = 0;
@@ -1030,6 +1032,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
         static int minTDP = -1;
         static double averageFps = 0;
         int numRuns = 0;
+        bool updateAdaptive = true;
         private async void Sensor_Tick(object sender, EventArgs e)
         {
             try
@@ -1038,7 +1041,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 iGPU = AdViewModel.IsAdaptiveiGPU;
                 coreCount = AdViewModel.MaxCoreCount;
 
-                if (tdp)
+                if (tdp && AdViewModel.IsAdaptivePerf)
                 {
                     await Task.Run(() =>
                     {
@@ -1066,8 +1069,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                         //MessageBox.Show(CPUClock.ToString());
 
                         //CPUPower = (int)GetSensor.getCPUInfo(SensorType.Power, "Package");
-
-
                     });
 
 
@@ -1148,24 +1149,36 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                             else if (AdViewModel.MaxTDP >= 10) minTDP = AdViewModel.MaxTDP - 5;
                             if (minTDP < 5) minTDP = 5;
 
-                            if (exists && AdViewModel.IsAdaptiveFPS == true || exists && AdViewModel.IsFPS == true)
+                            if (updateAdaptive || fps < fpsLimit)
                             {
-                                if (averageFps != fpsLimit) CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp, fps, fpsLimit);
+                                if (exists && AdViewModel.IsAdaptiveFPS == true || exists && AdViewModel.IsFPS == true)
+                                {
+                                    if (averageFps != fpsLimit) CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp, fps, fpsLimit);
 
-                                if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock, fps, fpsLimit);
+                                    if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock, fps, fpsLimit);
+                                }
+                                else
+                                {
+                                    CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
+
+                                    if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+                                }
+
+                                updateAdaptive = false;
                             }
-                            else
+                            else updateAdaptive = true;
+                        }
+                        else
+                        {
+                            if (updateAdaptive)
                             {
                                 CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
 
                                 if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+                                
+                                updateAdaptive = false;
                             }
-                        }
-                        else
-                        {
-                            CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
-
-                            if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+                            else updateAdaptive = true;
                         }
                     }
                 }

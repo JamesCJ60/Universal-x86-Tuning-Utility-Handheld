@@ -370,6 +370,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     _maxTemp = ViewModel.MaxTemp,
                     _maxiGPU = ViewModel.MaxiGPU,
                     _miniGPU = ViewModel.MiniGPU,
+                    _isAdaptivePerf = ViewModel.IsAdaptivePerf,
                 };
                 adaptivePresetManager.SavePreset(Global.presetName, preset);
             }

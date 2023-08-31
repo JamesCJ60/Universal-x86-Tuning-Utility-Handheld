@@ -1041,7 +1041,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                 iGPU = AdViewModel.IsAdaptiveiGPU;
                 coreCount = AdViewModel.MaxCoreCount;
 
-                if (tdp && AdViewModel.IsAdaptivePerf)
+                if (tdp)
                 {
                     await Task.Run(() =>
                     {
@@ -1082,7 +1082,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     else
                     {
 
-                        if (RTSS.directoryRTSSExists() && RTSS.RTSSRunning())
+                        if (RTSS.directoryRTSSExists() && RTSS.RTSSRunning() && AdViewModel.IsAdaptivePerf)
                         {
                             bool exists = true;
 

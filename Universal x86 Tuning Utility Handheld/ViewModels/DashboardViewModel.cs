@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
+using Universal_x86_Tuning_Utility_Handheld.Scripts;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
 using Universal_x86_Tuning_Utility_Handheld.Views.Windows;
@@ -76,11 +77,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.ViewModels
         {
         }
 
-        private void Functions(string parameter)
+        private async void Functions(string parameter)
         {
             switch (parameter)
             {
                 case "close":
+                    if (ControllerControl.isStarted)
+                    {
+                        ControllerControl.isStarted = false;
+                        ControllerControl.Stop();
+                    }
                     if (Fan_Control.isSupported) Fan_Control.disableFanControl();
                     Process.GetCurrentProcess().Kill();
                     return;

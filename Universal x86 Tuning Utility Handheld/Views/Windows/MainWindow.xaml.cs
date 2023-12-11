@@ -165,6 +165,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
             Fan_Control.UpdateAddresses();
+
+            ControllerControl.isStarted = true;
+            ControllerControl.SetUp();
         }
 
         int i = 0;
@@ -535,6 +538,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             base.OnClosed(e);
 
             // Make sure that closing this window will begin the process of closing the application.
+            isControllerEmu = false;
+            ControllerControl.isStarted = false;
+            ControllerControl.Stop();
             Application.Current.Shutdown();
             Environment.Exit(0);
         }
@@ -775,7 +781,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     break;
             }
         }
-
+        bool isControllerEmu = false;
         async void Mouse_Tick(object sender, EventArgs e)
         {
             if (Settings.Default.isMouse == true)

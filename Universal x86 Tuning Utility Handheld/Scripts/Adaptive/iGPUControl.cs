@@ -55,7 +55,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts.Adaptive
 
                     if ((int)averageLastGpuLoad <= 40 && _gpuLoad > 60 && _currentClock < 650 && cpuClocks >= minCPUClock && memClock > 550) newClock = (int)(maxClock / 1.6);
 
-                    if (fpsLimit > 0)
+                    if (fps > 0 && fpsLimit > 0)
                     {
                         if (_gpuLoad > 92 && _temperature <= MaxTemperature && memClock >= 550 && cpuClocks > minCPUClock || fps < fpsLimit)
                         {

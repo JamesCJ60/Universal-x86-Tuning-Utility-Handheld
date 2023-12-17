@@ -1093,7 +1093,15 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                     else
                     {
 
-                        if (RTSS.directoryRTSSExists() && RTSS.RTSSRunning() && AdViewModel.IsAdaptivePerf)
+                        if (i > 6)
+                        {
+                            GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
+                            GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
+                            GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
+                            i = -1;
+                        }
+
+                        if (RTSS.directoryRTSSExists() == true && RTSS.RTSSRunning() == true && AdViewModel.IsAdaptivePerf == true)
                         {
                             bool exists = true;
 
@@ -1133,14 +1141,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                                 //exists = IsProcessRunning(appId);
                             });
 
-                            if (i > 6)
-                            {
-                                GPULoad = ADLXBackend.GetGPUMetrics(0, 7);
-                                GPUClock = ADLXBackend.GetGPUMetrics(0, 0);
-                                GPUMemClock = ADLXBackend.GetGPUMetrics(0, 1);
-                                i = -1;
-                            }
-
                             if (CPUControl._currentPowerLimit >= 45) minCPUClock = 3600;
                             else if (CPUControl._currentPowerLimit >= 38) minCPUClock = 3200;
                             else if (CPUControl._currentPowerLimit >= 33) minCPUClock = 3000;
@@ -1172,20 +1172,20 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
                                 {
                                     CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
 
-                                    if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+                                    if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock, -1, -1);
                                 }
 
                                 updateAdaptive = false;
                             }
                             else updateAdaptive = true;
                         }
-                        else
+                        if(AdViewModel.IsAdaptivePerf == false)
                         {
                             if (updateAdaptive)
                             {
                                 CPUControl.UpdatePowerLimit(CPUTemp, CPULoad, AdViewModel.MaxTDP, minTDP, AdViewModel.MaxTemp);
 
-                                if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock);
+                                if (iGPU) iGPUControl.UpdateiGPUClock(AdViewModel.MaxiGPU, AdViewModel.MiniGPU, AdViewModel.MaxTemp, CPUPower, CPUTemp, GPUClock, GPULoad, GPUMemClock, CPUClock, newMinCPUClock, -1, -1);
                                 
                                 updateAdaptive = false;
                             }

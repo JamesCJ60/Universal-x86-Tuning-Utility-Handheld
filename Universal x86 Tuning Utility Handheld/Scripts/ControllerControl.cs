@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Scripts
@@ -21,7 +22,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts
 
         static HidHideControlService con = new HidHideControlService();
         static ViGEmClient viGEmClient = new ViGEmClient();
-        static IXbox360Controller targetController = viGEmClient.CreateXbox360Controller();
+        static IXbox360Controller targetController360 = viGEmClient.CreateXbox360Controller();
 
         public static bool isStarted = false;
 
@@ -30,7 +31,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts
             await Task.Run(() =>
             {
                 HideOriginalController(false);
-                targetController.Connect();
+                targetController360.Connect();
 
                 while (isStarted)
                 {
@@ -43,7 +44,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts
         public static void Stop()
         {
             HideOriginalController(true);
-            targetController.Disconnect();
+            targetController360.Disconnect();
             viGEmClient.Dispose();
         }
 
@@ -95,33 +96,36 @@ namespace Universal_x86_Tuning_Utility_Handheld.Scripts
         {
 
             Controller physicalController = new Controller(index);
-            State state = physicalController.GetState();
-
-            targetController.SetButtonState(Xbox360Button.Start, (state.Gamepad.Buttons & GamepadButtonFlags.Start) != 0);
-            targetController.SetButtonState(Xbox360Button.Back, (state.Gamepad.Buttons & GamepadButtonFlags.Back) != 0);
-
-            if (Global._appVis != Visibility.Visible)
+            if (physicalController.IsConnected)
             {
-                targetController.SetButtonState(Xbox360Button.A, (state.Gamepad.Buttons & GamepadButtonFlags.A) != 0);
-                targetController.SetButtonState(Xbox360Button.B, (state.Gamepad.Buttons & GamepadButtonFlags.B) != 0);
-                targetController.SetButtonState(Xbox360Button.X, (state.Gamepad.Buttons & GamepadButtonFlags.X) != 0);
-                targetController.SetButtonState(Xbox360Button.Y, (state.Gamepad.Buttons & GamepadButtonFlags.Y) != 0);
-                targetController.SetButtonState(Xbox360Button.LeftShoulder, (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) != 0);
-                targetController.SetButtonState(Xbox360Button.RightShoulder, (state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) != 0);
-                targetController.SetButtonState(Xbox360Button.LeftThumb, (state.Gamepad.Buttons & GamepadButtonFlags.LeftThumb) != 0);
-                targetController.SetButtonState(Xbox360Button.RightThumb, (state.Gamepad.Buttons & GamepadButtonFlags.RightThumb) != 0);
+                State state = physicalController.GetState();
 
-                targetController.SetButtonState(Xbox360Button.Up, (state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) != 0);
-                targetController.SetButtonState(Xbox360Button.Down, (state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) != 0);
-                targetController.SetButtonState(Xbox360Button.Left, (state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) != 0);
-                targetController.SetButtonState(Xbox360Button.Right, (state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) != 0);
+                targetController360.SetButtonState(Xbox360Button.Start, (state.Gamepad.Buttons & GamepadButtonFlags.Start) != 0);
+                targetController360.SetButtonState(Xbox360Button.Back, (state.Gamepad.Buttons & GamepadButtonFlags.Back) != 0);
 
-                targetController.SetAxisValue(0, state.Gamepad.LeftThumbX);
-                targetController.SetAxisValue(1, state.Gamepad.LeftThumbY);
-                targetController.SetAxisValue(2, state.Gamepad.RightThumbX);
-                targetController.SetAxisValue(3, state.Gamepad.RightThumbY);
-                targetController.SetSliderValue(0, state.Gamepad.LeftTrigger);
-                targetController.SetSliderValue(1, state.Gamepad.RightTrigger);
+                if (Global._appVis != Visibility.Visible)
+                {
+                    targetController360.SetButtonState(Xbox360Button.A, (state.Gamepad.Buttons & GamepadButtonFlags.A) != 0);
+                    targetController360.SetButtonState(Xbox360Button.B, (state.Gamepad.Buttons & GamepadButtonFlags.B) != 0);
+                    targetController360.SetButtonState(Xbox360Button.X, (state.Gamepad.Buttons & GamepadButtonFlags.X) != 0);
+                    targetController360.SetButtonState(Xbox360Button.Y, (state.Gamepad.Buttons & GamepadButtonFlags.Y) != 0);
+                    targetController360.SetButtonState(Xbox360Button.LeftShoulder, (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) != 0);
+                    targetController360.SetButtonState(Xbox360Button.RightShoulder, (state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) != 0);
+                    targetController360.SetButtonState(Xbox360Button.LeftThumb, (state.Gamepad.Buttons & GamepadButtonFlags.LeftThumb) != 0);
+                    targetController360.SetButtonState(Xbox360Button.RightThumb, (state.Gamepad.Buttons & GamepadButtonFlags.RightThumb) != 0);
+
+                    targetController360.SetButtonState(Xbox360Button.Up, (state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) != 0);
+                    targetController360.SetButtonState(Xbox360Button.Down, (state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) != 0);
+                    targetController360.SetButtonState(Xbox360Button.Left, (state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) != 0);
+                    targetController360.SetButtonState(Xbox360Button.Right, (state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) != 0);
+
+                    targetController360.SetAxisValue(0, state.Gamepad.LeftThumbX);
+                    targetController360.SetAxisValue(1, state.Gamepad.LeftThumbY);
+                    targetController360.SetAxisValue(2, state.Gamepad.RightThumbX);
+                    targetController360.SetAxisValue(3, state.Gamepad.RightThumbY);
+                    targetController360.SetSliderValue(0, state.Gamepad.LeftTrigger);
+                    targetController360.SetSliderValue(1, state.Gamepad.RightTrigger);
+                }
             }
         }
     }

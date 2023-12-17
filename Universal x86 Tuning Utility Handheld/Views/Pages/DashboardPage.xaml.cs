@@ -29,6 +29,10 @@ using System.Diagnostics;
 using Universal_x86_Tuning_Utility_Handheld.Services;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.AxHost;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using System.Collections.Generic;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -48,7 +52,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         private DispatcherTimer checkInput = new DispatcherTimer();
 
         private readonly XgMobileConnectionService xgMobileConnectionService;
-
+        bool isSetUp = false;
         public DashboardPage(ViewModels.DashboardViewModel viewModel)
         {
             ViewModel = viewModel;
@@ -64,10 +68,14 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             UpdateASUS();
             SetRecordingDeviceState(ViewModel.Recording);
 
+            isSetUp = true;
+
             normalBorderBrush = ccSection8.BorderBrush;
-            checkInput.Interval = TimeSpan.FromSeconds(0.12);
+            checkInput.Interval = TimeSpan.FromSeconds(0.5);
             checkInput.Tick += checkInput_Tick;
             checkInput.Start();
+
+            Controller_Event.buttonEvents.controllerInput += handleControllerInputs;
 
             if (Settings.Default.isASUS)
             {
@@ -95,209 +103,33 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                 else ViewModel.IsXgMobile = true;
 
                 eGPU = detected && connected ? 1 : 0;
-                if (eGPU == 0 && ViewModel.XgMobileTag != "Activate ROG XG Mobile") ViewModel.XgMobileTag = "Activate ROG XG Mobile"; 
-                if (eGPU == 1 && ViewModel.XgMobileTag != "Deactivate ROG XG Mobile")  ViewModel.XgMobileTag = "Deactivate ROG XG Mobile";
+                if (eGPU == 0 && ViewModel.XgMobileTag != "Activate ROG XG Mobile") ViewModel.XgMobileTag = "Activate ROG XG Mobile";
+                if (eGPU == 1 && ViewModel.XgMobileTag != "Deactivate ROG XG Mobile") ViewModel.XgMobileTag = "Deactivate ROG XG Mobile";
             }
             catch { }
         }
 
         int selected = 0, lastSelected = 0;
         bool wasMini = true;
+
         async void checkInput_Tick(object sender, EventArgs e)
         {
             if (Global._mainWindowNav.SelectedPageIndex == 0 && Global._appVis == Visibility.Visible && Global.shortCut == false)
             {
-                UpdateGUI(UserIndex.One);
-                UpdateGUI(UserIndex.Two);
-
-                var foregroundBrush = (Brush)Application.Current.FindResource("TextFillColorPrimaryBrush");
-                selectedBorderBrush = foregroundBrush;
-            }
-            else wasMini = true;
-        }
-
-        private static Controller controller;
-        private void UpdateGUI(UserIndex controllerNo)
-        {
-            try
-            {
                 if (wasMini)
                 {
+                    isSetUp = false;
                     getBrightness();
                     getVol();
+                    isSetUp = true;
                     getWifi();
                     getBluetooth();
                     wasMini = false;
                 }
 
-                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection51, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccMini, ccClose };
-                controller = new Controller(controllerNo);
-                bool connected = controller.IsConnected;
-
-                if (connected)
+                if (!Controller_Event.controller.IsConnected)
                 {
-                    //get controller state
-                    var state = controller.GetState();
-                    SharpDX.XInput.Gamepad gamepad = controller.GetState().Gamepad;
-                    float tx = gamepad.LeftThumbX;
-                    float ty = gamepad.LeftThumbY;
-
-                    ScrollViewer svMain = Global.FindVisualChild<ScrollViewer>(this);
-
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadUp) || ty > 18000)
-                    {
-                        if (selected > 0) selected--;
-                        else selected = 0;
-
-                        if (cards[selected].Visibility == Visibility.Collapsed)
-                        {
-                            do selected--;
-                            while (cards[selected].Visibility == Visibility.Collapsed);
-
-                            if (selected < 0) selected = lastSelected;
-                        }
-
-                        GeneralTransform transform = cards[selected].TransformToVisual(svMain);
-                        Point topPosition = transform.Transform(new Point(0, 0));
-                        Point bottomPosition = transform.Transform(new Point(0, cards[selected].ActualHeight));
-
-                        if (topPosition.Y < 0 || bottomPosition.Y > svMain.ActualHeight)
-                        {
-                            double targetOffset = svMain.VerticalOffset + topPosition.Y - 12;
-                            svMain.ScrollToVerticalOffset(targetOffset);
-                        }
-
-                        if (selected <= 1) svMain.ScrollToTop();
-                    }
-
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadDown) || ty < -18000)
-                    {
-                        if (selected < cards.Length - 1) selected++;
-                        else selected = cards.Length - 1;
-
-                        if (cards[selected].Visibility == Visibility.Collapsed)
-                        {
-                            do selected++;
-                            while (cards[selected].Visibility == Visibility.Collapsed);
-
-                            if (selected > cards.Length - 1) selected = lastSelected;
-                        }
-
-                        GeneralTransform transform = cards[selected].TransformToVisual(svMain);
-                        Point topPosition = transform.Transform(new Point(0, 0));
-                        Point bottomPosition = transform.Transform(new Point(0, cards[selected].ActualHeight));
-
-                        if (topPosition.Y < 0 || bottomPosition.Y > svMain.ActualHeight)
-                        {
-                            double targetOffset = svMain.VerticalOffset + bottomPosition.Y - svMain.ActualHeight + 12;
-                            svMain.ScrollToVerticalOffset(targetOffset);
-                        }
-
-                        if (selected >= cards.Length - 2) svMain.ScrollToBottom();
-                    }
-
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadLeft) || tx < -26000)
-                    {
-                        Slider slider = Global.FindVisualChild<Slider>(cards[selected]);
-
-                        if (slider != null)
-                        {
-                            int currentValue = (int)slider.Value;
-                            currentValue--;
-                            if (currentValue < slider.Minimum) currentValue = (int)slider.Minimum;
-                            if (currentValue > slider.Maximum) currentValue = (int)slider.Maximum;
-                            slider.Value = currentValue;
-                        }
-
-                        ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
-
-                        if (toggleSwitch != null)
-                        {
-                            toggleSwitch.IsChecked = false;
-                        }
-                    }
-
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.A))
-                    {
-                        ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
-
-                        if (toggleSwitch != null)
-                        {
-                            if(toggleSwitch.IsChecked == true) toggleSwitch.IsChecked = false;
-                            else toggleSwitch.IsChecked = true;
-                        }
-
-                        if (cards[selected] == ccSection11) new XG_Mobile_Prompt(false).Show();
-                        if (cards[selected] == ccMini) MainWindow.minimise = 1;
-                        if (cards[selected] == ccClose)
-                        {
-                            if (Fan_Control.isSupported) Fan_Control.disableFanControl();
-                            Process.GetCurrentProcess().Kill();
-                        }
-                    }
-
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadRight) || tx > 26000)
-                    {
-                        Slider slider = Global.FindVisualChild<Slider>(cards[selected]);
-
-                        if (slider != null)
-                        {
-                            int currentValue = (int)slider.Value;
-                            currentValue++;
-                            if (currentValue < slider.Minimum) currentValue = (int)slider.Minimum;
-                            if (currentValue > slider.Maximum) currentValue = (int)slider.Maximum;
-                            slider.Value = currentValue;
-                        }
-
-                        ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
-
-                        if (toggleSwitch != null)
-                        {
-                            toggleSwitch.IsChecked = true;
-                        }
-                    }
-
-                    if (selected != lastSelected && cards[selected].Visibility != Visibility.Collapsed && cards[selected].BorderBrush != selectedBorderBrush)
-                    {
-                        if (selected < 0) selected = 0;
-                        if (selected > cards.Length - 1) selected = cards.Length - 1;
-
-                        foreach (var card in cards)
-                        {
-                            card.BorderBrush = normalBorderBrush;
-                            card.BorderThickness = normalThickness;
-                        }
-
-                        cards[selected].BorderBrush = selectedBorderBrush;
-                        cards[selected].BorderThickness = selectedThickness;
-                        lastSelected = selected;
-                    }
-                    else if (selected == lastSelected && cards[selected].Visibility == Visibility.Collapsed)
-                    {
-                        if(selected > cards.Length / 2)
-                        {
-                            if (cards[selected].Visibility == Visibility.Collapsed)
-                            {
-                                do selected--;
-                                while (cards[selected].Visibility == Visibility.Collapsed);
-
-                                if (selected < 0) selected = lastSelected;
-                            }
-                        }
-                        else
-                        {
-                            if (cards[selected].Visibility == Visibility.Collapsed)
-                            {
-                                do selected++;
-                                while (cards[selected].Visibility == Visibility.Collapsed);
-
-                                if (selected > cards.Length - 1) selected = lastSelected;
-                            }
-                        }
-                    }
-                }
-                else if (controllerNo == UserIndex.One && !connected)
-                {
+                    CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection51, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccMini, ccClose };
                     foreach (var card in cards)
                     {
                         card.BorderBrush = normalBorderBrush;
@@ -305,7 +137,172 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     }
                     lastSelected = -1;
                 }
-            } catch { }
+
+                var foregroundBrush = (Brush)Application.Current.FindResource("TextFillColorPrimaryBrush");
+                selectedBorderBrush = foregroundBrush;
+            }
+            else wasMini = true;
+        }
+
+        private void handleControllerInputs(object sender, EventArgs e)
+        {
+            if (Global._mainWindowNav.SelectedPageIndex == 0 && Global._appVis == Visibility.Visible && Global.shortCut == false)
+            {
+                CardControl[] cards = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection5, ccSection51, ccSection6, ccSection7, ccSection8, ccSection9, ccSection10, ccSection11, ccSection12, ccMini, ccClose };
+                ScrollViewer svMain = Global.FindVisualChild<ScrollViewer>(this);
+                Universal_x86_Tuning_Utility_Handheld.Scripts.Misc.controllerInputEventArgs args = (Universal_x86_Tuning_Utility_Handheld.Scripts.Misc.controllerInputEventArgs)e;
+
+                if (args.Action == "Up")
+                {
+                    if (selected > 0) selected--;
+                    else selected = 0;
+
+                    if (cards[selected].Visibility == Visibility.Collapsed)
+                    {
+                        do selected--;
+                        while (cards[selected].Visibility == Visibility.Collapsed);
+
+                        if (selected < 0) selected = lastSelected;
+                    }
+
+                    GeneralTransform transform = cards[selected].TransformToVisual(svMain);
+                    Point topPosition = transform.Transform(new Point(0, 0));
+                    Point bottomPosition = transform.Transform(new Point(0, cards[selected].ActualHeight));
+
+                    if (topPosition.Y < 0 || bottomPosition.Y > svMain.ActualHeight)
+                    {
+                        double targetOffset = svMain.VerticalOffset + topPosition.Y - 12;
+                        svMain.ScrollToVerticalOffset(targetOffset);
+                    }
+
+                    if (selected <= 1) svMain.ScrollToTop();
+                }
+
+                if (args.Action == "Down")
+                {
+                    if (selected < cards.Length - 1) selected++;
+                    else selected = cards.Length - 1;
+
+                    if (cards[selected].Visibility == Visibility.Collapsed)
+                    {
+                        do selected++;
+                        while (cards[selected].Visibility == Visibility.Collapsed);
+
+                        if (selected > cards.Length - 1) selected = lastSelected;
+                    }
+
+                    GeneralTransform transform = cards[selected].TransformToVisual(svMain);
+                    Point topPosition = transform.Transform(new Point(0, 0));
+                    Point bottomPosition = transform.Transform(new Point(0, cards[selected].ActualHeight));
+
+                    if (topPosition.Y < 0 || bottomPosition.Y > svMain.ActualHeight)
+                    {
+                        double targetOffset = svMain.VerticalOffset + bottomPosition.Y - svMain.ActualHeight + 12;
+                        svMain.ScrollToVerticalOffset(targetOffset);
+                    }
+
+                    if (selected >= cards.Length - 2) svMain.ScrollToBottom();
+                }
+
+                if (args.Action == "Left")
+                {
+                    Slider slider = Global.FindVisualChild<Slider>(cards[selected]);
+
+                    if (slider != null)
+                    {
+                        int currentValue = (int)slider.Value;
+                        currentValue--;
+                        if (currentValue < slider.Minimum) currentValue = (int)slider.Minimum;
+                        if (currentValue > slider.Maximum) currentValue = (int)slider.Maximum;
+                        slider.Value = currentValue;
+                    }
+
+                    ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
+
+                    if (toggleSwitch != null)
+                    {
+                        toggleSwitch.IsChecked = false;
+                    }
+                }
+
+                if (args.Action == "Right")
+                {
+                    Slider slider = Global.FindVisualChild<Slider>(cards[selected]);
+
+                    if (slider != null)
+                    {
+                        int currentValue = (int)slider.Value;
+                        currentValue++;
+                        if (currentValue < slider.Minimum) currentValue = (int)slider.Minimum;
+                        if (currentValue > slider.Maximum) currentValue = (int)slider.Maximum;
+                        slider.Value = currentValue;
+                    }
+
+                    ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
+
+                    if (toggleSwitch != null)
+                    {
+                        toggleSwitch.IsChecked = true;
+                    }
+                }
+
+                if (args.Action == "A")
+                {
+                    ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
+
+                    if (toggleSwitch != null)
+                    {
+                        if (toggleSwitch.IsChecked == true) toggleSwitch.IsChecked = false;
+                        else toggleSwitch.IsChecked = true;
+                    }
+
+                    if (cards[selected] == ccSection11) new XG_Mobile_Prompt(false).Show();
+                    if (cards[selected] == ccMini) MainWindow.minimise = 1;
+                    if (cards[selected] == ccClose)
+                    {
+                        if (Fan_Control.isSupported) Fan_Control.disableFanControl();
+                        Process.GetCurrentProcess().Kill();
+                    }
+                }
+                if (selected != lastSelected && cards[selected].Visibility != Visibility.Collapsed && cards[selected].BorderBrush != selectedBorderBrush)
+                {
+                    if (selected < 0) selected = 0;
+                    if (selected > cards.Length - 1) selected = cards.Length - 1;
+
+                    foreach (var card in cards)
+                    {
+                        card.BorderBrush = normalBorderBrush;
+                        card.BorderThickness = normalThickness;
+                    }
+
+                    cards[selected].BorderBrush = selectedBorderBrush;
+                    cards[selected].BorderThickness = selectedThickness;
+                    lastSelected = selected;
+                }
+                else if (selected == lastSelected && cards[selected].Visibility == Visibility.Collapsed)
+                {
+                    if (selected > cards.Length / 2)
+                    {
+                        if (cards[selected].Visibility == Visibility.Collapsed)
+                        {
+                            do selected--;
+                            while (cards[selected].Visibility == Visibility.Collapsed);
+
+                            if (selected < 0) selected = lastSelected;
+                        }
+                    }
+                    else
+                    {
+                        if (cards[selected].Visibility == Visibility.Collapsed)
+                        {
+                            do selected++;
+                            while (cards[selected].Visibility == Visibility.Collapsed);
+
+                            if (selected > cards.Length - 1) selected = lastSelected;
+                        }
+                    }
+                }
+            }
         }
 
         private void ToggleSwitch_Checked(object sender, RoutedEventArgs e)
@@ -316,7 +313,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
             if (ViewModel.IsXgMobile)
             {
-                if(ViewModel.IsXgMobileLED) xgMobileConnectionService.EnableXgMobileLight();
+                if (ViewModel.IsXgMobileLED) xgMobileConnectionService.EnableXgMobileLight();
                 else xgMobileConnectionService.DisableXgMobileLight();
             }
 
@@ -419,7 +416,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     if (Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.PerformanceMode, ASUSWmi.PerformanceTurbo);
                 }
 
-               if(ViewModel.ChargeLimit >= 50 && Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.BatteryLimit, ViewModel.ChargeLimit);
+                if (ViewModel.ChargeLimit >= 50 && Settings.Default.isASUS) App.wmi.DeviceSet(ASUSWmi.BatteryLimit, ViewModel.ChargeLimit);
             });
 
             Settings.Default.acMode = ViewModel.AcMode;
@@ -441,7 +438,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         device.AudioEndpointVolume.Mute = mute;
                     }
 
-                    if(mute == true) ViewModel.MicIcon = SymbolRegular.MicOff24;
+                    if (mute == true) ViewModel.MicIcon = SymbolRegular.MicOff24;
                     else ViewModel.MicIcon = SymbolRegular.Mic24;
                 });
             }
@@ -450,6 +447,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
         public async void updateBrightness(int newBirghtness)
         {
+            if (isSetUp)
             try
             {
                 await Task.Run(() =>
@@ -474,7 +472,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
         public async void updateVolume(int newVolume)
         {
-            try
+            if (isSetUp)
+                try
             {
                 await Task.Run(() =>
                 {

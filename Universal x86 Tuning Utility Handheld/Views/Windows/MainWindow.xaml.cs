@@ -110,6 +110,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             ApplyController();
             _navigationService = navigationService;
 
+            Controller_Event.start_Controller_Management();
+
             if (Settings.Default.isASUS == true) App.wmi.SubscribeToEvents(WatcherEventArrived);
 
             UpdatePreset("Default");
@@ -166,8 +168,8 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
 
             Fan_Control.UpdateAddresses();
 
-            ControllerControl.isStarted = true;
-            ControllerControl.SetUp();
+            //ControllerControl.isStarted = true;
+            //ControllerControl.SetUp();
         }
 
         int i = 0;
@@ -182,7 +184,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             }
             else
             {
-                if (Visibility == Visibility.Visible && update >= 2)
+                if (Visibility == Visibility.Visible && update >= 4)
                 {
                     UpdateInfo();
                     GetWifi();
@@ -592,6 +594,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Windows
             //        controller.SetVibration(vibration);
             //    }
             //}
+
+
+
         }
 
         private void UiWindow_StateChanged(object sender, EventArgs e)

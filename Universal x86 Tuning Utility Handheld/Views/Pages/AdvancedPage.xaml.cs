@@ -29,6 +29,9 @@ using Wpf.Ui.Mvvm.Interfaces;
 using Universal_x86_Tuning_Utility_Handheld.Services;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Universal_x86_Tuning_Utility.Scripts;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
+using System.Diagnostics;
+using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {
@@ -47,6 +50,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         }
         private DispatcherTimer checkInput = new DispatcherTimer();
         private DispatcherTimer updateGUI = new DispatcherTimer();
+
+        private static CardControl[] cards = new CardControl[1];
+
         public AdvancedPage(ViewModels.AdvancedViewModel viewModel)
         {
             ViewModel = viewModel;
@@ -57,7 +63,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 
             normalBorderBrush = ccSection12.BorderBrush;
 
-            checkInput.Interval = TimeSpan.FromSeconds(0.12);
+            checkInput.Interval = TimeSpan.FromSeconds(0.5);
             checkInput.Tick += checkInput_Tick;
             checkInput.Start();
 
@@ -69,6 +75,27 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             ViewModel.BatteryIcon = Global.battery;
 
             Garbage.Garbage_Collect();
+
+            Controller_Event.buttonEvents.controllerInput += handleControllerInputs;
+
+            if (Family.TYPE == Family.ProcessorType.Amd_Apu)
+            {
+                CardControl[] cardsTemp = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection431, ccSection44, ccSection45, ccSection46, ccSection5, ccSection6, ccSection7, ccSection8, ccSection81, ccSection82, ccSection9, ccSection10, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12, ccSection13, ccSection14 };
+                cards = cardsTemp;
+            }
+            if (Family.TYPE == Family.ProcessorType.Intel)
+            {
+                ccSection1.Visibility = Visibility.Collapsed;
+                ccSection2.Visibility = Visibility.Collapsed;
+                ccSection5.Visibility = Visibility.Collapsed;
+                ccSection9.Visibility = Visibility.Collapsed;
+                ccSection13.Visibility = Visibility.Collapsed;
+                CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection431, ccSection44, ccSection45, ccSection46, ccSection7, ccSection8, ccSection81, ccSection82, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12 };
+                cards = cardsTemp;
+            }
+
+            if (ViewModel.IsAdaptiveTDP == true) { if (Family.FAM == Family.RyzenFamily.Renoir || Family.FAM == Family.RyzenFamily.Mendocino || Family.FAM == Family.RyzenFamily.Rembrandt || Family.FAM == Family.RyzenFamily.PhoenixPoint) ViewModel.ShowAdaptiveiGPU = true; }
+            else ViewModel.ShowAdaptiveiGPU = false;
         }
 
         int selected = 0, lastSelected = -1;
@@ -77,8 +104,30 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
         {
             if (Global._mainWindowNav.SelectedPageIndex == 1 && Global._appVis == Visibility.Visible && Global.shortCut == false)
             {
-                UpdateGUI(UserIndex.One);
-                UpdateGUI(UserIndex.Two);
+                if (!Controller_Event.controller.IsConnected)
+                {
+                    foreach (var card in cards)
+                    {
+                        card.BorderBrush = normalBorderBrush;
+                        card.BorderThickness = normalThickness;
+                    }
+                    lastSelected = -1;
+                }
+                else
+                {
+                    if (cards[cards.Length - 1].Visibility == Visibility.Visible)
+                    {
+                        cards[cards.Length - 2].Margin = new Thickness(0, 9, 0, 0);
+                        cards[cards.Length - 1].Margin = new Thickness(0, 9, 0, 18);
+                    }
+                    else
+                    {
+                        cards[cards.Length - 2].Margin = new Thickness(0, 9, 0, 18);
+                        cards[cards.Length - 1].Margin = new Thickness(0, 9, 0, 0);
+                    }
+                }
+
+                if (ViewModel.IsAdaptiveTDP == false && ViewModel.IsAdaptiveiGPU == true) ViewModel.IsAdaptiveiGPU = false;
 
                 var foregroundBrush = (Brush)System.Windows.Application.Current.FindResource("TextFillColorPrimaryBrush");
                 selectedBorderBrush = foregroundBrush;
@@ -91,59 +140,16 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             ViewModel.BatteryIcon = Global.battery;
         }
 
-        private static Controller controller;
-        private void UpdateGUI(UserIndex controllerNo)
+        private void handleControllerInputs(object sender, EventArgs e)
         {
             try
             {
-                CardControl[] cards = new CardControl[1];
-
-                if (Family.TYPE == Family.ProcessorType.Amd_Apu)
+                if (Global._mainWindowNav.SelectedPageIndex == 1 && Global._appVis == Visibility.Visible && Global.shortCut == false)
                 {
-                    CardControl[] cardsTemp = { ccSection1, ccSection2, ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection431, ccSection44, ccSection45, ccSection46, ccSection5, ccSection6, ccSection7, ccSection8, ccSection81, ccSection82, ccSection9, ccSection10, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12, ccSection13, ccSection14 };
-                    cards = cardsTemp;
-                }
-                if (Family.TYPE == Family.ProcessorType.Intel)
-                {
-                    ccSection1.Visibility = Visibility.Collapsed;
-                    ccSection2.Visibility = Visibility.Collapsed;
-                    ccSection5.Visibility = Visibility.Collapsed;
-                    ccSection9.Visibility = Visibility.Collapsed;
-                    ccSection13.Visibility = Visibility.Collapsed;
-                    CardControl[] cardsTemp = { ccSection3, ccSection4, ccSection41, ccSection42, ccSection43, ccSection431, ccSection44, ccSection45, ccSection46, ccSection7, ccSection8, ccSection81, ccSection82, ccSection101, ccSection102, ccSection103, ccSection104, ccSection105, ccSection11, ccSection12 };
-                    cards = cardsTemp;
-                }
-
-                if (ViewModel.IsAdaptiveTDP == false && ViewModel.IsAdaptiveiGPU == true) ViewModel.IsAdaptiveiGPU = false;
-
-                if (ViewModel.IsAdaptiveTDP == true) { if (Family.FAM == Family.RyzenFamily.Renoir || Family.FAM == Family.RyzenFamily.Mendocino || Family.FAM == Family.RyzenFamily.Rembrandt || Family.FAM == Family.RyzenFamily.PhoenixPoint) ViewModel.ShowAdaptiveiGPU = true; }
-                else ViewModel.ShowAdaptiveiGPU = false;
-
-                controller = new Controller(controllerNo);
-                bool connected = controller.IsConnected;
-
-                if (cards[cards.Length - 1].Visibility == Visibility.Visible)
-                {
-                    cards[cards.Length - 2].Margin = new Thickness(0, 9, 0, 0);
-                    cards[cards.Length - 1].Margin = new Thickness(0, 9, 0, 18);
-                }
-                else
-                {
-                    cards[cards.Length - 2].Margin = new Thickness(0, 9, 0, 18);
-                    cards[cards.Length - 1].Margin = new Thickness(0, 9, 0, 0);
-                }
-
-                if (connected)
-                {
-                    //get controller state
-                    var state = controller.GetState();
-                    SharpDX.XInput.Gamepad gamepad = controller.GetState().Gamepad;
-                    float tx = gamepad.LeftThumbX;
-                    float ty = gamepad.LeftThumbY;
-
                     ScrollViewer svMain = Global.FindVisualChild<ScrollViewer>(this);
-
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadUp) || ty > 18000)
+                    Universal_x86_Tuning_Utility_Handheld.Scripts.Misc.controllerInputEventArgs args = (Universal_x86_Tuning_Utility_Handheld.Scripts.Misc.controllerInputEventArgs)e;
+                    if (ViewModel.IsAdaptiveTDP == false && ViewModel.IsAdaptiveiGPU == true) ViewModel.IsAdaptiveiGPU = false;
+                    if (args.Action == "Up")
                     {
                         if (selected > 0) selected--;
                         else selected = 0;
@@ -169,7 +175,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         if (selected <= 1) svMain.ScrollToTop();
                     }
 
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadDown) || ty < -18000)
+                    if (args.Action == "Down")
                     {
                         if (selected < cards.Length - 1) selected++;
                         else selected = cards.Length - 1;
@@ -177,7 +183,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         if (cards[selected].Visibility == Visibility.Collapsed)
                         {
                             do selected++;
-                            while (cards[selected].Visibility == Visibility.Collapsed);
+                            while (cards[selected].Visibility == Visibility.Collapsed && selected > cards.Length - 2);
 
                             if (selected > cards.Length - 1) selected = lastSelected;
                         }
@@ -196,7 +202,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         if (selected >= cards.Length - 2) svMain.ScrollToBottom();
                     }
 
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadLeft) || tx < -26000)
+                    if (args.Action == "Left")
                     {
                         Slider slider = Global.FindVisualChild<Slider>(cards[selected]);
 
@@ -219,18 +225,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         }
                     }
 
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.A))
-                    {
-                        ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
-
-                        if (toggleSwitch != null)
-                        {
-                            if (toggleSwitch.IsChecked == true) toggleSwitch.IsChecked = false;
-                            else toggleSwitch.IsChecked = true;
-                        }
-                    }
-
-                    if (state.Gamepad.Buttons.HasFlag(GamepadButtonFlags.DPadRight) || tx > 26000)
+                    if (args.Action == "Right")
                     {
                         Slider slider = Global.FindVisualChild<Slider>(cards[selected]);
 
@@ -250,6 +245,17 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         if (toggleSwitch != null)
                         {
                             toggleSwitch.IsChecked = true;
+                        }
+                    }
+
+                    if (args.Action == "A")
+                    {
+                        ToggleSwitch toggleSwitch = Global.FindVisualChild<ToggleSwitch>(cards[selected]);
+
+                        if (toggleSwitch != null)
+                        {
+                            if (toggleSwitch.IsChecked == true) toggleSwitch.IsChecked = false;
+                            else toggleSwitch.IsChecked = true;
                         }
                     }
 
@@ -292,18 +298,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         }
                     }
                 }
-                else if (controllerNo == UserIndex.One && !connected)
-                {
-                    foreach (var card in cards)
-                    {
-                        card.BorderBrush = normalBorderBrush;
-                        card.BorderThickness = normalThickness;
-                    }
+            } catch {
 
-                    lastSelected = -1;
-                }
             }
-            catch { }
         }
 
         private void ToggleSwitch_Checked(object sender, RoutedEventArgs e)

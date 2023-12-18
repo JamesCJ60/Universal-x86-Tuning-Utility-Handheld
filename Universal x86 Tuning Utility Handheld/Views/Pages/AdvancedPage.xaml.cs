@@ -149,6 +149,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                     ScrollViewer svMain = Global.FindVisualChild<ScrollViewer>(this);
                     Universal_x86_Tuning_Utility_Handheld.Scripts.Misc.controllerInputEventArgs args = (Universal_x86_Tuning_Utility_Handheld.Scripts.Misc.controllerInputEventArgs)e;
                     if (ViewModel.IsAdaptiveTDP == false && ViewModel.IsAdaptiveiGPU == true) ViewModel.IsAdaptiveiGPU = false;
+
                     if (args.Action == "Up")
                     {
                         if (selected > 0) selected--;
@@ -183,7 +184,7 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         if (cards[selected].Visibility == Visibility.Collapsed)
                         {
                             do selected++;
-                            while (cards[selected].Visibility == Visibility.Collapsed && selected > cards.Length - 2);
+                            while (cards[selected].Visibility == Visibility.Collapsed);
 
                             if (selected > cards.Length - 1) selected = lastSelected;
                         }
@@ -197,7 +198,6 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                             double targetOffset = svMain.VerticalOffset + bottomPosition.Y - svMain.ActualHeight + 12;
                             svMain.ScrollToVerticalOffset(targetOffset);
                         }
-
 
                         if (selected >= cards.Length - 2) svMain.ScrollToBottom();
                     }
@@ -298,7 +298,9 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
                         }
                     }
                 }
-            } catch {
+            }
+            catch
+            {
 
             }
         }

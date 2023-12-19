@@ -1,0 +1,313 @@
+﻿<Page x:Class="Universal_x86_Tuning_Utility_Handheld.Views.Pages.glGUI1"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Universal_x86_Tuning_Utility_Handheld.Views.Pages"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      mc:Ignorable="d" 
+      d:DesignHeight="720" d:DesignWidth="1280"
+      Title="PS_Vita_Like_GUI" Loaded="Page_Loaded" SnapsToDevicePixels="True" UseLayoutRounding="True">
+
+    <Page.Resources>
+        <ImageBrush x:Key="VignetteBrush" ImageSource="https://forum.affinity.serif.com/uploads/monthly_2020_04/595FAD8C-E33F-4E12-A974-9B2D043A2BA3.png.eac9bd8cac80378692e4115553790af8.png" Stretch="Fill" />
+    </Page.Resources>
+
+    <Grid Background="Transparent" SnapsToDevicePixels="True" UseLayoutRounding="True">
+        <DockPanel ZIndex="0" LastChildFill="True" Margin="-18" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Image Name="GameBG" Stretch="UniformToFill" Source="https://images6.alphacoders.com/116/1160043.jpg"></Image>
+        </DockPanel>
+        <DockPanel ZIndex="1" LastChildFill="True">
+            <Border x:Name="vignetteBorder" Background="{StaticResource VignetteBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-16"/>
+        </DockPanel>
+        <DockPanel ZIndex="3" LastChildFill="False" Margin="0,16,24,0">
+            <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+                <ui:SymbolIcon VerticalAlignment="Center" Name="siWifi" FontSize="37" Margin="0,0,24,0" Foreground="White">
+                    <ui:SymbolIcon.Effect>
+                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                    </ui:SymbolIcon.Effect>
+                </ui:SymbolIcon>
+                <ui:SymbolIcon VerticalAlignment="Center" Name="siClock" Symbol="Clock24" FontSize="37" Margin="0,0,3,0" Foreground="White">
+                    <ui:SymbolIcon.Effect>
+                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                    </ui:SymbolIcon.Effect>
+                </ui:SymbolIcon>
+                <TextBlock VerticalAlignment="Center" Margin="0,-1.9,24,0" Name="tbTime" FontSize="28" Foreground="White">
+                    <TextBlock.Effect>
+                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+                <ui:SymbolIcon VerticalAlignment="Center" Name="siBattery" FontSize="37" Foreground="White">
+                    <ui:SymbolIcon.Effect>
+                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                    </ui:SymbolIcon.Effect>
+                </ui:SymbolIcon>
+                <TextBlock VerticalAlignment="Center" Margin="6,-2,0,0" Name="tbBattery" FontSize="28" Foreground="White">
+                    <TextBlock.Effect>
+                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+            </StackPanel>
+        </DockPanel>
+        <DockPanel ZIndex="3" LastChildFill="False" Margin="16,-20,16,-20">
+            <ListBox Background="Transparent" DockPanel.Dock="Left" Width="32" VerticalAlignment="Center" Name="lbMenus" BorderBrush="Transparent">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate x:Name="GameBordebr">
+                                            <Border Width="16" Height="16" CornerRadius="999" BorderThickness="0" Background="White" BorderBrush="Transparent" Margin="0,12,0,12">
+                                                <Border.Effect>
+                                                    <DropShadowEffect Color="White" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                                                </Border.Effect>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="16" Height="16" CornerRadius="999" BorderThickness="0" Background="Gray" BorderBrush="Transparent" Margin="0,12,0,12">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                            </Border.Effect>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <Grid SnapsToDevicePixels="True" UseLayoutRounding="True" Panel.ZIndex="2" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <ListBox Name="myListBox" Grid.Row="0" SelectionChanged="myListBox_SelectionChanged" BorderBrush="Transparent" Background="Transparent" SnapsToDevicePixels="True" UseLayoutRounding="True" >
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate x:Name="GameBorder">
+                                            <DockPanel Margin="{Binding newMargin}" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                                                <TextBlock UseLayoutRounding="True" SnapsToDevicePixels="True" TextAlignment="Center" DockPanel.Dock="Bottom" Text="{Binding Name}" MaxWidth="{Binding MaxWidth}" Foreground="White" FontSize="{Binding FontSize}" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                                    <TextBlock.Effect>
+                                                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                                                    </TextBlock.Effect>
+                                                </TextBlock>
+                                                <Border UseLayoutRounding="True" SnapsToDevicePixels="True" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Center" CornerRadius="999" BorderBrush="LightBlue" BorderThickness="4" Margin="0,12,0,8">
+                                                    <Border.Background>
+                                                        <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                                    </Border.Background>
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                                                    </Border.Effect>
+                                                </Border>
+                                            </DockPanel>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="{Binding newMargin}" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                            <TextBlock UseLayoutRounding="True" SnapsToDevicePixels="True" TextAlignment="Center" DockPanel.Dock="Bottom" Text="{Binding Name}" MaxWidth="{Binding MaxWidth}" Foreground="White" FontSize="{Binding FontSize}" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                            <Border UseLayoutRounding="True" SnapsToDevicePixels="True" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Center" CornerRadius="999" BorderBrush="Transparent" BorderThickness="4" Margin="0,12,0,8">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                </Border.Background>
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                                </Border.Effect>
+                            </Border>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ListBox Name="myListBox2" Grid.Row="1" SelectionChanged="myListBox2_SelectionChanged" BorderBrush="Transparent"  Background="Transparent" SnapsToDevicePixels="True" UseLayoutRounding="True" >
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate x:Name="GameBorder">
+                                            <DockPanel Margin="{Binding newMargin}" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                                                <TextBlock UseLayoutRounding="True" SnapsToDevicePixels="True" TextAlignment="Center" DockPanel.Dock="Bottom" Text="{Binding Name}" MaxWidth="{Binding MaxWidth}" Foreground="White" FontSize="{Binding FontSize}" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                                    <TextBlock.Effect>
+                                                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                                                    </TextBlock.Effect>
+                                                </TextBlock>
+                                                <Border UseLayoutRounding="True" SnapsToDevicePixels="True" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Center" CornerRadius="999" BorderBrush="LightBlue" BorderThickness="4" Margin="0,12,0,8">
+                                                    <Border.Background>
+                                                        <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                                    </Border.Background>
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                                                    </Border.Effect>
+                                                </Border>
+                                            </DockPanel>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="{Binding newMargin}" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                            <TextBlock UseLayoutRounding="True" SnapsToDevicePixels="True" TextAlignment="Center" DockPanel.Dock="Bottom" Text="{Binding Name}" MaxWidth="{Binding MaxWidth}" Foreground="White" FontSize="{Binding FontSize}" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                            <Border UseLayoutRounding="True" SnapsToDevicePixels="True" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Center" CornerRadius="999" BorderBrush="Transparent" BorderThickness="4" Margin="0,12,0,8">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                </Border.Background>
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                                </Border.Effect>
+                            </Border>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ListBox Name="myListBox3" Grid.Row="2" SelectionChanged="myListBox3_SelectionChanged" BorderBrush="Transparent"  Background="Transparent" SnapsToDevicePixels="True" UseLayoutRounding="True" >
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate x:Name="GameBorder">
+                                            <DockPanel Margin="{Binding newMargin}" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                                                <TextBlock UseLayoutRounding="True" SnapsToDevicePixels="True" TextAlignment="Center" DockPanel.Dock="Bottom" Text="{Binding Name}" MaxWidth="{Binding MaxWidth}" Foreground="White" FontSize="{Binding FontSize}" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                                    <TextBlock.Effect>
+                                                        <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                                                    </TextBlock.Effect>
+                                                </TextBlock>
+                                                <Border UseLayoutRounding="True" SnapsToDevicePixels="True" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Center" CornerRadius="999" BorderBrush="LightBlue" BorderThickness="4" Margin="0,12,0,8">
+                                                    <Border.Background>
+                                                        <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                                    </Border.Background>
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                                                    </Border.Effect>
+                                                </Border>
+                                            </DockPanel>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="{Binding newMargin}" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                            <TextBlock UseLayoutRounding="True" SnapsToDevicePixels="True" TextAlignment="Center" DockPanel.Dock="Bottom" Text="{Binding Name}" MaxWidth="{Binding MaxWidth}" Foreground="White" FontSize="{Binding FontSize}" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect ShadowDepth="2" RenderingBias="Quality"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                            <Border UseLayoutRounding="True" SnapsToDevicePixels="True" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Center" CornerRadius="999" BorderBrush="Transparent" BorderThickness="4" Margin="0,12,0,8">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                </Border.Background>
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
+                                </Border.Effect>
+                            </Border>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</Page>

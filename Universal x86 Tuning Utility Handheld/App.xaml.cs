@@ -122,6 +122,7 @@ namespace Universal_x86_Tuning_Utility_Handheld
                   services.AddScoped<ViewModels.MainWindowViewModel>();
 
                   // Views and ViewModels
+                  services.AddScoped<Views.Pages.glGUI1>();
                   services.AddScoped<Views.Pages.DashboardPage>();
                   services.AddScoped<ViewModels.DashboardViewModel>();
                   services.AddScoped<Views.Pages.AdvancedPage>();

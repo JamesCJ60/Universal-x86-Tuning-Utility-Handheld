@@ -1,37 +1,17 @@
-﻿using SharpDX.XInput;
-using System;
-using System.Data;
-using System.DirectoryServices.ActiveDirectory;
-using System.Management;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using Universal_x86_Tuning_Utility_Handheld.Scripts.Misc;
-using Universal_x86_Tuning_Utility_Handheld.Views.Windows;
-using Windows.Devices.Radios;
 using Wpf.Ui.Common.Interfaces;
 using Wpf.Ui.Controls;
-using NAudio.CoreAudioApi;
-using System.Threading.Tasks;
-using System.Media;
-using System.Linq;
 using Universal_x86_Tuning_Utility_Handheld.Properties;
-using Microsoft.Win32.TaskScheduler;
-using Task = System.Threading.Tasks.Task;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-using System.Windows.Forms;
 using Universal_x86_Tuning_Utility.Scripts.Misc;
-using Wpf.Ui.Mvvm.Interfaces;
 using Universal_x86_Tuning_Utility_Handheld.Services;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Universal_x86_Tuning_Utility.Scripts;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
-using System.Diagnostics;
-using Universal_x86_Tuning_Utility_Handheld.Scripts.Fan_Control;
+
 
 namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
 {

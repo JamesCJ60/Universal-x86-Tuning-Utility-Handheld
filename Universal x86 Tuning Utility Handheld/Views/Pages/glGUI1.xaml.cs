@@ -48,11 +48,11 @@ namespace Universal_x86_Tuning_Utility_Handheld.Views.Pages
             double part = this.ActualWidth;
             // Calculate the percentage
             double percentage = (part / whole) * 100;
-            int dim = Convert.ToInt32(228.0 / 100 * percentage);
-            int fontSize = Convert.ToInt32(29.0 / 100 * percentage);
+            int dim = Convert.ToInt32(242.0 / 100 * percentage);
+            int fontSize = Convert.ToInt32(31.0 / 100 * percentage);
             int margin = Convert.ToInt32(64.0 / 100 * percentage);
-            int menuFontSize = Convert.ToInt32(36.0 / 100 * percentage);
-            int menuIconSize = Convert.ToInt32(46.0 / 100 * percentage);
+            int menuFontSize = Convert.ToInt32(37.0 / 100 * percentage);
+            int menuIconSize = Convert.ToInt32(47.0 / 100 * percentage);
             int margin2 = Convert.ToInt32(26.0 / 100 * percentage);
 
             tbBattery.FontSize = menuFontSize;

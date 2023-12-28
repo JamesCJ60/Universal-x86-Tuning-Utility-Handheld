@@ -49,7 +49,7 @@
                 </TextBlock>
             </StackPanel>
         </DockPanel>
-        <DockPanel ZIndex="3" LastChildFill="False" Margin="16,-20,16,-20">
+        <DockPanel ZIndex="3" LastChildFill="False" Margin="16,10,16,10">
             <ListBox Background="Transparent" DockPanel.Dock="Left" Width="32" VerticalAlignment="Center" Name="lbMenus" BorderBrush="Transparent">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
@@ -71,7 +71,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate x:Name="GameBordebr">
-                                            <Border Width="16" Height="16" CornerRadius="999" BorderThickness="0" Background="White" BorderBrush="Transparent" Margin="0,12,0,12">
+                                            <Border Width="14" Height="14" CornerRadius="999" BorderThickness="0" Background="White" BorderBrush="Transparent" Margin="0,12,0,12">
                                                 <Border.Effect>
                                                     <DropShadowEffect Color="White" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
                                                 </Border.Effect>
@@ -85,7 +85,7 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="16" Height="16" CornerRadius="999" BorderThickness="0" Background="Gray" BorderBrush="Transparent" Margin="0,12,0,12">
+                        <Border Width="14" Height="14" CornerRadius="999" BorderThickness="0" Background="Gray" BorderBrush="Transparent" Margin="0,12,0,12">
                             <Border.Effect>
                                 <DropShadowEffect Color="Black" ShadowDepth="0" Opacity="1" BlurRadius="8" RenderingBias="Quality"/>
                             </Border.Effect>
